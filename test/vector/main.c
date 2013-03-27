@@ -324,7 +324,77 @@ DECLARE_TEST( vector, cross )
 
 DECLARE_TEST( vector, ops )
 {
+	vector_t vec;
 
+	vec = vector_mul( vector_one(), vector_zero() );
+	EXPECT_VECTOREQ( vec, vector_zero() );
+
+	vec = vector_mul( vector_zero(), vector_one() );
+	EXPECT_VECTOREQ( vec, vector_zero() );
+
+	vec = vector_mul( vector_one(), vector_one() );
+	EXPECT_VECTOREQ( vec, vector_one() );
+
+	vec = vector_mul( vector_two(), vector_zero() );
+	EXPECT_VECTOREQ( vec, vector_zero() );
+
+	vec = vector_mul( vector_two(), vector_half() );
+	EXPECT_VECTOREQ( vec, vector_one() );
+
+	vec = vector_mul( vector( 1, 2, 3, 4 ), vector( 5, 6, 7, 8 ) );
+	EXPECT_VECTOREQ( vec, vector( 5, 12, 21, 32 ) );
+
+	vec = vector_div( vector_zero(), vector_one() );
+	EXPECT_VECTOREQ( vec, vector_zero() );
+
+	vec = vector_div( vector_one(), vector_one() );
+	EXPECT_VECTOREQ( vec, vector_one() );
+
+	vec = vector_div( vector_one(), vector_half() );
+	EXPECT_VECTOREQ( vec, vector_two() );
+
+	vec = vector_div( vector( 1, 2, 3, 4 ), vector( 5, 6, 7, 8 ) );
+	EXPECT_VECTOREQ( vec, vector( REAL_C(1.0) / REAL_C(5.0), REAL_C(2.0) / REAL_C(6.0), REAL_C(3.0) / REAL_C(7.0), REAL_C(4.0) / REAL_C(8.0) ) );
+
+	vec = vector_add( vector_zero(), vector_zero() );
+	EXPECT_VECTOREQ( vec, vector_zero() );
+	
+	vec = vector_add( vector_zero(), vector_one() );
+	EXPECT_VECTOREQ( vec, vector_one() );
+
+	vec = vector_add( vector_one(), vector_zero() );
+	EXPECT_VECTOREQ( vec, vector_one() );
+
+	vec = vector_add( vector_one(), vector_one() );
+	EXPECT_VECTOREQ( vec, vector_two() );
+
+	vec = vector_add( vector( 1, 2, 3, 4 ), vector( 5, 6, 7, 8 ) );
+	EXPECT_VECTOREQ( vec, vector( 6, 8, 10, 12 ) );
+
+	vec = vector_sub( vector_zero(), vector_zero() );
+	EXPECT_VECTOREQ( vec, vector_zero() );
+	
+	vec = vector_sub( vector_zero(), vector_one() );
+	EXPECT_VECTOREQ( vec, vector( -1, -1, -1, -1 ) );
+
+	vec = vector_sub( vector_one(), vector_zero() );
+	EXPECT_VECTOREQ( vec, vector_one() );
+
+	vec = vector_sub( vector_one(), vector_one() );
+	EXPECT_VECTOREQ( vec, vector_zero() );
+
+	vec = vector_sub( vector( 1, -2, 3, -4 ), vector( -5, 6, -7, 8 ) );
+	EXPECT_VECTOREQ( vec, vector( 6, -8, 10, -12 ) );
+
+	vec = vector_neg( vector_zero() );
+	EXPECT_VECTOREQ( vec, vector_zero() );
+	
+	vec = vector_neg( vector_one() );
+	EXPECT_VECTOREQ( vec, vector( -1, -1, -1, -1 ) );
+
+	vec = vector_neg( vector( 1, -2, 3, -4 ) );
+	EXPECT_VECTOREQ( vec, vector( -1, 2, -3, 4 ) );
+	
 	return 0;
 }
 
