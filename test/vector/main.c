@@ -394,7 +394,25 @@ DECLARE_TEST( vector, ops )
 
 	vec = vector_neg( vector( 1, -2, 3, -4 ) );
 	EXPECT_VECTOREQ( vec, vector( -1, 2, -3, 4 ) );
-	
+
+	vec = vector_muladd( vector_one(), vector_zero(), vector_one() );
+	EXPECT_VECTOREQ( vec, vector_one() );
+
+	vec = vector_muladd( vector_zero(), vector_one(), vector_zero() );
+	EXPECT_VECTOREQ( vec, vector_zero() );
+
+	vec = vector_muladd( vector_one(), vector_one(), vector_one() );
+	EXPECT_VECTOREQ( vec, vector_two() );
+
+	vec = vector_muladd( vector_two(), vector_zero(), vector_zero() );
+	EXPECT_VECTOREQ( vec, vector_zero() );
+
+	vec = vector_muladd( vector_two(), vector_half(), vector_one() );
+	EXPECT_VECTOREQ( vec, vector_two() );
+
+	vec = vector_muladd( vector( 1, 2, 3, 4 ), vector( 5, 6, 7, 8 ), vector( -1, -2, -3, -4 ) );
+	EXPECT_VECTOREQ( vec, vector( 4, 10, 18, 28 ) );
+
 	return 0;
 }
 
@@ -482,7 +500,26 @@ DECLARE_TEST( vector, shuffle )
 
 DECLARE_TEST( vector, util )
 {
+	vector_t vec;
 
+	vec = vector_scale( vector_zero(), 1 );
+	EXPECT_VECTOREQ( vec, vector_zero() );
+	
+	vec = vector_scale( vector_one(), 1 );
+	EXPECT_VECTOREQ( vec, vector_one() );
+	
+	vec = vector_scale( vector_two(), 0 );
+	EXPECT_VECTOREQ( vec, vector_zero() );
+	
+	vec = vector_scale( vector_two(), 1 );
+	EXPECT_VECTOREQ( vec, vector_two() );
+	
+	vec = vector_scale( vector_one(), 2 );
+	EXPECT_VECTOREQ( vec, vector_two() );
+	
+	vec = vector_scale( vector( 1, 2, 3, 4 ), 5 );
+	EXPECT_VECTOREQ( vec, vector( 5, 10, 15, 20 ) );
+	
 	return 0;
 }
 
