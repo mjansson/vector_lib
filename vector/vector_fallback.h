@@ -175,6 +175,12 @@ vector_t vector_neg( const vector_t v )
 }
 
 
+vector_t vector_muladd( const vector_t v0, const vector_t v1, const vector_t v2 )
+{
+	return vector_add( vector_mul( v0, v1 ), v2 );
+}
+
+
 vector_t vector_shuffle( const vector_t v, unsigned int mask )
 {
 	const float32_t* element = &v.x;

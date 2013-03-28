@@ -174,6 +174,16 @@ vector_t vector_neg( const vector_t v )
 }
 
 
+vector_t vector_muladd( const vector_t v0, const vector_t v1, const vector_t v2 )
+{
+#if FOUNDATION_ARCH_SSE4_FMA3
+	return _mm_fmadd_ps( v0, v1, v2);
+#else
+	return vector_add( vector_mul( v0, v1 ), v2 );
+#endif
+}
+
+
 vector_t vector_scale( const vector_t v, const real s )
 {
 	return _mm_mul_ps( v, _mm_set_ps1( s ) );
@@ -183,7 +193,11 @@ vector_t vector_scale( const vector_t v, const real s )
 vector_t vector_lerp( const vector_t from, const vector_t to, const real factor )
 {
 	vector_t s = _mm_set1_ps( factor );
+#if FOUNDATION_ARCH_SSE4_FMA3
+	return _mm_fmadd_ps( to, s, _mm_fnmadd_ps( from, s, from ) );
+#else
 	return _mm_add_ps( _mm_mul_ps( s, to ), _mm_sub_ps( from, _mm_mul_ps( s, from ) ) );
+#endif
 }
 
 

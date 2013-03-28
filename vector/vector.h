@@ -12,7 +12,7 @@
  *
  * This library is put in the public domain; you can redistribute it and/or modify it without any restrictions.
  *
-*/
+ */
 
 #pragma once
 
@@ -60,6 +60,7 @@ static FORCEINLINE CONSTCALL vector_t   vector_div( const vector_t v0, const vec
 static FORCEINLINE CONSTCALL vector_t   vector_add( const vector_t v0, const vector_t v1 );
 static FORCEINLINE CONSTCALL vector_t   vector_sub( const vector_t v0, const vector_t v1 );
 static FORCEINLINE CONSTCALL vector_t   vector_neg( const vector_t v );
+static FORCEINLINE CONSTCALL vector_t   vector_muladd( const vector_t v0, const vector_t v1, const vector_t v2 );
 
 static FORCEINLINE CONSTCALL vector_t   vector_shuffle( const vector_t v, const unsigned int mask );
 static FORCEINLINE CONSTCALL vector_t   vector_scale( const vector_t v, const real s );
