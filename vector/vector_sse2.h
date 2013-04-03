@@ -190,24 +190,55 @@ vector_t vector_lerp( const vector_t from, const vector_t to, const real factor 
 }
 
 
+vector_t vector_project( const vector_t v, const vector_t at )
+{
+	vector_t normal = vector_normalize( at );
+	return vector_mul( normal, vector_dot( normal, v ) );
+}
+
+
 vector_t vector_reflect( const vector_t v, const vector_t at )
 {
 	const vector_t two = vector_two();
-	vector_t normal = vector_normalize( at );
-	vector_t double_proj = vector_mul( normal, vector_mul( vector_dot3( normal, v ), two ) );
+	const vector_t normal = vector_normalize( at );
+	const vector_t double_proj = vector_mul( normal, vector_mul( vector_dot( normal, v ), two ) );
 	return vector_sub( double_proj, v );
+}
+
+
+vector_t vector_project3( const vector_t v, const vector_t at )
+{
+	//Shuffle to preserve w component of input vector
+	const vector_t normal = vector_mul( at, _mm_rsqrt_ps( vector_dot3( at, at ) ) );
+	const vector_t result = vector_mul( normal, vector_dot3( normal, v ) );
+	const vector_t splice = _mm_shuffle_ps( result, v, VECTOR_MASK_ZZWW );
+	return _mm_shuffle_ps( result, splice, VECTOR_MASK_XYXW );
+}
+
+
+vector_t vector_reflect3( const vector_t v, const vector_t at )
+{
+	//Shuffle to preserve w component of input vector
+	const vector_t two = vector_two();
+	const vector_t normal = vector_normalize3( at );
+	const vector_t double_proj = vector_mul( normal, vector_mul( vector_dot3( normal, v ), two ) );
+	const vector_t result = vector_sub( double_proj, v );
+	const vector_t splice = _mm_shuffle_ps( result, v, VECTOR_MASK_ZZWW );
+	return _mm_shuffle_ps( result, splice, VECTOR_MASK_XYXW );
 }
 
 
 vector_t vector_length( const vector_t v )
 {
-	return _mm_sqrt_ss( vector_length_sqr( v ) );
+	const vector_t vsqrt = _mm_sqrt_ss( vector_length_sqr( v ) );
+	return vector_shuffle( vsqrt, VECTOR_MASK_XXXX );
 }
 
 
 vector_t vector_length_fast( const vector_t v )
 {
-	return _mm_sqrt_ss( vector_length_sqr( v ) );
+	const vector_t vsqrt = _mm_sqrt_ss( vector_length_sqr( v ) );
+	return vector_shuffle( vsqrt, VECTOR_MASK_XXXX );
 }
 
 
@@ -219,13 +250,15 @@ vector_t vector_length_sqr( const vector_t v )
 
 vector_t vector_length3( const vector_t v )
 {
-	return _mm_sqrt_ss( vector_length3_sqr( v ) );
+	const vector_t vsqrt = _mm_sqrt_ss( vector_length3_sqr( v ) );
+	return vector_shuffle( vsqrt, VECTOR_MASK_XXXX );
 }
 
 
 vector_t vector_length3_fast( const vector_t v )
 {
-	return _mm_sqrt_ss( vector_length3_sqr( v ) );
+	const vector_t vsqrt = _mm_sqrt_ss( vector_length3_sqr( v ) );
+	return vector_shuffle( vsqrt, VECTOR_MASK_XXXX );
 }
 
 

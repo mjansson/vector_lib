@@ -40,7 +40,7 @@ real vector_test_difference( const vector_t v0, const vector_t v1 )
 
 
 #define EXPECT_VECTOREQ( var, expect ) do { if( !vector_equal( (var), (expect) ) ) { log_warnf( WARNING_SUSPICIOUS, "Test failed, %s != %s vector (at %s:%u): (%.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ") (%.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ")", FOUNDATION_PREPROCESSOR_TOSTRING(var), FOUNDATION_PREPROCESSOR_TOSTRING(expect), __FILE__, __LINE__, (real)vector_x((var)), (real)vector_y((var)), (real)vector_z((var)), (real)vector_w((var)), (real)vector_x((expect)), (real)vector_y((expect)), (real)vector_z((expect)), (real)vector_w((expect)) ); return FAILED_TEST; } } while(0)
-#define EXPECT_VECTORALMOSTEQ( var, expect ) do { real diff = vector_test_difference( (var), (expect) ); if( diff > 0.005f ) { log_warnf( WARNING_SUSPICIOUS, "Test failed, %s != %s vector (at %s:%u): (%.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ") (%.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ") diff %.6" STRING_FORMAT_REAL, FOUNDATION_PREPROCESSOR_TOSTRING(var), FOUNDATION_PREPROCESSOR_TOSTRING(expect), __FILE__, __LINE__, (real)vector_x((var)), (real)vector_y((var)), (real)vector_z((var)), (real)vector_w((var)), (real)vector_x((expect)), (real)vector_y((expect)), (real)vector_z((expect)), (real)vector_w((expect)), diff ); return FAILED_TEST; } } while(0)
+#define EXPECT_VECTORALMOSTEQ( var, expect ) do { real diff = vector_test_difference( (var), (expect) ); if( diff > 0.0075f ) { log_warnf( WARNING_SUSPICIOUS, "Test failed, %s != %s vector (at %s:%u): (%.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ") (%.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ") diff %.6" STRING_FORMAT_REAL, FOUNDATION_PREPROCESSOR_TOSTRING(var), FOUNDATION_PREPROCESSOR_TOSTRING(expect), __FILE__, __LINE__, (real)vector_x((var)), (real)vector_y((var)), (real)vector_z((var)), (real)vector_w((var)), (real)vector_x((expect)), (real)vector_y((expect)), (real)vector_z((expect)), (real)vector_w((expect)), diff ); return FAILED_TEST; } } while(0)
 
 
 application_t test_application( void )
@@ -519,6 +519,114 @@ DECLARE_TEST( vector, util )
 	
 	vec = vector_scale( vector( 1, 2, 3, 4 ), 5 );
 	EXPECT_VECTOREQ( vec, vector( 5, 10, 15, 20 ) );
+
+	vec = vector_lerp( vector_zero(), vector_zero(), 0 );
+	EXPECT_VECTOREQ( vec, vector_zero() );
+
+	vec = vector_lerp( vector_zero(), vector_zero(), 1 );
+	EXPECT_VECTOREQ( vec, vector_zero() );
+
+	vec = vector_lerp( vector_zero(), vector_one(), 0 );
+	EXPECT_VECTOREQ( vec, vector_zero() );
+
+	vec = vector_lerp( vector_zero(), vector_one(), 1 );
+	EXPECT_VECTOREQ( vec, vector_one() );
+
+	vec = vector_lerp( vector_one(), vector_one(), 1 );
+	EXPECT_VECTOREQ( vec, vector_one() );
+
+	vec = vector_lerp( vector_one(), vector_one(), 10 );
+	EXPECT_VECTOREQ( vec, vector_one() );
+
+	vec = vector_lerp( vector_zero(), vector_one(), 2 );
+	EXPECT_VECTOREQ( vec, vector_two() );
+
+	vec = vector_lerp( vector_zero(), vector_one(), -1 );
+	EXPECT_VECTOREQ( vec, vector_uniform( -1 ) );
+
+	vec = vector_lerp( vector( 1, -2, 3, -4 ), vector( 11, -12, -13, 14 ), REAL_C(0.5) );
+	EXPECT_VECTOREQ( vec, vector( 6, -7, -5, 5 ) );
+
+	vec = vector_project( vector_zero(), vector_one() );
+	EXPECT_VECTOREQ( vec, vector_zero() );
+
+	vec = vector_project( vector_one(), vector_one() );
+	EXPECT_VECTORALMOSTEQ( vec, vector_one() );
+
+	vec = vector_project( vector_uniform( -1 ), vector_one() );
+	EXPECT_VECTORALMOSTEQ( vec, vector_uniform( -1 ) );
+
+	vec = vector_project( vector( 1, 2, 3, 4 ), vector( 2, 0, 0, 0 ) );
+	EXPECT_VECTORALMOSTEQ( vec, vector( 1, 0, 0, 0 ) );
+
+	vec = vector_project( vector( 1, 2, 3, 4 ), vector( 0, -3, 0, 0 ) );
+	EXPECT_VECTORALMOSTEQ( vec, vector( 0, 2, 0, 0 ) );
+
+	vec = vector_project( vector( 1, 2, 3, 4 ), vector( 0, 0, 4, 0 ) );
+	EXPECT_VECTORALMOSTEQ( vec, vector( 0, 0, 3, 0 ) );
+
+	vec = vector_project( vector( 1, 2, 3, 4 ), vector( 0, 0, 0, -5 ) );
+	EXPECT_VECTORALMOSTEQ( vec, vector( 0, 0, 0, 4 ) );
+
+	vec = vector_project( vector( 1, 2, 3, 4 ), vector( 0, 1, 0, 2 ) );
+	EXPECT_VECTORALMOSTEQ( vec, vector( 0, 2, 0, 4 ) );
+	
+	vec = vector_project3( vector_zero(), vector_one() );
+	EXPECT_VECTOREQ( vec, vector_zero() );
+
+	vec = vector_project3( vector_one(), vector_one() );
+	EXPECT_VECTORALMOSTEQ( vec, vector_one() );
+
+	vec = vector_project3( vector_uniform( -1 ), vector_one() );
+	EXPECT_VECTORALMOSTEQ( vec, vector_uniform( -1 ) );
+
+	vec = vector_project3( vector( 1, 2, 3, 4 ), vector( 2, 0, 0, 0 ) );
+	EXPECT_VECTORALMOSTEQ( vec, vector( 1, 0, 0, 4 ) );
+
+	vec = vector_project3( vector( 1, 2, 3, 4 ), vector( 0, -3, 0, 0 ) );
+	EXPECT_VECTORALMOSTEQ( vec, vector( 0, 2, 0, 4 ) );
+
+	vec = vector_project3( vector( 1, 2, 3, 4 ), vector( 0, 0, 4, 0 ) );
+	EXPECT_VECTORALMOSTEQ( vec, vector( 0, 0, 3, 4 ) );
+
+	vec = vector_project3( vector( 1, 2, 3, 4 ), vector( 0, 0, 0, -5 ) );
+	EXPECT_VECTORALMOSTEQ( vec, vector( 0, 0, 0, 4 ) );
+
+	vec = vector_project3( vector( 1, 2, 3, 4 ), vector( 0, 1, 0, 2 ) );
+	EXPECT_VECTORALMOSTEQ( vec, vector( 0, 2, 0, 4 ) );
+
+	vec = vector_reflect( vector_zero(), vector_one() );
+	EXPECT_VECTOREQ( vec, vector_zero() );	
+
+	vec = vector_reflect( vector_one(), vector_one() );
+	EXPECT_VECTORALMOSTEQ( vec, vector_one() );	
+
+	vec = vector_reflect( vector_uniform( -1 ), vector_one() );
+	EXPECT_VECTORALMOSTEQ( vec, vector_uniform( -1 ) );	
+
+	vec = vector_reflect( vector( 1, 1, 0, 1 ), vector( 0, 1, 0, 1 ) );
+	EXPECT_VECTORALMOSTEQ( vec, vector( -1, 1, 0, 1 ) );	
+
+	vec = vector_reflect( vector( 2, 3, 4, 5 ), vector( -2, -3, 0, -5 ) );
+	EXPECT_VECTORALMOSTEQ( vec, vector( 2, 3, -4, 5 ) );	
+
+	vec = vector_reflect3( vector_zero(), vector_one() );
+	EXPECT_VECTOREQ( vec, vector_zero() );	
+
+	vec = vector_reflect3( vector_one(), vector_one() );
+	EXPECT_VECTORALMOSTEQ( vec, vector_one() );	
+
+	vec = vector_reflect3( vector_uniform( -1 ), vector_one() );
+	EXPECT_VECTORALMOSTEQ( vec, vector_uniform( -1 ) );	
+
+	vec = vector_reflect3( vector( 1, 1, 0, 1 ), vector( 0, 1, 0, 1 ) );
+	EXPECT_VECTORALMOSTEQ( vec, vector( -1, 1, 0, 1 ) );	
+
+	vec = vector_reflect3( vector( 2, 3, 4, 5 ), vector( -2, -3, 0, -5 ) );
+	EXPECT_VECTORALMOSTEQ( vec, vector( 2, 3, -4, 5 ) );	
+
+	vec = vector_reflect3( vector( 2, 3, 4, -5 ), vector( -2, -3, 0, 13 ) );
+	EXPECT_VECTORALMOSTEQ( vec, vector( 2, 3, -4, -5 ) );	
 	
 	return 0;
 }
@@ -526,28 +634,142 @@ DECLARE_TEST( vector, util )
 
 DECLARE_TEST( vector, length )
 {
+	vector_t vec;
 
+	vec = vector_length( vector_zero() );
+	EXPECT_VECTOREQ( vec, vector_zero() );
+
+	vec = vector_length( vector_one() );
+	EXPECT_VECTOREQ( vec, vector_two() );
+
+	vec = vector_length( vector_two() );
+	EXPECT_VECTOREQ( vec, vector_uniform( 4 ) );
+
+	vec = vector_length( vector( 1, -2, 3, -4 ) );
+	EXPECT_VECTOREQ( vec, vector_uniform( math_sqrt( 30 ) ) );
+	
+	vec = vector_length_fast( vector_zero() );
+	EXPECT_VECTOREQ( vec, vector_zero() );
+
+	vec = vector_length_fast( vector_one() );
+	EXPECT_VECTOREQ( vec, vector_two() );
+
+	vec = vector_length_fast( vector_two() );
+	EXPECT_VECTOREQ( vec, vector_uniform( 4 ) );
+
+	vec = vector_length_fast( vector( 1, -2, 3, -4 ) );
+	EXPECT_VECTOREQ( vec, vector_uniform( math_sqrt( 30 ) ) );
+	
+	vec = vector_length3( vector_zero() );
+	EXPECT_VECTOREQ( vec, vector_zero() );
+
+	vec = vector_length3( vector_one() );
+	EXPECT_VECTOREQ( vec, vector_uniform( REAL_SQRT3 ) );
+
+	vec = vector_length3( vector_two() );
+	EXPECT_VECTOREQ( vec, vector_uniform( math_sqrt( 12 ) ) );
+
+	vec = vector_length3( vector( 1, -2, 3, -4 ) );
+	EXPECT_VECTOREQ( vec, vector_uniform( math_sqrt( 14 ) ) );
+	
+	vec = vector_length3_fast( vector_zero() );
+	EXPECT_VECTOREQ( vec, vector_zero() );
+
+	vec = vector_length3_fast( vector_one() );
+	EXPECT_VECTOREQ( vec, vector_uniform( REAL_SQRT3 ) );
+
+	vec = vector_length3_fast( vector_two() );
+	EXPECT_VECTOREQ( vec, vector_uniform( math_sqrt( 12 ) ) );
+
+	vec = vector_length3_fast( vector( 1, -2, 3, -4 ) );
+	EXPECT_VECTOREQ( vec, vector_uniform( math_sqrt( 14 ) ) );
+
+	vec = vector_length_sqr( vector_zero() );
+	EXPECT_VECTOREQ( vec, vector_zero() );
+
+	vec = vector_length_sqr( vector_one() );
+	EXPECT_VECTOREQ( vec, vector_uniform( 4 ) );
+
+	vec = vector_length_sqr( vector( 1, -2, 3, -4 ) );
+	EXPECT_VECTOREQ( vec, vector_uniform( 30 ) );
+
+	vec = vector_length3_sqr( vector_zero() );
+	EXPECT_VECTOREQ( vec, vector_zero() );
+
+	vec = vector_length3_sqr( vector_one() );
+	EXPECT_VECTOREQ( vec, vector_uniform( 3 ) );
+
+	vec = vector_length3_sqr( vector( 1, -2, 3, -4 ) );
+	EXPECT_VECTOREQ( vec, vector_uniform( 14 ) );
+	
 	return 0;
 }
 
 
 DECLARE_TEST( vector, minmax )
 {
+	vector_t vec;
 
+	vec = vector_min( vector_zero(), vector_one() );
+	EXPECT_VECTOREQ( vec, vector_zero() );	
+
+	vec = vector_min( vector_one(), vector_one() );
+	EXPECT_VECTOREQ( vec, vector_one() );	
+
+	vec = vector_min( vector( 1, 2, 3, 4 ), vector( 2, -3, 4, -5 ) );
+	EXPECT_VECTOREQ( vec, vector( 1, -3, 3, -5 ) );	
+
+	vec = vector_max( vector_zero(), vector_one() );
+	EXPECT_VECTOREQ( vec, vector_one() );	
+
+	vec = vector_max( vector_one(), vector_one() );
+	EXPECT_VECTOREQ( vec, vector_one() );	
+
+	vec = vector_max( vector( 1, 2, 3, 4 ), vector( 2, -3, 4, -5 ) );
+	EXPECT_VECTOREQ( vec, vector( 2, 2, 4, 4 ) );	
+	
 	return 0;
 }
 
 
 DECLARE_TEST( vector, component )
 {
+	EXPECT_REALEQ( vector_x( vector_zero() ), REAL_ZERO );
+	EXPECT_REALEQ( vector_y( vector_zero() ), REAL_ZERO );
+	EXPECT_REALEQ( vector_z( vector_zero() ), REAL_ZERO );
+	EXPECT_REALEQ( vector_w( vector_zero() ), REAL_ZERO );
 
+	EXPECT_REALEQ( vector_x( vector_one() ), REAL_ONE );
+	EXPECT_REALEQ( vector_y( vector_one() ), REAL_ONE );
+	EXPECT_REALEQ( vector_z( vector_one() ), REAL_ONE );
+	EXPECT_REALEQ( vector_w( vector_one() ), REAL_ONE );
+
+	EXPECT_REALEQ( vector_x( vector( 1, -2, 3, -4 ) ), 1 );
+	EXPECT_REALEQ( vector_y( vector( 1, -2, 3, -4 ) ), -2 );
+	EXPECT_REALEQ( vector_z( vector( 1, -2, 3, -4 ) ), 3 );
+	EXPECT_REALEQ( vector_w( vector( 1, -2, 3, -4 ) ), -4 );
+
+	EXPECT_REALEQ( vector_component( vector( 1, -2, 3, -4 ), 0 ), 1 );
+	EXPECT_REALEQ( vector_component( vector( 1, -2, 3, -4 ), 1 ), -2 );
+	EXPECT_REALEQ( vector_component( vector( 1, -2, 3, -4 ), 2 ), 3 );
+	EXPECT_REALEQ( vector_component( vector( 1, -2, 3, -4 ), 3 ), -4 );
+	
 	return 0;
 }
 
 
 DECLARE_TEST( vector, equal )
 {
+	EXPECT_TRUE( vector_equal( vector_zero(), vector_zero() ) );
+	EXPECT_TRUE( vector_equal( vector_one(), vector_one() ) );
+	EXPECT_TRUE( vector_equal( vector_uniform( -5 ), vector_uniform( -5 ) ) );
+	EXPECT_TRUE( vector_equal( vector( 1, -2, 3, -4 ), vector( 1, -2, 3, -4 ) ) );
 
+	EXPECT_FALSE( vector_equal( vector_zero(), vector_one() ) );
+	EXPECT_FALSE( vector_equal( vector_one(), vector_zero() ) );
+	EXPECT_FALSE( vector_equal( vector_uniform( -5 ), vector_uniform( 5 ) ) );
+	EXPECT_FALSE( vector_equal( vector( 1, -2, 3, -4 ), vector( 1, 2, 3, -4 ) ) );
+	
 	return 0;
 }
 

@@ -65,7 +65,12 @@ static FORCEINLINE CONSTCALL vector_t   vector_muladd( const vector_t v0, const 
 static FORCEINLINE CONSTCALL vector_t   vector_shuffle( const vector_t v, const unsigned int mask );
 static FORCEINLINE CONSTCALL vector_t   vector_scale( const vector_t v, const real s );
 static FORCEINLINE CONSTCALL vector_t   vector_lerp( const vector_t from, const vector_t to, const real factor );
+
+//! Project and reflect on non-normalized vector (will call normalize internally)
+static FORCEINLINE CONSTCALL vector_t   vector_project( const vector_t v, const vector_t at );
 static FORCEINLINE CONSTCALL vector_t   vector_reflect( const vector_t v, const vector_t at );
+static FORCEINLINE CONSTCALL vector_t   vector_project3( const vector_t v, const vector_t at );
+static FORCEINLINE CONSTCALL vector_t   vector_reflect3( const vector_t v, const vector_t at );
 
 static FORCEINLINE CONSTCALL vector_t   vector_length( const vector_t v );
 static FORCEINLINE CONSTCALL vector_t   vector_length_fast( const vector_t v );

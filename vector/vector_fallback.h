@@ -203,21 +203,64 @@ vector_t vector_scale( const vector_t v, const real s )
 
 vector_t vector_lerp( const vector_t from, const vector_t to, const real factor )
 {
-	real factor_inv = REAL_C( 1.0 ) - factor;
 	vector_t v = {
-		from.x * factor_inv + to.x * factor,
-		from.y * factor_inv + to.y * factor,
-		from.z * factor_inv + to.z * factor,
-		from.w * factor_inv + to.w * factor };
+		from.x + ( to.x - from.x ) * factor,
+		from.y + ( to.y - from.y ) * factor,
+		from.z + ( to.z - from.z ) * factor,
+		from.w + ( to.w - from.w ) * factor };
 	return v;
+}
+
+
+vector_t vector_project( const vector_t v, const vector_t at )
+{
+	const vector_t normal = vector_normalize( at );
+	const vector_t ndotv = vector_dot( normal, v );
+	vector_t result = {
+		normal.x * ndotv.x,
+		normal.y * ndotv.y,
+		normal.z * ndotv.z,
+		normal.w * ndotv.w };
+	return result;
 }
 
 
 vector_t vector_reflect( const vector_t v, const vector_t at )
 {
-	vector_t normal = vector_normalize( at );
-	vector_t double_proj = vector_scale( normal, ( normal.x*v.x + normal.y*v.y + normal.z*v.z ) * 2.0f );
-	return vector_sub( double_proj, v );
+	const vector_t normal = vector_normalize( at );
+	const vector_t ndotv = vector_dot( normal, v );
+	vector_t result = {
+		( 2.0f * ( normal.x * ndotv.x ) ) - v.x,
+		( 2.0f * ( normal.y * ndotv.y ) ) - v.y,
+		( 2.0f * ( normal.z * ndotv.z ) ) - v.z,
+		( 2.0f * ( normal.w * ndotv.w ) ) - v.w };
+	return result;
+}
+
+
+vector_t vector_project3( const vector_t v, const vector_t at )
+{
+	const vector_t normal = vector_normalize3( at );
+	const vector_t ndotv = vector_dot3( normal, v );
+	vector_t result = {
+		normal.x * ndotv.x,
+		normal.y * ndotv.y,
+		normal.z * ndotv.z,
+		v.w	};
+	return result;
+}
+
+
+vector_t vector_reflect3( const vector_t v, const vector_t at )
+{
+	const vector_t normal = vector_normalize3( at );
+	const vector_t ndotv = vector_dot3( normal, v );
+	vector_t result = {
+		( 2.0f * ( normal.x * ndotv.x ) ) - v.x,
+		( 2.0f * ( normal.y * ndotv.y ) ) - v.y,
+		( 2.0f * ( normal.z * ndotv.z ) ) - v.z,
+		v.w };
+	return result;
 }
 
 
