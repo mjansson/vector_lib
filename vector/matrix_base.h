@@ -124,8 +124,11 @@ matrix_t matrix_sub( const matrix_t m0, const matrix_t m1 )
 
 vector_t matrix_rotate( const matrix_t m, const vector_t v )
 {
-	//TODO: Implement
-	return v;
+	return vector(
+	  m.frow[0][0] * v.x + m.frow[1][0] * v.y + m.frow[2][0] * v.z,
+	  m.frow[0][1] * v.x + m.frow[1][1] * v.y + m.frow[2][1] * v.z,
+	  m.frow[0][2] * v.x + m.frow[1][2] * v.y + m.frow[2][2] * v.z,
+	  v.w );
 }
 
 #endif
@@ -134,8 +137,11 @@ vector_t matrix_rotate( const matrix_t m, const vector_t v )
 
 vector_t matrix_transform( const matrix_t m, const vector_t v )
 {
-	//TODO: Implement
-	return v;
+	return vector(
+	  m.frow[0][0] * v.x + m.frow[1][0] * v.y + m.frow[2][0] * v.z + m.frow[3][0] * v.w,
+	  m.frow[0][1] * v.x + m.frow[1][1] * v.y + m.frow[2][1] * v.z + m.frow[3][1] * v.w,
+	  m.frow[0][2] * v.x + m.frow[1][2] * v.y + m.frow[2][2] * v.z + m.frow[3][2] * v.w,
+	  m.frow[0][3] * v.x + m.frow[1][3] * v.y + m.frow[2][3] * v.z + m.frow[3][3] * v.w );
 }
 
 #endif

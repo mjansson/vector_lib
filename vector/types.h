@@ -55,7 +55,7 @@ typedef union _matrix
 		float32_t m30, m31, m32, m33;
 	} comp;
 	ALIGN(16) float32_t arr[16];
-	ALIGN(16) float32_t frow[4][4]; // frow[Column][Row]
+	ALIGN(16) float32_t frow[4][4]; // frow[row][column]
 	vector_t            row[4];
 } matrix_t;
 

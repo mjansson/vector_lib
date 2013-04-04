@@ -23,3 +23,5 @@ def makeTest( name ):
 
 makeTest('all')
 makeTest('vector')
+makeTest('matrix')
+makeTest('quaternion')

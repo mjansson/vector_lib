@@ -16,13 +16,11 @@
 
 #pragma once
 
-/*! \file math/vector.h
+/*! \file vector.h
     Vector math */
 
 #include <vector/types.h>
 #include <vector/mask.h>
-
-#include <foundation/math.h>
 
 
 //! Load unaligned
