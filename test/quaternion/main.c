@@ -43,7 +43,7 @@ real vector_test_difference( const vector_t v0, const vector_t v1 )
 #define EXPECT_VECTORALMOSTEQ( var, expect ) do { real diff = vector_test_difference( (var), (expect) ); if( diff > 0.0075f ) { log_warnf( WARNING_SUSPICIOUS, "Test failed, %s != %s vector (at %s:%u): (%.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ") (%.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ") diff %.6" STRING_FORMAT_REAL, FOUNDATION_PREPROCESSOR_TOSTRING(var), FOUNDATION_PREPROCESSOR_TOSTRING(expect), __FILE__, __LINE__, (real)vector_x((var)), (real)vector_y((var)), (real)vector_z((var)), (real)vector_w((var)), (real)vector_x((expect)), (real)vector_y((expect)), (real)vector_z((expect)), (real)vector_w((expect)), diff ); return FAILED_TEST; } } while(0)
 
 
-application_t test_application( void )
+application_t test_quaternion_application( void )
 {
 	application_t app = {0};
 	app.name = "Quaternion tests";
@@ -51,6 +51,17 @@ application_t test_application( void )
 	app.config_dir = "test_quaternion";
 	app.flags = APPLICATION_UTILITY;
 	return app;
+}
+
+
+int test_quaternion_initialize( void )
+{
+	return 0;
+}
+
+
+void test_quaternion_shutdown( void )
+{
 }
 
 
@@ -78,7 +89,7 @@ DECLARE_TEST( quaternion, construct )
 }
 
 
-void test_declare( void )
+void test_quaternion_declare( void )
 {
 #if FOUNDATION_ARCH_SSE4
 	log_infof( "Using SSE4 implementation" );
@@ -95,3 +106,28 @@ void test_declare( void )
 	ADD_TEST( quaternion, construct );
 }
 
+
+test_suite_t test_quaternion_suite = {
+	test_quaternion_application,
+	test_quaternion_declare,
+	test_quaternion_initialize,
+	test_quaternion_shutdown
+};
+
+
+#if FOUNDATION_PLATFORM_ANDROID
+
+int test_quaternion_run( void )
+{
+	test_suite = test_quaternion_suite;
+	return test_run_all();
+}
+
+#else
+
+test_suite_t test_suite_define( void )
+{
+	return test_quaternion_suite;
+}
+
+#endif

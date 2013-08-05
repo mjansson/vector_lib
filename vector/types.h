@@ -49,10 +49,10 @@ typedef union _matrix
 {
 	ALIGN(16) struct _matrix_component
 	{
-		float32_t m00, m01, m02, m03; //Row
-		float32_t m10, m11, m12, m13;
-		float32_t m20, m21, m22, m23;
-		float32_t m30, m31, m32, m33;
+		float32_t m00, m01, m02, m03; //Row 0
+		float32_t m10, m11, m12, m13; //Row 1
+		float32_t m20, m21, m22, m23; //Row 2
+		float32_t m30, m31, m32, m33; //Row 3
 	} comp;
 	ALIGN(16) float32_t arr[16];
 	ALIGN(16) float32_t frow[4][4]; // frow[row][column]

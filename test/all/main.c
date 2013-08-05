@@ -46,20 +46,31 @@ void* event_thread( object_t thread, void* arg )
 int main_initialize( void )
 {
 	application_t application = {0};
-	application.name = "Foundation string test";
-	application.short_name = "test_string";
-	application.config_dir = "test_string";
+	application.name = "Vector library test suite";
+	application.short_name = "test_all";
+	application.config_dir = "test_all";
 	application.flags = APPLICATION_UTILITY;
 	
 	return foundation_initialize( memory_system_malloc(), application );
 }
 
 
+#if FOUNDATION_PLATFORM_ANDROID
+#  include <foundation/android.h>
+extern int test_matrix_run( void );
+extern int test_quaternion_run( void );
+extern int test_vector_run( void );
+typedef int (*test_run_fn)( void );
+#endif
+
 int main_run( void* main_arg )
 {
 	const char* pattern = 0;
 	char** exe_paths = 0;
 	unsigned int iexe, exesize;
+	object_t library = 0;
+	void* library_initialize = 0;
+	void* library_run = 0;
 	process_t* process = 0;
 	char* process_path = 0;
 	int process_result = 0;
@@ -67,6 +78,33 @@ int main_run( void* main_arg )
 	
 	thread = thread_create( event_thread, "event_thread", THREAD_PRIORITY_NORMAL, 0 );
 	thread_start( thread, 0 );
+
+#if FOUNDATION_PLATFORM_ANDROID
+	
+	int test_fn = 0;
+	test_run_fn tests[] = {
+		test_matrix_run,
+		test_quaternion_run,
+		test_vector_run,
+		0
+	};
+
+	do
+	{
+		if( process_result >= 0 )
+		{
+			if( ( process_result = tests[test_fn]() ) >= 0 )
+				log_infof( "All tests passed (%d)", process_result );
+		}
+		++test_fn;
+	} while( tests[test_fn] && ( process_result >= 0 ) );
+
+	if( process_result != 0 )
+	{
+		log_warnf( WARNING_SUSPICIOUS, "Tests failed with exit code %d", process_result );
+	}
+	
+#else
 	
 	//Find all test executables in the current executable directory
 #if FOUNDATION_PLATFORM_WINDOWS
@@ -78,7 +116,7 @@ int main_run( void* main_arg )
 #else
 #  error Not implemented
 #endif
-	exe_paths = fs_matching_files( environment_executable_directory(), pattern, false );
+	exe_paths = fs_matching_files( environment_executable_directory(), pattern, true );
 	for( iexe = 0, exesize = array_size( exe_paths ); iexe < exesize; ++iexe )
 	{
 		if( string_equal_substr( exe_paths[iexe], environment_executable_name(), string_length( environment_executable_name() ) ) )
@@ -113,6 +151,7 @@ int main_run( void* main_arg )
 			process_set_exit_code( -1 );
 			goto exit;
 		}
+
 		log_infof( "All tests from %s passed (%d)", exe_paths[iexe], process_result );
 	}
 
@@ -120,6 +159,11 @@ int main_run( void* main_arg )
 
 exit:
 
+	if( exe_paths )
+		string_array_deallocate( exe_paths );
+
+#endif
+	
 	thread_terminate( thread );
 	thread_destroy( thread );
 	while( thread_is_running( thread ) )
