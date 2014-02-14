@@ -21,13 +21,14 @@ void* event_thread( object_t thread, void* arg )
 	while( !thread_should_terminate( thread ) )
 	{
 		block = event_stream_process( system_event_stream() );
+		event = 0;
 
-		while( ( event = event_next( block, 0 ) ) )
+		while( ( event = event_next( block, event ) ) )
 		{
-			if( event->system == SYSTEM_FOUNDATION ) switch( event->id )
+			switch( event->id )
 			{
 				case FOUNDATIONEVENT_TERMINATE:
-					log_warnf( WARNING_SUSPICIOUS, "Terminating tests due to event" );
+					log_warn( HASH_TEST, WARNING_SUSPICIOUS, "Terminating tests due to event" );
 					process_exit( -2 );
 					break;
 
@@ -50,6 +51,8 @@ int main_initialize( void )
 	application.short_name = "test_all";
 	application.config_dir = "test_all";
 	application.flags = APPLICATION_UTILITY;
+
+	log_set_suppress( 0, ERRORLEVEL_DEBUG );
 	
 	return foundation_initialize( memory_system_malloc(), application );
 }
@@ -57,9 +60,9 @@ int main_initialize( void )
 
 #if FOUNDATION_PLATFORM_ANDROID
 #  include <foundation/android.h>
+extern int test_vector_run( void );
 extern int test_matrix_run( void );
 extern int test_quaternion_run( void );
-extern int test_vector_run( void );
 typedef int (*test_run_fn)( void );
 #endif
 
@@ -68,9 +71,6 @@ int main_run( void* main_arg )
 	const char* pattern = 0;
 	char** exe_paths = 0;
 	unsigned int iexe, exesize;
-	object_t library = 0;
-	void* library_initialize = 0;
-	void* library_run = 0;
 	process_t* process = 0;
 	char* process_path = 0;
 	int process_result = 0;
@@ -83,9 +83,9 @@ int main_run( void* main_arg )
 	
 	int test_fn = 0;
 	test_run_fn tests[] = {
+		test_vector_run,
 		test_matrix_run,
 		test_quaternion_run,
-		test_vector_run,
 		0
 	};
 
@@ -94,14 +94,14 @@ int main_run( void* main_arg )
 		if( process_result >= 0 )
 		{
 			if( ( process_result = tests[test_fn]() ) >= 0 )
-				log_infof( "All tests passed (%d)", process_result );
+				log_infof( HASH_TEST, "All tests passed (%d)", process_result );
 		}
 		++test_fn;
 	} while( tests[test_fn] && ( process_result >= 0 ) );
 
 	if( process_result != 0 )
 	{
-		log_warnf( WARNING_SUSPICIOUS, "Tests failed with exit code %d", process_result );
+		log_warnf( HASH_TEST, WARNING_SUSPICIOUS, "Tests failed with exit code %d", process_result );
 	}
 	
 #else
@@ -119,7 +119,12 @@ int main_run( void* main_arg )
 	exe_paths = fs_matching_files( environment_executable_directory(), pattern, true );
 	for( iexe = 0, exesize = array_size( exe_paths ); iexe < exesize; ++iexe )
 	{
-		if( string_equal_substr( exe_paths[iexe], environment_executable_name(), string_length( environment_executable_name() ) ) )
+		bool is_self = false;
+		char* exe_file_name = path_base_file_name( exe_paths[iexe] );
+		if( string_equal( exe_file_name, environment_executable_name() ) )
+			is_self = true;
+		string_deallocate( exe_file_name );
+		if( is_self )
 			continue; //Don't run self
 
 		process_path = path_merge( environment_executable_directory(), exe_paths[iexe] );
@@ -130,7 +135,7 @@ int main_run( void* main_arg )
 		process_set_working_directory( process, environment_executable_directory() );
 		process_set_flags( process, PROCESS_ATTACHED );
 		
-		log_infof( "Running test executable: %s", exe_paths[iexe] );
+		log_infof( HASH_TEST, "Running test executable: %s", exe_paths[iexe] );
 
 		process_result = process_spawn( process );
 		while( process_result == PROCESS_WAIT_INTERRUPTED )
@@ -145,17 +150,17 @@ int main_run( void* main_arg )
 		if( process_result != 0 )
 		{
 			if( process_result >= PROCESS_INVALID_ARGS )
-				log_warnf( WARNING_SUSPICIOUS, "Tests failed, process terminated with error %x", process_result );
+				log_warnf( HASH_TEST, WARNING_SUSPICIOUS, "Tests failed, process terminated with error %x", process_result );
 			else
-				log_warnf( WARNING_SUSPICIOUS, "Tests failed with exit code %d", process_result );
+				log_warnf( HASH_TEST, WARNING_SUSPICIOUS, "Tests failed with exit code %d", process_result );
 			process_set_exit_code( -1 );
 			goto exit;
 		}
 
-		log_infof( "All tests from %s passed (%d)", exe_paths[iexe], process_result );
+		log_infof( HASH_TEST, "All tests from %s passed (%d)", exe_paths[iexe], process_result );
 	}
 
-	log_infof( "All tests passed" );
+	log_info( HASH_TEST, "All tests passed" );
 
 exit:
 

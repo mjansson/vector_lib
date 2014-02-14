@@ -39,8 +39,8 @@ real vector_test_difference( const vector_t v0, const vector_t v1 )
 }
 
 
-#define EXPECT_VECTOREQ( var, expect ) do { if( !vector_equal( (var), (expect) ) ) { log_warnf( WARNING_SUSPICIOUS, "Test failed, %s != %s vector (at %s:%u): (%.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ") (%.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ")", FOUNDATION_PREPROCESSOR_TOSTRING(var), FOUNDATION_PREPROCESSOR_TOSTRING(expect), __FILE__, __LINE__, (real)vector_x((var)), (real)vector_y((var)), (real)vector_z((var)), (real)vector_w((var)), (real)vector_x((expect)), (real)vector_y((expect)), (real)vector_z((expect)), (real)vector_w((expect)) ); return FAILED_TEST; } } while(0)
-#define EXPECT_VECTORALMOSTEQ( var, expect ) do { real diff = vector_test_difference( (var), (expect) ); if( diff > 0.0075f ) { log_warnf( WARNING_SUSPICIOUS, "Test failed, %s != %s vector (at %s:%u): (%.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ") (%.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ") diff %.6" STRING_FORMAT_REAL, FOUNDATION_PREPROCESSOR_TOSTRING(var), FOUNDATION_PREPROCESSOR_TOSTRING(expect), __FILE__, __LINE__, (real)vector_x((var)), (real)vector_y((var)), (real)vector_z((var)), (real)vector_w((var)), (real)vector_x((expect)), (real)vector_y((expect)), (real)vector_z((expect)), (real)vector_w((expect)), diff ); return FAILED_TEST; } } while(0)
+#define EXPECT_VECTOREQ( var, expect ) do { if( !vector_equal( (var), (expect) ) ) { log_warnf( HASH_TEST, WARNING_SUSPICIOUS, "Test failed, %s != %s vector (at %s:%u): (%.6" PRIREAL ", %.6" PRIREAL ", %.6" PRIREAL ", %.6" PRIREAL ") (%.6" PRIREAL ", %.6" PRIREAL ", %.6" PRIREAL ", %.6" PRIREAL ")", FOUNDATION_PREPROCESSOR_TOSTRING(var), FOUNDATION_PREPROCESSOR_TOSTRING(expect), __FILE__, __LINE__, (real)vector_x((var)), (real)vector_y((var)), (real)vector_z((var)), (real)vector_w((var)), (real)vector_x((expect)), (real)vector_y((expect)), (real)vector_z((expect)), (real)vector_w((expect)) ); return FAILED_TEST; } } while(0)
+#define EXPECT_VECTORALMOSTEQ( var, expect ) do { real diff = vector_test_difference( (var), (expect) ); if( diff > 0.0075f ) { log_warnf( HASH_TEST, WARNING_SUSPICIOUS, "Test failed, %s != %s vector (at %s:%u): (%.6" PRIREAL ", %.6" PRIREAL ", %.6" PRIREAL ", %.6" PRIREAL ") (%.6" PRIREAL ", %.6" PRIREAL ", %.6" PRIREAL ", %.6" PRIREAL ") diff %.6" PRIREAL, FOUNDATION_PREPROCESSOR_TOSTRING(var), FOUNDATION_PREPROCESSOR_TOSTRING(expect), __FILE__, __LINE__, (real)vector_x((var)), (real)vector_y((var)), (real)vector_z((var)), (real)vector_w((var)), (real)vector_x((expect)), (real)vector_y((expect)), (real)vector_z((expect)), (real)vector_w((expect)), diff ); return FAILED_TEST; } } while(0)
 
 
 application_t test_matrix_application( void )
@@ -51,6 +51,14 @@ application_t test_matrix_application( void )
 	app.config_dir = "test_matrix";
 	app.flags = APPLICATION_UTILITY;
 	return app;
+}
+
+
+memory_system_t test_matrix_memory_system( void )
+{
+
+	return memory_system_malloc();
+
 }
 
 
@@ -286,15 +294,15 @@ DECLARE_TEST( matrix, vec )
 void test_matrix_declare( void )
 {
 #if FOUNDATION_ARCH_SSE4
-	log_infof( "Using SSE4 implementation" );
+	log_infof( HASH_TEST, "Using SSE4 implementation" );
 #elif FOUNDATION_ARCH_SSE3
-	log_infof( "Using SSE3 implementation" );
+	log_infof( HASH_TEST, "Using SSE3 implementation" );
 #elif FOUNDATION_ARCH_SSE2
-	log_infof( "Using SSE2 implementation" );
+	log_infof( HASH_TEST, "Using SSE2 implementation" );
 #elif FOUNDATION_ARCH_NEON
-	log_infof( "Using NEON implementation" );
+	log_infof( HASH_TEST, "Using NEON implementation" );
 #else
-	log_infof( "Using fallback implementation" );
+	log_infof( HASH_TEST, "Using fallback implementation" );
 #endif
 
 	ADD_TEST( matrix, construct );
@@ -305,6 +313,7 @@ void test_matrix_declare( void )
 
 test_suite_t test_matrix_suite = {
 	test_matrix_application,
+	test_matrix_memory_system,
 	test_matrix_declare,
 	test_matrix_initialize,
 	test_matrix_shutdown

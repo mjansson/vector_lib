@@ -129,7 +129,7 @@ typedef struct _euler_angles
 
 typedef ALIGN(16) float32_t float32_aligned128_t;
 
-FOUNDATION_COMPILETIME_ASSERT( sizeof( vector_t ) == sizeof( float32_t )*4, _assert_vector_size );
-FOUNDATION_COMPILETIME_ASSERT( sizeof( matrix_t ) == sizeof( float32_t )*16, _assert_matrix_size );
-FOUNDATION_COMPILETIME_ASSERT( sizeof( transform_t ) == sizeof( float32_t )*8, _assert_transform_size );
+FOUNDATION_STATIC_ASSERT( sizeof( vector_t ) == sizeof( float32_t )*4, _assert_vector_size );
+FOUNDATION_STATIC_ASSERT( sizeof( matrix_t ) == sizeof( float32_t )*16, _assert_matrix_size );
+FOUNDATION_STATIC_ASSERT( sizeof( transform_t ) == sizeof( float32_t )*8, _assert_transform_size );
 

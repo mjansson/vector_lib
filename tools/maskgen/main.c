@@ -43,7 +43,9 @@ int main_run( void* main_arg )
 {
 	const char element[4][2] = { "X", "Y", "Z", "W" };
 
-	log_infof(
+	log_set_suppress( HASH_TOOL, ERRORLEVEL_DEBUG );
+	
+	log_infof( HASH_TOOL,
 	 "/* mask.h  -  Vector library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels\n"
 	 " *\n"
 	 " * This library provides a cross-platform vector math library in C11 providing basic support data types and\n"
@@ -84,9 +86,9 @@ int main_run( void* main_arg )
 		for( int e1 = 0; e1 < 4; ++e1 )
 			for( int e2 = 0; e2 < 4; ++e2 )
 				for( int e3 = 0; e3 < 4; ++e3 )
-					log_infof( "	VECTOR_MASK_%s%s%s%s = VECTOR_MASK( %d, %d, %d, %d ),", element[e0], element[e1], element[e2], element[e3], e0, e1, e2, e3 );
+					log_infof( HASH_TOOL, "\tVECTOR_MASK_%s%s%s%s = VECTOR_MASK( %d, %d, %d, %d ),", element[e0], element[e1], element[e2], element[e3], e0, e1, e2, e3 );
 
-	log_infof( "} vector_mask_t;\n\n" );
+	log_infof( HASH_TOOL, "} vector_mask_t;\n\n" );
 
 	return 0;
 }
