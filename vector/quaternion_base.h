@@ -16,8 +16,8 @@
 
 #ifndef VECTOR_HAVE_QUATERNION_ZERO
 
-quaternion_t quaternion_zero( void )
-{
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
+quaternion_zero(void) {
 	return vector_zero();
 }
 
@@ -25,47 +25,47 @@ quaternion_t quaternion_zero( void )
 
 #ifndef VECTOR_HAVE_QUATERNION_UNALIGNED
 
-quaternion_t quaternion_unaligned( const float32_t* RESTRICT q )
-{
-	return vector_unaligned( q );
+static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL quaternion_t
+quaternion_unaligned(const float32_t* FOUNDATION_RESTRICT q) {
+	return vector_unaligned(q);
 }
 
 #endif
 
 #ifndef VECTOR_HAVE_QUATERNION_ALIGNED
 
-quaternion_t quaternion_aligned( const float32_aligned128_t* RESTRICT q )
-{
-	return vector_aligned( q );
+static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL quaternion_t
+quaternion_aligned(const float32_aligned128_t* FOUNDATION_RESTRICT q) {
+	return vector_aligned(q);
 }
 
 #endif
 
 #ifndef VECTOR_HAVE_QUATERNION_IDENTITY
 
-quaternion_t quaternion_identity( void )
-{
-	static const ALIGN(16) float32_t _identity_quat[4] = { 0, 0, 0, 1 };
-	return quaternion_aligned( _identity_quat );
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
+quaternion_identity(void) {
+	static const FOUNDATION_ALIGN(16) float32_t _identity_quat[4] = {0, 0, 0, 1};
+	return quaternion_aligned(_identity_quat);
 }
 
 #endif
 
 #ifndef VECTOR_HAVE_QUATERNION_CONJUGATE
 
-quaternion_t quaternion_conjugate( const quaternion_t q )
-{
-	return vector( -q.x, -q.y, -q.z, q.w );
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
+quaternion_conjugate(const quaternion_t q) {
+	return vector(-q.x, -q.y, -q.z, q.w);
 }
 
 #endif
 
 #ifndef VECTOR_HAVE_QUATERNION_INVERSE
 
-quaternion_t quaternion_inverse( const quaternion_t q )
-{
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
+quaternion_inverse(const quaternion_t q) {
 	quaternion_t r = q;
-	const float32_t norm = vector_length_sqr( q ).x;
+	const float32_t norm = vector_length_sqr(q).x;
 	const float32_t inv_norm = 1.0f / norm;
 	r.x *= -inv_norm;
 	r.y *= -inv_norm;
@@ -78,100 +78,97 @@ quaternion_t quaternion_inverse( const quaternion_t q )
 
 #ifndef VECTOR_HAVE_QUATERNION_NEG
 
-quaternion_t quaternion_neg( const quaternion_t q )
-{
-	return vector_neg( q );
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
+quaternion_neg(const quaternion_t q) {
+	return vector_neg(q);
 }
 
 #endif
 
 #ifndef VECTOR_HAVE_QUATERNION_NORMALIZE
 
-quaternion_t quaternion_normalize( const quaternion_t q )
-{
-	return vector_normalize( q );
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
+quaternion_normalize(const quaternion_t q) {
+	return vector_normalize(q);
 }
 
 #endif
 
 #ifndef VECTOR_HAVE_QUATERNION_MUL
 
-quaternion_t quaternion_mul( const quaternion_t q0, const quaternion_t q1 )
-{
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
+quaternion_mul(const quaternion_t q0, const quaternion_t q1) {
 	return vector(
-	  q1.w * q0.x + q1.x * q0.w + q1.y * q0.z - q1.z * q0.y,
-	  q1.w * q0.y - q1.x * q0.z + q1.y * q0.w + q1.z * q0.x,
-	  q1.w * q0.z + q1.x * q0.y - q1.y * q0.x + q1.z * q0.w,
-	  q1.w * q0.w - q1.x * q0.x - q1.y * q0.y - q1.z * q0.z );
+	           q1.w * q0.x + q1.x * q0.w + q1.y * q0.z - q1.z * q0.y,
+	           q1.w * q0.y - q1.x * q0.z + q1.y * q0.w + q1.z * q0.x,
+	           q1.w * q0.z + q1.x * q0.y - q1.y * q0.x + q1.z * q0.w,
+	           q1.w * q0.w - q1.x * q0.x - q1.y * q0.y - q1.z * q0.z);
 }
 
 #endif
 
 #ifndef VECTOR_HAVE_QUATERNION_ADD
 
-quaternion_t quaternion_add( const quaternion_t q0, const quaternion_t q1 )
-{
-	return vector_add( q0, q1 );
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
+quaternion_add(const quaternion_t q0, const quaternion_t q1) {
+	return vector_add(q0, q1);
 }
 
 #endif
 
 #ifndef VECTOR_HAVE_QUATERNION_SUB
 
-quaternion_t quaternion_sub( const quaternion_t q0, const quaternion_t q1 )
-{
-	return vector_sub( q0, q1 );
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
+quaternion_sub(const quaternion_t q0, const quaternion_t q1) {
+	return vector_sub(q0, q1);
 }
 
 #endif
 
 #ifndef VECTOR_HAVE_QUATERNION_SLERP
 
-quaternion_t quaternion_slerp( const quaternion_t q0, const quaternion_t q1, real factor )
-{
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
+quaternion_slerp(const quaternion_t q0, const quaternion_t q1, real factor) {
 	quaternion_t qd;
-	float32_t cosval = vector_dot( q0, q1 ).x;
+	float32_t cosval = vector_dot(q0, q1).x;
 
 	//if cosval < 0 use slerp to negated target to get acute angle
 	//between quaternions and avoid extra spins
-	if( cosval < 0 )
-	{
-		qd = quaternion_neg( q1 );
-		cosval = vector_dot( q0, qd ).x;
+	if (cosval < 0) {
+		qd = quaternion_neg(q1);
+		cosval = vector_dot(q0, qd).x;
 	}
-	else
-	{
+	else {
 		qd = q1;
 	}
 
 	real angle = 0.0f;
-	if( -1.0f < cosval )
-	{
-		if( cosval < 1.0 )
-			angle = math_acos( cosval );
+	if (-1.0f < cosval) {
+		if (cosval < 1.0)
+			angle = math_acos(cosval);
 		else
 			return qd;
 	}
 	else
 		angle = REAL_PI;
 
-	if( math_realzero( angle ) )
+	if (math_real_is_zero(angle))
 		return qd;
 
-	real sinval = math_sin( angle );
+	real sinval = math_sin(angle);
 	real invsin = 1.0f / sinval;
-	real c1     = math_sin( ( 1.0f - factor ) * angle ) * invsin;
-	real c2     = math_sin( factor * angle ) * invsin;
+	real c1     = math_sin((1.0f - factor) * angle) * invsin;
+	real c2     = math_sin(factor * angle) * invsin;
 
-	return vector_add( vector_scale( q0, c1 ), vector_scale( qd, c2 ) );
+	return vector_add(vector_scale(q0, c1), vector_scale(qd, c2));
 }
 
 #endif
 
 #ifndef VECTOR_HAVE_QUATERNION_ROTATE
 
-vector_t quaternion_rotate( const quaternion_t q, const vector_t v )
-{
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
+quaternion_rotate(const quaternion_t q, const vector_t v) {
 	//Quaternion "q" rotation of vector "w" is calculated by constructing
 	//a quaternion "v" with values (0,w) and the formula (where q' is the conjugate of q)
 	// q * v * q'
@@ -188,19 +185,19 @@ vector_t quaternion_rotate( const quaternion_t q, const vector_t v )
 	//
 	//  qv * ( qv . w ) + v1 * qs - v1 % qv
 
-	vector_t v1 = vector_cross3( q, v );
+	vector_t v1 = vector_cross3(q, v);
 
 	v1.x += v.x * q.w;
 	v1.y += v.y * q.w;
 	v1.z += v.z * q.w;
 
-	vector_t v2 = vector_cross3( v1, q );
-	float32_t dot = ( q.x * v.x + q.y * v.y + q.z * v.z );
-	
+	vector_t v2 = vector_cross3(v1, q);
+	float32_t dot = (q.x * v.x + q.y * v.y + q.z * v.z);
+
 	vector_t r = {
-		q.x * dot + v1.x * q.w - v2.x,
-		q.y * dot + v1.y * q.w - v2.y,
-		q.z * dot + v1.z * q.w - v2.z,
+		q.x* dot + v1.x* q.w - v2.x,
+		q.y* dot + v1.y* q.w - v2.y,
+		q.z* dot + v1.z* q.w - v2.z,
 		1
 	};
 

@@ -21,17 +21,17 @@
 
 #include <vector/types.h>
 
-#define VECTOR_MASK( x, y, z, w ) (((w) << 6) | ((z) << 4) | ((y) << 2) | ((x)))
+#define VECTOR_MASK(x, y, z, w) (((w) << 6) | ((z) << 4) | ((y) << 2) | ((x)))
 
 /*! \brief Vector shuffle masks
     Vector shuffle masks where the operation performed by
-    v1 = vector_shuffle( v0, VECTOR_MASK_abcd )
+    v1 = vector_shuffle(v0, VECTOR_MASK_abcd)
     will be equal to
     v1.x = v0[a]
     v1.y = v0[b]
     v1.z = v0[c]
     v1.w = v0[d] */
-typedef enum _vector_mask
+typedef enum vector_mask_t
 {
 	VECTOR_MASK_XXXX = VECTOR_MASK( 0, 0, 0, 0 ),
 	VECTOR_MASK_XXXY = VECTOR_MASK( 0, 0, 0, 1 ),
@@ -290,5 +290,4 @@ typedef enum _vector_mask
 	VECTOR_MASK_WWWZ = VECTOR_MASK( 3, 3, 3, 2 ),
 	VECTOR_MASK_WWWW = VECTOR_MASK( 3, 3, 3, 3 ),
 } vector_mask_t;
-
 

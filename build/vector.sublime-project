@@ -1,0 +1,51 @@
+{
+	"folders":
+	[
+		{
+			"follow_symlinks": true,
+			"path": "../vector"
+		},
+		{
+			"follow_symlinks": true,
+			"path": "../test"
+		},
+		{
+			"follow_symlinks": true,
+			"path": "../tools"
+		},
+		{
+			"follow_symlinks": true,
+			"path": "../doc"
+		}
+	],
+	"build_systems":
+	[
+		{
+			"name": "Ninja",
+			"shell_cmd": "ninja",
+			"working_dir": "${project_path:${folder:${file_path}}}/..",
+		}
+	],
+	"translate_tabs_to_spaces": false,
+	"use_tab_stops": true,
+	"trim_trailing_white_space_on_save": true,
+	"settings":
+	{
+		"AStyleFormatter":
+		{
+			"options_default":
+			{
+				"style" : "attach",
+				"pad-oper": true,
+				"indent-switches" : false,
+				"indent-cases" : true,
+				"unpad-paren": true,
+				"break-closing-brackets": true,
+				"align-pointer": "type",
+				"max-code-length": 100,
+				"max-instatement-indent": 60,
+				"break-after-logical": true
+			}
+		}
+	}
+}
