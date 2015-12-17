@@ -90,13 +90,14 @@ DECLARE_TEST(matrix, construct) {
 	EXPECT_VECTOREQ(mat.row[3], vector(0, 0, 0, 1));
 
 	float32_t unaligned[] = {
+		0,
 		1, -2, 3, -4,
 		-5, 6, -7, 8,
 		9, 10, 11, 12,
 		-13, -14, -15, -16
 	};
 
-	mat = matrix_unaligned(unaligned);
+	mat = matrix_unaligned(&unaligned[1]);
 	EXPECT_VECTOREQ(mat.row[0], vector(1, -2, 3, -4));
 	EXPECT_VECTOREQ(mat.row[1], vector(-5, 6, -7, 8));
 	EXPECT_VECTOREQ(mat.row[2], vector(9, 10, 11, 12));
