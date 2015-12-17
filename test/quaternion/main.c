@@ -22,118 +22,123 @@
 //#define FOUNDATION_ARCH_SSE4 0
 //#undef  FOUNDATION_ARCH_SSE3
 //#define FOUNDATION_ARCH_SSE3 0
-#undef  FOUNDATION_ARCH_SSE2
-#define FOUNDATION_ARCH_SSE2 0
+//#undef  FOUNDATION_ARCH_SSE2
+//#define FOUNDATION_ARCH_SSE2 0
 //#undef  FOUNDATION_ARCH_NEON
 //#define FOUNDATION_ARCH_NEON 0
 
 #include <vector/quaternion.h>
 
-
-real vector_test_difference( const vector_t v0, const vector_t v1 )
-{
-	return ( math_abs( vector_x( v0 ) - vector_x( v1 ) ) +
-			 math_abs( vector_y( v0 ) - vector_y( v1 ) ) +
-			 math_abs( vector_z( v0 ) - vector_z( v1 ) ) +
-			 math_abs( vector_w( v0 ) - vector_w( v1 ) ) );
+static real
+vector_test_difference(const vector_t v0, const vector_t v1) {
+	return (math_abs(vector_x(v0) - vector_x(v1)) +
+	        math_abs(vector_y(v0) - vector_y(v1)) +
+	        math_abs(vector_z(v0) - vector_z(v1)) +
+	        math_abs(vector_w(v0) - vector_w(v1)));
 }
 
+#define EXPECT_VECTOREQ( var, expect ) do { if( !vector_equal((var), (expect) )) { log_warnf(HASH_TEST, WARNING_SUSPICIOUS, STRING_CONST("Test failed, %s != %s vector (at %s:%u): (%.6" PRIreal ", %.6" PRIreal ", %.6" PRIreal ", %.6" PRIreal ") (%.6" PRIreal ", %.6" PRIreal ", %.6" PRIreal ", %.6" PRIreal ")"), FOUNDATION_PREPROCESSOR_TOSTRING(var), FOUNDATION_PREPROCESSOR_TOSTRING(expect), __FILE__, __LINE__, (real)vector_x((var)), (real)vector_y((var)), (real)vector_z((var)), (real)vector_w((var)), (real)vector_x((expect)), (real)vector_y((expect)), (real)vector_z((expect)), (real)vector_w((expect)) ); return FAILED_TEST; } } while(0)
+#define EXPECT_VECTORALMOSTEQ( var, expect ) do { real diff = vector_test_difference((var), (expect)); if( diff > 0.0075f ) { log_warnf(HASH_TEST, WARNING_SUSPICIOUS, STRING_CONST("Test failed, %s != %s vector (at %s:%u): (%.6" PRIreal ", %.6" PRIreal ", %.6" PRIreal ", %.6" PRIreal ") (%.6" PRIreal ", %.6" PRIreal ", %.6" PRIreal ", %.6" PRIreal ") diff %.6" PRIreal), FOUNDATION_PREPROCESSOR_TOSTRING(var), FOUNDATION_PREPROCESSOR_TOSTRING(expect), __FILE__, __LINE__, (real)vector_x((var)), (real)vector_y((var)), (real)vector_z((var)), (real)vector_w((var)), (real)vector_x((expect)), (real)vector_y((expect)), (real)vector_z((expect)), (real)vector_w((expect)), diff ); return FAILED_TEST; } } while(0)
 
-#define EXPECT_VECTOREQ( var, expect ) do { if( !vector_equal( (var), (expect) ) ) { log_warnf( HASH_TEST, WARNING_SUSPICIOUS, "Test failed, %s != %s vector (at %s:%u): (%.6" PRIREAL ", %.6" PRIREAL ", %.6" PRIREAL ", %.6" PRIREAL ") (%.6" PRIREAL ", %.6" PRIREAL ", %.6" PRIREAL ", %.6" PRIREAL ")", FOUNDATION_PREPROCESSOR_TOSTRING(var), FOUNDATION_PREPROCESSOR_TOSTRING(expect), __FILE__, __LINE__, (real)vector_x((var)), (real)vector_y((var)), (real)vector_z((var)), (real)vector_w((var)), (real)vector_x((expect)), (real)vector_y((expect)), (real)vector_z((expect)), (real)vector_w((expect)) ); return FAILED_TEST; } } while(0)
-#define EXPECT_VECTORALMOSTEQ( var, expect ) do { real diff = vector_test_difference( (var), (expect) ); if( diff > 0.0075f ) { log_warnf( HASH_TEST, WARNING_SUSPICIOUS, "Test failed, %s != %s vector (at %s:%u): (%.6" PRIREAL ", %.6" PRIREAL ", %.6" PRIREAL ", %.6" PRIREAL ") (%.6" PRIREAL ", %.6" PRIREAL ", %.6" PRIREAL ", %.6" PRIREAL ") diff %.6" PRIREAL, FOUNDATION_PREPROCESSOR_TOSTRING(var), FOUNDATION_PREPROCESSOR_TOSTRING(expect), __FILE__, __LINE__, (real)vector_x((var)), (real)vector_y((var)), (real)vector_z((var)), (real)vector_w((var)), (real)vector_x((expect)), (real)vector_y((expect)), (real)vector_z((expect)), (real)vector_w((expect)), diff ); return FAILED_TEST; } } while(0)
-
-
-application_t test_quaternion_application( void )
-{
+static application_t
+test_quaternion_application(void) {
 	application_t app = {0};
-	app.name = "Quaternion tests";
-	app.short_name = "test_quaternion";
-	app.config_dir = "test_quaternion";
+	app.name = string_const(STRING_CONST("Quaternion tests"));
+	app.short_name = string_const(STRING_CONST("test_quaternion"));
+	app.config_dir = string_const(STRING_CONST("test_quaternion"));
+	app.version = vector_module_version();
 	app.flags = APPLICATION_UTILITY;
 	return app;
 }
 
-
-memory_system_t test_quaternion_memory_system( void )
-{
+static memory_system_t
+test_quaternion_memory_system(void) {
 	return memory_system_malloc();
 }
 
-
-int test_quaternion_initialize( void )
-{
-	return 0;
+static foundation_config_t
+test_quaternion_config(void) {
+	foundation_config_t config;
+	memset(&config, 0, sizeof(config));
+	return config;
 }
 
-
-void test_quaternion_shutdown( void )
-{
+static int
+test_quaternion_initialize(void) {
+	vector_config_t config;
+	memset(&config, 0, sizeof(config));
+	return vector_module_initialize(config);
 }
 
+static void
+test_quaternion_finalize(void) {
+	vector_module_finalize();
+}
 
-DECLARE_TEST( quaternion, construct )
-{
+DECLARE_TEST(quaternion, construct) {
 	quaternion_t q;
+	float32_t unaligned[] = { 1, -2, 3, -4 };
+	VECTOR_ALIGN float32_t aligned[] = { 1, -2, 3, -4 };
 
 	q = quaternion_zero();
-	EXPECT_VECTOREQ( q, vector_zero() );
+	EXPECT_VECTOREQ(q, vector_zero());
 
 	q = quaternion_identity();
-	EXPECT_VECTOREQ( q, vector( 0, 0, 0, 1 ) );
+	EXPECT_VECTOREQ(q, vector(0, 0, 0, 1));
 
-	float32_t unaligned[] = { 1, -2, 3, -4 };
+	q = quaternion_unaligned(unaligned);
+	EXPECT_VECTOREQ(q, vector(1, -2, 3, -4));
 
-	q = quaternion_unaligned( unaligned );
-	EXPECT_VECTOREQ( q, vector( 1, -2, 3, -4 ) );
+	q = quaternion_aligned(aligned);
+	EXPECT_VECTOREQ(q, vector(1, -2, 3, -4));
 
-	ALIGN(16) float32_t aligned[] = { 1, -2, 3, -4 };
-
-	q = quaternion_aligned( aligned );
-	EXPECT_VECTOREQ( q, vector( 1, -2, 3, -4 ) );
-	
 	return 0;
 }
 
-
-void test_quaternion_declare( void )
-{
+static void
+test_quaternion_declare(void) {
 #if FOUNDATION_ARCH_SSE4
-	log_infof( HASH_TEST, "Using SSE4 implementation" );
+	log_info(HASH_TEST, STRING_CONST("Using SSE4 implementation"));
 #elif FOUNDATION_ARCH_SSE3
-	log_infof( HASH_TEST, "Using SSE3 implementation" );
+	log_info(HASH_TEST, STRING_CONST("Using SSE3 implementation"));
 #elif FOUNDATION_ARCH_SSE2
-	log_infof( HASH_TEST, "Using SSE2 implementation" );
+	log_info(HASH_TEST, STRING_CONST("Using SSE2 implementation"));
 #elif FOUNDATION_ARCH_NEON
-	log_infof( HASH_TEST, "Using NEON implementation" );
+	log_info(HASH_TEST, STRING_CONST("Using NEON implementation"));
 #else
-	log_infof( HASH_TEST, "Using fallback implementation" );
+	log_info(HASH_TEST, STRING_CONST("Using fallback implementation"));
 #endif
 
-	ADD_TEST( quaternion, construct );
+	ADD_TEST(quaternion, construct);
 }
-
 
 test_suite_t test_quaternion_suite = {
 	test_quaternion_application,
 	test_quaternion_memory_system,
+	test_quaternion_config,
 	test_quaternion_declare,
 	test_quaternion_initialize,
-	test_quaternion_shutdown
+	test_quaternion_finalize
 };
 
+#if BUILD_MONOLITHIC
 
-#if FOUNDATION_PLATFORM_ANDROID
+int
+test_quaternion_run(void);
 
-int test_quaternion_run( void )
-{
+int
+test_quaternion_run(void) {
 	test_suite = test_quaternion_suite;
 	return test_run_all();
 }
 
 #else
 
-test_suite_t test_suite_define( void )
-{
+test_suite_t
+test_suite_define(void);
+
+test_suite_t
+test_suite_define(void) {
 	return test_quaternion_suite;
 }
 

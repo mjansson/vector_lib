@@ -822,16 +822,24 @@ test_suite_t test_vector_suite = {
 };
 
 
-#if FOUNDATION_PLATFORM_ANDROID
+#if BUILD_MONOLITHIC
 
-int test_vector_run(void) {
+int
+test_vector_run(void);
+
+int
+test_vector_run(void) {
 	test_suite = test_vector_suite;
 	return test_run_all();
 }
 
 #else
 
-test_suite_t test_suite_define(void) {
+test_suite_t
+test_suite_define(void);
+
+test_suite_t
+test_suite_define(void) {
 	return test_vector_suite;
 }
 
