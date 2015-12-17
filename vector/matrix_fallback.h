@@ -18,6 +18,6 @@ static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL matrix_t
 matrix_unaligned(const float32_t* FOUNDATION_RESTRICT m) {
 	return *(const matrix_t*)m;
 }
-#define VECTOR_HAVE_MATRIX_UNALIGNED
+#define VECTOR_HAVE_MATRIX_UNALIGNED 1
 
 #include <vector/matrix_base.h>

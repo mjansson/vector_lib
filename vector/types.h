@@ -68,7 +68,8 @@ union matrix_t {
 	vector_t row[4];
 };
 
-typedef struct vector_t quaternion_t;
+typedef vector_t quaternion_t;
+
 typedef struct dual_quaternion_t dual_quaternion_t;
 typedef struct transform_t transform_t;
 typedef struct euler_angles_t euler_angles_t;

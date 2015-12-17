@@ -17,9 +17,9 @@
 
 #ifndef VECTOR_HAVE_QUATERNION_CONJUGATE
 
-quaternion_t quaternion_conjugate( const quaternion_t q )
-{
-	return _mm_blend_ps( vector_neg( q ), q, 8 );
+quaternion_t
+quaternion_conjugate(const quaternion_t q) {
+	return _mm_blend_ps(vector_neg(q), q, 8);
 }
 #define VECTOR_HAVE_QUATERNION_CONJUGATE 1
 
@@ -28,12 +28,12 @@ quaternion_t quaternion_conjugate( const quaternion_t q )
 
 #ifndef VECTOR_HAVE_QUATERNION_INVERSE
 
-quaternion_t quaternion_inverse( const quaternion_t q )
-{
-	const vector_t norm = vector_length_sqr( q );
-	const vector_t inv_norm = vector_div( vector_one(), norm );
-	vector_t r = vector_mul( q, inv_norm );
-	return _mm_blend_ps( vector_neg( r ), r, 8 );
+quaternion_t
+quaternion_inverse(const quaternion_t q) {
+	const vector_t norm = vector_length_sqr(q);
+	const vector_t inv_norm = vector_div(vector_one(), norm);
+	vector_t r = vector_mul(q, inv_norm);
+	return _mm_blend_ps(vector_neg(r), r, 8);
 }
 #define VECTOR_HAVE_QUATERNION_INVERSE 1
 

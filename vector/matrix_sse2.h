@@ -14,7 +14,20 @@
  *
  */
 
+#ifndef VECTOR_HAVE_MATRIX_UNALIGNED
 
+static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL matrix_t
+matrix_unaligned(const float32_t* FOUNDATION_RESTRICT m) {
+	matrix_t mtx;
+	mtx.row[0] = vector_unaligned(m);
+	mtx.row[1] = vector_unaligned(m + 4);
+	mtx.row[2] = vector_unaligned(m + 8);
+	mtx.row[3] = vector_unaligned(m + 12);
+	return mtx;
+}
+#define VECTOR_HAVE_MATRIX_UNALIGNED 1
+
+#endif
 
 #ifndef VECTOR_HAVE_MATRIX_TRANSPOSE
 

@@ -145,10 +145,10 @@ static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_shuffle(const vector_t v, const unsigned int mask) {
 	const float32_t* element = &v.x;
 	return (vector_t){
-		element[(mask >> 0) & 0x3 ],
-		element[(mask >> 2) & 0x3 ],
-		element[(mask >> 4) & 0x3 ],
-		element[(mask >> 6) & 0x3 ]
+		element[(mask >> 0) & 0x3],
+		element[(mask >> 2) & 0x3],
+		element[(mask >> 4) & 0x3],
+		element[(mask >> 6) & 0x3]
 	};
 }
 

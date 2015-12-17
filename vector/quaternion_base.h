@@ -130,13 +130,13 @@ quaternion_sub(const quaternion_t q0, const quaternion_t q1) {
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
 quaternion_slerp(const quaternion_t q0, const quaternion_t q1, real factor) {
 	quaternion_t qd;
-	float32_t cosval = vector_dot(q0, q1).x;
+	float32_t cosval = vector_x(vector_dot(q0, q1));
 
 	//if cosval < 0 use slerp to negated target to get acute angle
 	//between quaternions and avoid extra spins
 	if (cosval < 0) {
 		qd = quaternion_neg(q1);
-		cosval = vector_dot(q0, qd).x;
+		cosval = vector_x(vector_dot(q0, qd));
 	}
 	else {
 		qd = q1;
@@ -184,6 +184,10 @@ quaternion_rotate(const quaternion_t q, const vector_t v) {
 	// Precalculating the vector v1 = (qs*w + qv x w) yields the final formula
 	//
 	//  qv * ( qv . w ) + v1 * qs - v1 % qv
+
+	//Potentially faster:
+	//t = 2 * cross(q.xyz, v)
+	//v' = v + q.w * t + cross(q.xyz, t)
 
 	vector_t v1 = vector_cross3(q, v);
 
