@@ -38,3 +38,15 @@ bool
 vector_module_is_initialized(void) {
 	return _vector_initialized;
 }
+
+string_t
+string_from_vector(char* buffer, size_t capacity, const vector_t v) {
+	return string_format(buffer, capacity, STRING_CONST("(%.6" PRIreal ", %.6" PRIreal ", %.6" PRIreal ", %.6" PRIreal ")"),
+		(real)vector_x(v), (real)vector_y(v), (real)vector_z(v), (real)vector_w(v));
+}
+
+string_const_t
+string_from_vector_static(const vector_t v) {
+	string_t buffer = string_thread_buffer();
+	return string_to_const(string_from_vector(buffer.str, buffer.length, v));
+}

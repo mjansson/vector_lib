@@ -29,7 +29,7 @@ VECTOR_API void
 vector_module_finalize(void);
 
 VECTOR_API bool
-vectór_module_is_initialized(void);
+vector_module_is_initialized(void);
 
 VECTOR_API version_t
 vector_module_version(void);
@@ -171,6 +171,12 @@ vector_component(const vector_t v, int c);
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL bool
 vector_equal(const vector_t v0, const vector_t v1);
+
+VECTOR_API string_t
+string_from_vector(char* buffer, size_t capacity, const vector_t v);
+
+VECTOR_API string_const_t
+string_from_vector_static(const vector_t v);
 
 #define VECTOR_IMPLEMENTATION_SSE4 0
 #define VECTOR_IMPLEMENTATION_SSE3 0
