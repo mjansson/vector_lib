@@ -12,6 +12,6 @@
  *
  * This library is put in the public domain; you can redistribute it and/or modify it without any restrictions.
  *
-*/
+ */
 
 #include <vector/quaternion_base.h>

@@ -21,6 +21,7 @@
 
 #include <foundation/platform.h>
 #include <foundation/math.h>
+#include <foundation/assert.h>
 
 #if FOUNDATION_ARCH_SSE4 || FOUNDATION_ARCH_SSE3 || FOUNDATION_ARCH_SSE2
 

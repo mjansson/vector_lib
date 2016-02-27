@@ -1,4 +1,4 @@
-/* matrix_sse3.h  -  Vector library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
+/* internal.h  -  Vector library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
  *
  * This library provides a cross-platform vector math library in C11 providing basic support data types and
  * functions to write applications and games in a platform-independent fashion. The latest source code is
@@ -14,4 +14,14 @@
  *
  */
 
-#include <vector/matrix_sse2.h>
+#pragma once
+
+/*! \file internal.h
+    Internal types */
+
+#include <foundation/platform.h>
+#include <foundation/types.h>
+#include <foundation/internal.h>
+
+#include <vector/types.h>
+#include <vector/hashstrings.h>
