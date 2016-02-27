@@ -23,7 +23,7 @@
 	ret.row[0] = _mm_dp_ps( _v, m2._m[0], DP_PUTX_4F);
 	ret.row[1] = _mm_or_ps( _rm[i], _mm_dp_ps(_v, m2._m[1], DP_PUTY_4F) );
 	ret.row[2] = _mm_or_ps( _rm[i], _mm_dp_ps(_v, m2._m[2], DP_PUTZ_4F) );
-	ret.row[3] = _mm_or_ps( _rm[i], _mm_dp_ps(_v, m2._m[3], DP_PUTW_4F) );*/
+	ret.row[3] = _mm_or_ps( _rm[i], _mm_dp_ps(_v, m2._m[3], DP_PUTW_4F) );
 
 	return ret;
 }

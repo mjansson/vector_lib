@@ -1,7 +1,3 @@
-#################
-## Eclipse
-#################
-
 *.pydevproject
 .project
 .metadata
@@ -15,6 +11,11 @@ local.properties
 .classpath
 .settings/
 .loadpath
+.ninja*
+build.ninja
+
+# Generated version
+version.c
 
 # External tool builders
 .externalToolBuilders/
@@ -28,6 +29,18 @@ local.properties
 # PDT-specific
 .buildpath
 
+#Android local build files
+build/android/assets
+build/android/libs
+
+#Xcode build
+build/xcode/foundation/build
+
+#Doxygen generated
+doc/html
+
+#Local config
+SConfig
 
 #################
 ## Visual Studio
@@ -189,5 +202,23 @@ build/scons/deploy*
 #Backups
 *~
 
+#Object files
+*.o
+
 #XCode
 xcuserdata
+*.xccheckout
+
+#SublimeText local workspace
+*.sublime-workspace
+
+#Never store keystores in version control!
+*.keystore
+
+#Do not store local build prefs
+build.json
+codesign.json
+coveralls.json
+coverallsreport.json
+codecov.json
+codecovreport.json

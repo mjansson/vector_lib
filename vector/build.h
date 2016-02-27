@@ -1,4 +1,4 @@
-/* build.h  -  Vector library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
+/* build.h  -  Vector library build setup  -  Public Domain  -  2015 Mattias Jansson / Rampant Pixels
  *
  * This library provides a cross-platform vector math library in C11 providing basic support data types and
  * functions to write applications and games in a platform-independent fashion. The latest source code is
@@ -16,11 +16,22 @@
 
 #pragma once
 
-/*! \file build.h
-    Build setup */
-
 #include <foundation/platform.h>
 
-#include <vector/types.h>
-
-
+#if defined( VECTOR_COMPILE ) && VECTOR_COMPILE
+#  ifdef __cplusplus
+#  define VECTOR_EXTERN extern "C"
+#  define VECTOR_API extern "C"
+#  else
+#  define VECTOR_EXTERN extern
+#  define VECTOR_API extern
+#  endif
+#else
+#  ifdef __cplusplus
+#  define VECTOR_EXTERN extern "C"
+#  define VECTOR_API extern "C"
+#  else
+#  define VECTOR_EXTERN extern
+#  define VECTOR_API extern
+#  endif
+#endif

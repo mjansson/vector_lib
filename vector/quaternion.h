@@ -23,31 +23,46 @@ Rotation abstraction using quaternions */
 #include <vector/mask.h>
 #include <vector/vector.h>
 
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
+quaternion_zero(void);
 
-static FORCEINLINE CONSTCALL quaternion_t   quaternion_zero( void );
-
-static FORCEINLINE CONSTCALL quaternion_t   quaternion_identity( void );
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
+quaternion_identity(void);
 
 //! Load unaligned
-static FORCEINLINE PURECALL  quaternion_t   quaternion_unaligned( const float32_t* RESTRICT q );
+static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL quaternion_t
+quaternion_unaligned(const float32_t* FOUNDATION_RESTRICT q);
 
 //! Load aligned (16-byte alignment)
-static FORCEINLINE PURECALL  quaternion_t   quaternion_aligned( const float32_aligned128_t* RESTRICT q );
+static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL quaternion_t
+quaternion_aligned(const float32_aligned128_t* FOUNDATION_RESTRICT q);
 
-static FORCEINLINE CONSTCALL quaternion_t   quaternion_conjugate( const quaternion_t q );
-static FORCEINLINE CONSTCALL quaternion_t   quaternion_inverse( const quaternion_t q );
-static FORCEINLINE CONSTCALL quaternion_t   quaternion_neg( const quaternion_t q );
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
+quaternion_conjugate(const quaternion_t q);
 
-static FORCEINLINE CONSTCALL quaternion_t   quaternion_normalize( const quaternion_t q );
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
+quaternion_inverse(const quaternion_t q);
 
-static FORCEINLINE CONSTCALL quaternion_t   quaternion_mul( const quaternion_t q0, const quaternion_t q1 );
-static FORCEINLINE CONSTCALL quaternion_t   quaternion_add( const quaternion_t q0, const quaternion_t q1 );
-static FORCEINLINE CONSTCALL quaternion_t   quaternion_sub( const quaternion_t q0, const quaternion_t q1 );
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
+quaternion_neg(const quaternion_t q);
 
-static FORCEINLINE CONSTCALL quaternion_t   quaternion_slerp( const quaternion_t q0, const quaternion_t q1, real factor );
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
+quaternion_normalize(const quaternion_t q);
 
-static FORCEINLINE CONSTCALL vector_t       quaternion_rotate( const quaternion_t q, const vector_t v );
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
+quaternion_mul(const quaternion_t q0, const quaternion_t q1);
 
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
+quaternion_add(const quaternion_t q0, const quaternion_t q1);
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
+quaternion_sub(const quaternion_t q0, const quaternion_t q1);
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
+quaternion_slerp(const quaternion_t q0, const quaternion_t q1, real factor);
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
+quaternion_rotate(const quaternion_t q, const vector_t v);
 
 #if FOUNDATION_ARCH_SSE4
 #  include <vector/quaternion_sse4.h>

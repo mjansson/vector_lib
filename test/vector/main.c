@@ -29,810 +29,841 @@
 
 #include <vector/vector.h>
 
-
-real vector_test_difference( const vector_t v0, const vector_t v1 )
-{
-	return ( math_abs( vector_x( v0 ) - vector_x( v1 ) ) +
-			 math_abs( vector_y( v0 ) - vector_y( v1 ) ) +
-			 math_abs( vector_z( v0 ) - vector_z( v1 ) ) +
-			 math_abs( vector_w( v0 ) - vector_w( v1 ) ) );
+static real
+vector_test_difference(const vector_t v0, const vector_t v1) {
+	return (math_abs(vector_x(v0) - vector_x(v1)) +
+	        math_abs(vector_y(v0) - vector_y(v1)) +
+	        math_abs(vector_z(v0) - vector_z(v1)) +
+	        math_abs(vector_w(v0) - vector_w(v1)));
 }
 
+#define EXPECT_VECTOREQ( var, expect ) do { \
+	if( !vector_equal((var), (expect) )) { \
+		char buffer[2][64]; \
+		string_t vstr[2]; \
+		vstr[0] = string_from_vector(buffer[0], sizeof(buffer[0]), (var)); \
+		vstr[1] = string_from_vector(buffer[1], sizeof(buffer[1]), (expect)); \
+		log_warnf(HASH_TEST, WARNING_SUSPICIOUS, STRING_CONST("Test failed, %s != %s vector (at %s:%u): %.*s %.*s"), \
+		    FOUNDATION_PREPROCESSOR_TOSTRING(var), FOUNDATION_PREPROCESSOR_TOSTRING(expect), __FILE__, __LINE__, \
+		    STRING_FORMAT(vstr[0]), STRING_FORMAT(vstr[1])); \
+		return FAILED_TEST; \
+	} \
+} while(0)
 
-#define EXPECT_VECTOREQ( var, expect ) do { if( !vector_equal( (var), (expect) ) ) { log_warnf( WARNING_SUSPICIOUS, "Test failed, %s != %s vector (at %s:%u): (%.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ") (%.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ")", FOUNDATION_PREPROCESSOR_TOSTRING(var), FOUNDATION_PREPROCESSOR_TOSTRING(expect), __FILE__, __LINE__, (real)vector_x((var)), (real)vector_y((var)), (real)vector_z((var)), (real)vector_w((var)), (real)vector_x((expect)), (real)vector_y((expect)), (real)vector_z((expect)), (real)vector_w((expect)) ); return FAILED_TEST; } } while(0)
-#define EXPECT_VECTORALMOSTEQ( var, expect ) do { real diff = vector_test_difference( (var), (expect) ); if( diff > 0.0075f ) { log_warnf( WARNING_SUSPICIOUS, "Test failed, %s != %s vector (at %s:%u): (%.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ") (%.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ", %.6" STRING_FORMAT_REAL ") diff %.6" STRING_FORMAT_REAL, FOUNDATION_PREPROCESSOR_TOSTRING(var), FOUNDATION_PREPROCESSOR_TOSTRING(expect), __FILE__, __LINE__, (real)vector_x((var)), (real)vector_y((var)), (real)vector_z((var)), (real)vector_w((var)), (real)vector_x((expect)), (real)vector_y((expect)), (real)vector_z((expect)), (real)vector_w((expect)), diff ); return FAILED_TEST; } } while(0)
+#define EXPECT_VECTORALMOSTEQ( var, expect ) do { \
+	real diff = vector_test_difference((var), (expect)); \
+	if( diff > 0.0075f ) { \
+		char buffer[2][64]; \
+		string_t vstr[2]; \
+		vstr[0] = string_from_vector(buffer[0], sizeof(buffer[0]), (var)); \
+		vstr[1] = string_from_vector(buffer[1], sizeof(buffer[1]), (expect)); \
+		log_warnf(HASH_TEST, WARNING_SUSPICIOUS, STRING_CONST("Test failed, %s !~= %s vector (at %s:%u): %.*s %.*s"), \
+		    FOUNDATION_PREPROCESSOR_TOSTRING(var), FOUNDATION_PREPROCESSOR_TOSTRING(expect), __FILE__, __LINE__, \
+		    STRING_FORMAT(vstr[0]), STRING_FORMAT(vstr[1])); \
+		return FAILED_TEST; \
+	} \
+} while(0)
 
-
-application_t test_vector_application( void )
-{
-	application_t app = {0};
-	app.name = "Vector tests";
-	app.short_name = "test_vector";
-	app.config_dir = "test_vector";
+static application_t
+test_vector_application(void) {
+	application_t app;
+	memset(&app, 0, sizeof(app));
+	app.name = string_const(STRING_CONST("Vector tests"));
+	app.short_name = string_const(STRING_CONST("test_vector"));
+	app.config_dir = string_const(STRING_CONST("test_vector"));
+	app.version = vector_module_version();
 	app.flags = APPLICATION_UTILITY;
 	return app;
 }
 
-
-int test_vector_initialize( void )
-{
-	return 0;
+static memory_system_t 
+test_vector_memory_system(void) {
+	return memory_system_malloc();
 }
 
-
-void test_vector_shutdown( void )
-{
+static foundation_config_t
+test_vector_config(void) {
+	foundation_config_t config;
+	memset(&config, 0, sizeof(config));
+	return config;
 }
 
+static int 
+test_vector_initialize(void) {
+	vector_config_t config;
+	memset(&config, 0, sizeof(config));
+	return vector_module_initialize(config);
+}
 
-DECLARE_TEST( vector, construct )
-{
+static void 
+test_vector_finalize(void) {
+	vector_module_finalize();
+}
+
+DECLARE_TEST(vector, construct) {
 	vector_t vec;
 	float32_t unaligned[4] = { 3, 2, 1, 0 };
-	ALIGN(16) float32_t aligned[4] = { 0, 1, 2, 3 };
-	
-	vec = vector( REAL_C(0.0), REAL_C(1.0), REAL_C(2.0), REAL_C(3.0) );	
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(1.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(2.0) );
-	EXPECT_REALEQ( vector_w( vec ), REAL_C(3.0) );
+	VECTOR_ALIGN float32_t aligned[4] = { 0, 1, 2, 3 };
 
-	vec = vector_unaligned( unaligned );
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(3.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(2.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(1.0) );
-	EXPECT_REALEQ( vector_w( vec ), REAL_C(0.0) );
+	vec = vector(REAL_C(0.0), REAL_C(1.0), REAL_C(2.0), REAL_C(3.0));
+	EXPECT_REALEQ(vector_x(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(1.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(2.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(3.0));
 
-	vec = vector_aligned( aligned );
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(1.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(2.0) );
-	EXPECT_REALEQ( vector_w( vec ), REAL_C(3.0) );
+	vec = vector_unaligned(unaligned);
+	EXPECT_REALEQ(vector_x(vec), REAL_C(3.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(2.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(1.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(0.0));
 
-	vec = vector_uniform( REAL_C(4.0) );
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(4.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(4.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(4.0) );
-	EXPECT_REALEQ( vector_w( vec ), REAL_C(4.0) );
+	vec = vector_aligned(aligned);
+	EXPECT_REALEQ(vector_x(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(1.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(2.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(3.0));
+
+	vec = vector_uniform(REAL_C(4.0));
+	EXPECT_REALEQ(vector_x(vec), REAL_C(4.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(4.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(4.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(4.0));
 
 	vec = vector_zero();
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_w( vec ), REAL_C(0.0) );
+	EXPECT_REALEQ(vector_x(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(0.0));
 
 	vec = vector_one();
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(1.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(1.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(1.0) );
-	EXPECT_REALEQ( vector_w( vec ), REAL_C(1.0) );
+	EXPECT_REALEQ(vector_x(vec), REAL_C(1.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(1.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(1.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(1.0));
 
 	vec = vector_half();
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(0.5) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(0.5) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(0.5) );
-	EXPECT_REALEQ( vector_w( vec ), REAL_C(0.5) );
+	EXPECT_REALEQ(vector_x(vec), REAL_C(0.5));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(0.5));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(0.5));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(0.5));
 
 	vec = vector_two();
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(2.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(2.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(2.0) );
-	EXPECT_REALEQ( vector_w( vec ), REAL_C(2.0) );
+	EXPECT_REALEQ(vector_x(vec), REAL_C(2.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(2.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(2.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(2.0));
 
 	vec = vector_origo();
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_w( vec ), REAL_C(1.0) );
+	EXPECT_REALEQ(vector_x(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(1.0));
 
 	vec = vector_xaxis();
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(1.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_w( vec ), REAL_C(1.0) );
+	EXPECT_REALEQ(vector_x(vec), REAL_C(1.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(1.0));
 
 	vec = vector_yaxis();
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(1.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_w( vec ), REAL_C(1.0) );
+	EXPECT_REALEQ(vector_x(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(1.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(1.0));
 
 	vec = vector_zaxis();
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(1.0) );
-	EXPECT_REALEQ( vector_w( vec ), REAL_C(1.0) );
-	
+	EXPECT_REALEQ(vector_x(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(1.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(1.0));
+
 	return 0;
 }
 
 
-DECLARE_TEST( vector, normalize )
-{
+DECLARE_TEST(vector, normalize) {
 	vector_t vec;
 	real ref;
 
-	vec = vector_normalize( vector( 1, 0, 0, 0 ) );
-	EXPECT_VECTORALMOSTEQ( vec, vector( 1, 0, 0, 0 ) );
-	
-	vec = vector_normalize( vector( 0, 1, 0, 0 ) );
-	EXPECT_VECTORALMOSTEQ( vec, vector( 0, 1, 0, 0 ) );
-	
-	vec = vector_normalize( vector( 0, 0, 1, 0 ) );
-	EXPECT_VECTORALMOSTEQ( vec, vector( 0, 0, 1, 0 ) );
-	
-	vec = vector_normalize( vector( 0, 0, 0, 1 ) );
-	EXPECT_VECTORALMOSTEQ( vec, vector( 0, 0, 0, 1 ) );
+	vec = vector_normalize(vector(1, 0, 0, 0));
+	EXPECT_VECTORALMOSTEQ(vec, vector(1, 0, 0, 0));
 
-	ref = math_sqrt( REAL_C(1.0) / REAL_C(4.0) );
-	vec = vector_normalize( vector( 1, 1, 1, 1 ) );
-	EXPECT_VECTORALMOSTEQ( vec, vector( ref, ref, ref, ref ) );
+	vec = vector_normalize(vector(0, 1, 0, 0));
+	EXPECT_VECTORALMOSTEQ(vec, vector(0, 1, 0, 0));
 
-	ref = math_sqrt( REAL_C(1.0) / REAL_C(4.0) );
-	vec = vector_normalize( vector( -1, 1, -1, 1 ) );
-	EXPECT_VECTORALMOSTEQ( vec, vector( -ref, ref, -ref, ref ) );
+	vec = vector_normalize(vector(0, 0, 1, 0));
+	EXPECT_VECTORALMOSTEQ(vec, vector(0, 0, 1, 0));
 
-	ref = math_sqrt( REAL_C(158.0) );
-	vec = vector_normalize( vector( 0, -3, 7, -10 ) );
-	EXPECT_VECTORALMOSTEQ( vec, vector( 0, -REAL_C(3.0) / ref, REAL_C(7.0) / ref, -REAL_C(10.0) / ref ) );
-	
-	vec = vector_normalize3( vector( 1, 0, 0, 0 ) );
-	EXPECT_VECTORALMOSTEQ( vec, vector( 1, 0, 0, 0 ) );
-	
-	vec = vector_normalize3( vector( 0, 1, 0, 0 ) );
-	EXPECT_VECTORALMOSTEQ( vec, vector( 0, 1, 0, 0 ) );
-	
-	vec = vector_normalize3( vector( 0, 0, 1, 0 ) );
-	EXPECT_VECTORALMOSTEQ( vec, vector( 0, 0, 1, 0 ) );
+	vec = vector_normalize(vector(0, 0, 0, 1));
+	EXPECT_VECTORALMOSTEQ(vec, vector(0, 0, 0, 1));
 
-	ref = math_sqrt( REAL_C(1.0) / REAL_C(3.0) );
-	vec = vector_normalize3( vector( 1, 1, 1, 1 ) );
-	EXPECT_VECTORALMOSTEQ( vec, vector( ref, ref, ref, 1 ) );
+	ref = math_sqrt(REAL_C(1.0) / REAL_C(4.0));
+	vec = vector_normalize(vector(1, 1, 1, 1));
+	EXPECT_VECTORALMOSTEQ(vec, vector(ref, ref, ref, ref));
 
-	ref = math_sqrt( REAL_C(1.0) / REAL_C(3.0) );
-	vec = vector_normalize3( vector( -1, 1, -1, 1 ) );
-	EXPECT_VECTORALMOSTEQ( vec, vector( -ref, ref, -ref, 1 ) );
+	ref = math_sqrt(REAL_C(1.0) / REAL_C(4.0));
+	vec = vector_normalize(vector(-1, 1, -1, 1));
+	EXPECT_VECTORALMOSTEQ(vec, vector(-ref, ref, -ref, ref));
 
-	ref = math_sqrt( REAL_C(58.0) );
-	vec = vector_normalize3( vector( 0, -3, 7, -10 ) );
-	EXPECT_VECTORALMOSTEQ( vec, vector( 0, -REAL_C(3.0) / ref, REAL_C(7.0) / ref, -REAL_C(10.0) ) );
-	
+	ref = math_sqrt(REAL_C(158.0));
+	vec = vector_normalize(vector(0, -3, 7, -10));
+	EXPECT_VECTORALMOSTEQ(vec, vector(0, -REAL_C(3.0) / ref, REAL_C(7.0) / ref, -REAL_C(10.0) / ref));
+
+	vec = vector_normalize3(vector(1, 0, 0, 0));
+	EXPECT_VECTORALMOSTEQ(vec, vector(1, 0, 0, 0));
+
+	vec = vector_normalize3(vector(0, 1, 0, 0));
+	EXPECT_VECTORALMOSTEQ(vec, vector(0, 1, 0, 0));
+
+	vec = vector_normalize3(vector(0, 0, 1, 0));
+	EXPECT_VECTORALMOSTEQ(vec, vector(0, 0, 1, 0));
+
+	ref = math_sqrt(REAL_C(1.0) / REAL_C(3.0));
+	vec = vector_normalize3(vector(1, 1, 1, 1));
+	EXPECT_VECTORALMOSTEQ(vec, vector(ref, ref, ref, 1));
+
+	ref = math_sqrt(REAL_C(1.0) / REAL_C(3.0));
+	vec = vector_normalize3(vector(-1, 1, -1, 1));
+	EXPECT_VECTORALMOSTEQ(vec, vector(-ref, ref, -ref, 1));
+
+	ref = math_sqrt(REAL_C(58.0));
+	vec = vector_normalize3(vector(0, -3, 7, -10));
+	EXPECT_VECTORALMOSTEQ(vec, vector(0, -REAL_C(3.0) / ref, REAL_C(7.0) / ref, -REAL_C(10.0)));
+
 	return 0;
 }
 
 
-DECLARE_TEST( vector, dot )
-{
-	vector_t vec;
-	
-	vec = vector_dot( vector_zero(), vector_one() );
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_w( vec ), REAL_C(0.0) );
-	
-	vec = vector_dot( vector_one(), vector_zero() );
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_w( vec ), REAL_C(0.0) );
-	
-	vec = vector_dot( vector_one(), vector_one() );
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(4.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(4.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(4.0) );
-	EXPECT_REALEQ( vector_w( vec ), REAL_C(4.0) );
-	
-	vec = vector_dot( vector( 1, 0, 0, 0 ), vector( 2, 0, 0, 0 ) );
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(2.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(2.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(2.0) );
-	EXPECT_REALEQ( vector_w( vec ), REAL_C(2.0) );
-	
-	vec = vector_dot( vector( -1, 1, -1, 1 ), vector( 1, 1, -1, -1 ) );
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_w( vec ), REAL_C(0.0) );
-	
-	vec = vector_dot( vector( -3, 4, -5, 6 ), vector( 0, 1, -1, -2 ) );
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(-3.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(-3.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(-3.0) );
-	EXPECT_REALEQ( vector_w( vec ), REAL_C(-3.0) );
-	
-	vec = vector_dot3( vector_zero(), vector_one() );
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_w( vec ), REAL_C(0.0) );
-	
-	vec = vector_dot3( vector_one(), vector_zero() );
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_w( vec ), REAL_C(0.0) );
-	
-	vec = vector_dot3( vector_one(), vector_one() );
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(3.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(3.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(3.0) );
-	EXPECT_REALEQ( vector_w( vec ), REAL_C(3.0) );
-	
-	vec = vector_dot3( vector( -1, 1, -1, 1 ), vector( 1, 1, -1, -1 ) );
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(1.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(1.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(1.0) );
-	EXPECT_REALEQ( vector_w( vec ), REAL_C(1.0) );
-	
-	vec = vector_dot3( vector( -3, 4, -5, 6 ), vector( 0, 1, -1, -2 ) );
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(9.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(9.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(9.0) );
-	EXPECT_REALEQ( vector_w( vec ), REAL_C(9.0) );
-	
-	return 0;
-}
-
-
-DECLARE_TEST( vector, cross )
-{
-	vector_t vec;
-	
-	vec = vector_cross3( vector( 0, 0, 0, 1 ), vector( 1, 2, 3, 4 ) );
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(0.0) );
-
-	vec = vector_cross3( vector( 1, 0, 0, 0 ), vector( 1, 0, 0, 1 ) );
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(0.0) );
-
-	vec = vector_cross3( vector( 1, 0, 0, 1 ), vector( 0, 1, 0, 1 ) );
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(1.0) );
-
-	vec = vector_cross3( vector( 1, 0, 0, 0 ), vector( 0, 0, 1, 1 ) );
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(-1.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(0.0) );
-
-	vec = vector_cross3( vector( 0, 1, 0, 1 ), vector( 1, 0, 0, 1 ) );
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(-1.0) );
-
-	vec = vector_cross3( vector( 0, 1, 0, 0 ), vector( 0, 1, 0, 1 ) );
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(0.0) );
-
-	vec = vector_cross3( vector( 0, 1, 0, 1 ), vector( 0, 0, 1, 1 ) );
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(1.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(0.0) );
-
-	vec = vector_cross3( vector( 0, 0, 1, 0 ), vector( 1, 0, 0, 1 ) );
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(1.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(0.0) );
-
-	vec = vector_cross3( vector( 0, 0, 1, 1 ), vector( 0, 1, 0, 1 ) );
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(-1.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(0.0) );
-
-	vec = vector_cross3( vector( 0, 0, 1, 0 ), vector( 0, 0, 1, 1 ) );
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(0.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(0.0) );
-	
-	return 0;
-}
-
-
-DECLARE_TEST( vector, ops )
-{
+DECLARE_TEST(vector, dot) {
 	vector_t vec;
 
-	vec = vector_mul( vector_one(), vector_zero() );
-	EXPECT_VECTOREQ( vec, vector_zero() );
+	vec = vector_dot(vector_zero(), vector_one());
+	EXPECT_REALEQ(vector_x(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(0.0));
 
-	vec = vector_mul( vector_zero(), vector_one() );
-	EXPECT_VECTOREQ( vec, vector_zero() );
+	vec = vector_dot(vector_one(), vector_zero());
+	EXPECT_REALEQ(vector_x(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(0.0));
 
-	vec = vector_mul( vector_one(), vector_one() );
-	EXPECT_VECTOREQ( vec, vector_one() );
+	vec = vector_dot(vector_one(), vector_one());
+	EXPECT_REALEQ(vector_x(vec), REAL_C(4.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(4.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(4.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(4.0));
 
-	vec = vector_mul( vector_two(), vector_zero() );
-	EXPECT_VECTOREQ( vec, vector_zero() );
+	vec = vector_dot(vector(1, 0, 0, 0), vector(2, 0, 0, 0));
+	EXPECT_REALEQ(vector_x(vec), REAL_C(2.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(2.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(2.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(2.0));
 
-	vec = vector_mul( vector_two(), vector_half() );
-	EXPECT_VECTOREQ( vec, vector_one() );
+	vec = vector_dot(vector(-1, 1, -1, 1), vector(1, 1, -1, -1));
+	EXPECT_REALEQ(vector_x(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(0.0));
 
-	vec = vector_mul( vector( 1, 2, 3, 4 ), vector( 5, 6, 7, 8 ) );
-	EXPECT_VECTOREQ( vec, vector( 5, 12, 21, 32 ) );
+	vec = vector_dot(vector(-3, 4, -5, 6), vector(0, 1, -1, -2));
+	EXPECT_REALEQ(vector_x(vec), REAL_C(-3.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(-3.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(-3.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(-3.0));
 
-	vec = vector_div( vector_zero(), vector_one() );
-	EXPECT_VECTOREQ( vec, vector_zero() );
+	vec = vector_dot3(vector_zero(), vector_one());
+	EXPECT_REALEQ(vector_x(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(0.0));
 
-	vec = vector_div( vector_one(), vector_one() );
-	EXPECT_VECTOREQ( vec, vector_one() );
+	vec = vector_dot3(vector_one(), vector_zero());
+	EXPECT_REALEQ(vector_x(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(0.0));
 
-	vec = vector_div( vector_one(), vector_half() );
-	EXPECT_VECTOREQ( vec, vector_two() );
+	vec = vector_dot3(vector_one(), vector_one());
+	EXPECT_REALEQ(vector_x(vec), REAL_C(3.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(3.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(3.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(3.0));
 
-	vec = vector_div( vector( 1, 2, 3, 4 ), vector( 5, 6, 7, 8 ) );
-	EXPECT_VECTOREQ( vec, vector( REAL_C(1.0) / REAL_C(5.0), REAL_C(2.0) / REAL_C(6.0), REAL_C(3.0) / REAL_C(7.0), REAL_C(4.0) / REAL_C(8.0) ) );
+	vec = vector_dot3(vector(-1, 1, -1, 1), vector(1, 1, -1, -1));
+	EXPECT_REALEQ(vector_x(vec), REAL_C(1.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(1.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(1.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(1.0));
 
-	vec = vector_add( vector_zero(), vector_zero() );
-	EXPECT_VECTOREQ( vec, vector_zero() );
-	
-	vec = vector_add( vector_zero(), vector_one() );
-	EXPECT_VECTOREQ( vec, vector_one() );
-
-	vec = vector_add( vector_one(), vector_zero() );
-	EXPECT_VECTOREQ( vec, vector_one() );
-
-	vec = vector_add( vector_one(), vector_one() );
-	EXPECT_VECTOREQ( vec, vector_two() );
-
-	vec = vector_add( vector( 1, 2, 3, 4 ), vector( 5, 6, 7, 8 ) );
-	EXPECT_VECTOREQ( vec, vector( 6, 8, 10, 12 ) );
-
-	vec = vector_sub( vector_zero(), vector_zero() );
-	EXPECT_VECTOREQ( vec, vector_zero() );
-	
-	vec = vector_sub( vector_zero(), vector_one() );
-	EXPECT_VECTOREQ( vec, vector( -1, -1, -1, -1 ) );
-
-	vec = vector_sub( vector_one(), vector_zero() );
-	EXPECT_VECTOREQ( vec, vector_one() );
-
-	vec = vector_sub( vector_one(), vector_one() );
-	EXPECT_VECTOREQ( vec, vector_zero() );
-
-	vec = vector_sub( vector( 1, -2, 3, -4 ), vector( -5, 6, -7, 8 ) );
-	EXPECT_VECTOREQ( vec, vector( 6, -8, 10, -12 ) );
-
-	vec = vector_neg( vector_zero() );
-	EXPECT_VECTOREQ( vec, vector_zero() );
-	
-	vec = vector_neg( vector_one() );
-	EXPECT_VECTOREQ( vec, vector( -1, -1, -1, -1 ) );
-
-	vec = vector_neg( vector( 1, -2, 3, -4 ) );
-	EXPECT_VECTOREQ( vec, vector( -1, 2, -3, 4 ) );
-
-	vec = vector_muladd( vector_one(), vector_zero(), vector_one() );
-	EXPECT_VECTOREQ( vec, vector_one() );
-
-	vec = vector_muladd( vector_zero(), vector_one(), vector_zero() );
-	EXPECT_VECTOREQ( vec, vector_zero() );
-
-	vec = vector_muladd( vector_one(), vector_one(), vector_one() );
-	EXPECT_VECTOREQ( vec, vector_two() );
-
-	vec = vector_muladd( vector_two(), vector_zero(), vector_zero() );
-	EXPECT_VECTOREQ( vec, vector_zero() );
-
-	vec = vector_muladd( vector_two(), vector_half(), vector_one() );
-	EXPECT_VECTOREQ( vec, vector_two() );
-
-	vec = vector_muladd( vector( 1, 2, 3, 4 ), vector( 5, 6, 7, 8 ), vector( -1, -2, -3, -4 ) );
-	EXPECT_VECTOREQ( vec, vector( 4, 10, 18, 28 ) );
+	vec = vector_dot3(vector(-3, 4, -5, 6), vector(0, 1, -1, -2));
+	EXPECT_REALEQ(vector_x(vec), REAL_C(9.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(9.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(9.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(9.0));
 
 	return 0;
 }
 
 
-DECLARE_TEST( vector, shuffle )
-{
-	vector_t in = vector( 1, 2, 3, 4 );
+DECLARE_TEST(vector, cross) {
 	vector_t vec;
 
-	vec = vector_shuffle( in, VECTOR_MASK_XXXX );
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(1.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(1.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(1.0) );
-	EXPECT_REALEQ( vector_w( vec ), REAL_C(1.0) );
-	
-	vec = vector_shuffle( in, VECTOR_MASK_YYYY );
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(2.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(2.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(2.0) );
-	EXPECT_REALEQ( vector_w( vec ), REAL_C(2.0) );
-	
-	vec = vector_shuffle( in, VECTOR_MASK_ZZZZ );
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(3.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(3.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(3.0) );
-	EXPECT_REALEQ( vector_w( vec ), REAL_C(3.0) );
-	
-	vec = vector_shuffle( in, VECTOR_MASK_WWWW );
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(4.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(4.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(4.0) );
-	EXPECT_REALEQ( vector_w( vec ), REAL_C(4.0) );
-	
-	vec = vector_shuffle( in, VECTOR_MASK_XYZW );
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(1.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(2.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(3.0) );
-	EXPECT_REALEQ( vector_w( vec ), REAL_C(4.0) );
-	
-	vec = vector_shuffle( in, VECTOR_MASK_WZYX );
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(4.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(3.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(2.0) );
-	EXPECT_REALEQ( vector_w( vec ), REAL_C(1.0) );
-	
-	vec = vector_shuffle( in, VECTOR_MASK_YXWZ );
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(2.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(1.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(4.0) );
-	EXPECT_REALEQ( vector_w( vec ), REAL_C(3.0) );
-	
-	vec = vector_shuffle( in, VECTOR_MASK_ZWXY );
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(3.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(4.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(1.0) );
-	EXPECT_REALEQ( vector_w( vec ), REAL_C(2.0) );
+	vec = vector_cross3(vector(0, 0, 0, 1), vector(1, 2, 3, 4));
+	EXPECT_REALEQ(vector_x(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(0.0));
 
-	vec = vector_shuffle( in, VECTOR_MASK_ZZXX );
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(3.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(3.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(1.0) );
-	EXPECT_REALEQ( vector_w( vec ), REAL_C(1.0) );
+	vec = vector_cross3(vector(1, 0, 0, 0), vector(1, 0, 0, 1));
+	EXPECT_REALEQ(vector_x(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(0.0));
 
-	vec = vector_shuffle( in, VECTOR_MASK_YYZZ );
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(2.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(2.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(3.0) );
-	EXPECT_REALEQ( vector_w( vec ), REAL_C(3.0) );
+	vec = vector_cross3(vector(1, 0, 0, 1), vector(0, 1, 0, 1));
+	EXPECT_REALEQ(vector_x(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(1.0));
 
-	vec = vector_shuffle( in, VECTOR_MASK_WXXW );
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(4.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(1.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(1.0) );
-	EXPECT_REALEQ( vector_w( vec ), REAL_C(4.0) );
+	vec = vector_cross3(vector(1, 0, 0, 0), vector(0, 0, 1, 1));
+	EXPECT_REALEQ(vector_x(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(-1.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(0.0));
 
-	vec = vector_shuffle( in, VECTOR_MASK_WYYZ );
-	EXPECT_REALEQ( vector_x( vec ), REAL_C(4.0) );
-	EXPECT_REALEQ( vector_y( vec ), REAL_C(2.0) );
-	EXPECT_REALEQ( vector_z( vec ), REAL_C(2.0) );
-	EXPECT_REALEQ( vector_w( vec ), REAL_C(3.0) );
-	
+	vec = vector_cross3(vector(0, 1, 0, 1), vector(1, 0, 0, 1));
+	EXPECT_REALEQ(vector_x(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(-1.0));
+
+	vec = vector_cross3(vector(0, 1, 0, 0), vector(0, 1, 0, 1));
+	EXPECT_REALEQ(vector_x(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(0.0));
+
+	vec = vector_cross3(vector(0, 1, 0, 1), vector(0, 0, 1, 1));
+	EXPECT_REALEQ(vector_x(vec), REAL_C(1.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(0.0));
+
+	vec = vector_cross3(vector(0, 0, 1, 0), vector(1, 0, 0, 1));
+	EXPECT_REALEQ(vector_x(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(1.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(0.0));
+
+	vec = vector_cross3(vector(0, 0, 1, 1), vector(0, 1, 0, 1));
+	EXPECT_REALEQ(vector_x(vec), REAL_C(-1.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(0.0));
+
+	vec = vector_cross3(vector(0, 0, 1, 0), vector(0, 0, 1, 1));
+	EXPECT_REALEQ(vector_x(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(0.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(0.0));
+
 	return 0;
 }
 
 
-DECLARE_TEST( vector, util )
-{
+DECLARE_TEST(vector, ops) {
 	vector_t vec;
 
-	vec = vector_scale( vector_zero(), 1 );
-	EXPECT_VECTOREQ( vec, vector_zero() );
-	
-	vec = vector_scale( vector_one(), 1 );
-	EXPECT_VECTOREQ( vec, vector_one() );
-	
-	vec = vector_scale( vector_two(), 0 );
-	EXPECT_VECTOREQ( vec, vector_zero() );
-	
-	vec = vector_scale( vector_two(), 1 );
-	EXPECT_VECTOREQ( vec, vector_two() );
-	
-	vec = vector_scale( vector_one(), 2 );
-	EXPECT_VECTOREQ( vec, vector_two() );
-	
-	vec = vector_scale( vector( 1, 2, 3, 4 ), 5 );
-	EXPECT_VECTOREQ( vec, vector( 5, 10, 15, 20 ) );
+	vec = vector_mul(vector_one(), vector_zero());
+	EXPECT_VECTOREQ(vec, vector_zero());
 
-	vec = vector_lerp( vector_zero(), vector_zero(), 0 );
-	EXPECT_VECTOREQ( vec, vector_zero() );
+	vec = vector_mul(vector_zero(), vector_one());
+	EXPECT_VECTOREQ(vec, vector_zero());
 
-	vec = vector_lerp( vector_zero(), vector_zero(), 1 );
-	EXPECT_VECTOREQ( vec, vector_zero() );
+	vec = vector_mul(vector_one(), vector_one());
+	EXPECT_VECTOREQ(vec, vector_one());
 
-	vec = vector_lerp( vector_zero(), vector_one(), 0 );
-	EXPECT_VECTOREQ( vec, vector_zero() );
+	vec = vector_mul(vector_two(), vector_zero());
+	EXPECT_VECTOREQ(vec, vector_zero());
 
-	vec = vector_lerp( vector_zero(), vector_one(), 1 );
-	EXPECT_VECTOREQ( vec, vector_one() );
+	vec = vector_mul(vector_two(), vector_half());
+	EXPECT_VECTOREQ(vec, vector_one());
 
-	vec = vector_lerp( vector_one(), vector_one(), 1 );
-	EXPECT_VECTOREQ( vec, vector_one() );
+	vec = vector_mul(vector(1, 2, 3, 4), vector(5, 6, 7, 8));
+	EXPECT_VECTOREQ(vec, vector(5, 12, 21, 32));
 
-	vec = vector_lerp( vector_one(), vector_one(), 10 );
-	EXPECT_VECTOREQ( vec, vector_one() );
+	vec = vector_div(vector_zero(), vector_one());
+	EXPECT_VECTOREQ(vec, vector_zero());
 
-	vec = vector_lerp( vector_zero(), vector_one(), 2 );
-	EXPECT_VECTOREQ( vec, vector_two() );
+	vec = vector_div(vector_one(), vector_one());
+	EXPECT_VECTOREQ(vec, vector_one());
 
-	vec = vector_lerp( vector_zero(), vector_one(), -1 );
-	EXPECT_VECTOREQ( vec, vector_uniform( -1 ) );
+	vec = vector_div(vector_one(), vector_half());
+	EXPECT_VECTOREQ(vec, vector_two());
 
-	vec = vector_lerp( vector( 1, -2, 3, -4 ), vector( 11, -12, -13, 14 ), REAL_C(0.5) );
-	EXPECT_VECTOREQ( vec, vector( 6, -7, -5, 5 ) );
+	vec = vector_div(vector(1, 2, 3, 4), vector(5, 6, 7, 8));
+	EXPECT_VECTOREQ(vec, vector(REAL_C(1.0) / REAL_C(5.0), REAL_C(2.0) / REAL_C(6.0),
+	                            REAL_C(3.0) / REAL_C(7.0), REAL_C(4.0) / REAL_C(8.0)));
 
-	vec = vector_project( vector_zero(), vector_one() );
-	EXPECT_VECTOREQ( vec, vector_zero() );
+	vec = vector_add(vector_zero(), vector_zero());
+	EXPECT_VECTOREQ(vec, vector_zero());
 
-	vec = vector_project( vector_one(), vector_one() );
-	EXPECT_VECTORALMOSTEQ( vec, vector_one() );
+	vec = vector_add(vector_zero(), vector_one());
+	EXPECT_VECTOREQ(vec, vector_one());
 
-	vec = vector_project( vector_uniform( -1 ), vector_one() );
-	EXPECT_VECTORALMOSTEQ( vec, vector_uniform( -1 ) );
+	vec = vector_add(vector_one(), vector_zero());
+	EXPECT_VECTOREQ(vec, vector_one());
 
-	vec = vector_project( vector( 1, 2, 3, 4 ), vector( 2, 0, 0, 0 ) );
-	EXPECT_VECTORALMOSTEQ( vec, vector( 1, 0, 0, 0 ) );
+	vec = vector_add(vector_one(), vector_one());
+	EXPECT_VECTOREQ(vec, vector_two());
 
-	vec = vector_project( vector( 1, 2, 3, 4 ), vector( 0, -3, 0, 0 ) );
-	EXPECT_VECTORALMOSTEQ( vec, vector( 0, 2, 0, 0 ) );
+	vec = vector_add(vector(1, 2, 3, 4), vector(5, 6, 7, 8));
+	EXPECT_VECTOREQ(vec, vector(6, 8, 10, 12));
 
-	vec = vector_project( vector( 1, 2, 3, 4 ), vector( 0, 0, 4, 0 ) );
-	EXPECT_VECTORALMOSTEQ( vec, vector( 0, 0, 3, 0 ) );
+	vec = vector_sub(vector_zero(), vector_zero());
+	EXPECT_VECTOREQ(vec, vector_zero());
 
-	vec = vector_project( vector( 1, 2, 3, 4 ), vector( 0, 0, 0, -5 ) );
-	EXPECT_VECTORALMOSTEQ( vec, vector( 0, 0, 0, 4 ) );
+	vec = vector_sub(vector_zero(), vector_one());
+	EXPECT_VECTOREQ(vec, vector(-1, -1, -1, -1));
 
-	vec = vector_project( vector( 1, 2, 3, 4 ), vector( 0, 1, 0, 2 ) );
-	EXPECT_VECTORALMOSTEQ( vec, vector( 0, 2, 0, 4 ) );
-	
-	vec = vector_project3( vector_zero(), vector_one() );
-	EXPECT_VECTOREQ( vec, vector_zero() );
+	vec = vector_sub(vector_one(), vector_zero());
+	EXPECT_VECTOREQ(vec, vector_one());
 
-	vec = vector_project3( vector_one(), vector_one() );
-	EXPECT_VECTORALMOSTEQ( vec, vector_one() );
+	vec = vector_sub(vector_one(), vector_one());
+	EXPECT_VECTOREQ(vec, vector_zero());
 
-	vec = vector_project3( vector_uniform( -1 ), vector_one() );
-	EXPECT_VECTORALMOSTEQ( vec, vector_uniform( -1 ) );
+	vec = vector_sub(vector(1, -2, 3, -4), vector(-5, 6, -7, 8));
+	EXPECT_VECTOREQ(vec, vector(6, -8, 10, -12));
 
-	vec = vector_project3( vector( 1, 2, 3, 4 ), vector( 2, 0, 0, 0 ) );
-	EXPECT_VECTORALMOSTEQ( vec, vector( 1, 0, 0, 4 ) );
+	vec = vector_neg(vector_zero());
+	EXPECT_VECTOREQ(vec, vector_zero());
 
-	vec = vector_project3( vector( 1, 2, 3, 4 ), vector( 0, -3, 0, 0 ) );
-	EXPECT_VECTORALMOSTEQ( vec, vector( 0, 2, 0, 4 ) );
+	vec = vector_neg(vector_one());
+	EXPECT_VECTOREQ(vec, vector(-1, -1, -1, -1));
 
-	vec = vector_project3( vector( 1, 2, 3, 4 ), vector( 0, 0, 4, 0 ) );
-	EXPECT_VECTORALMOSTEQ( vec, vector( 0, 0, 3, 4 ) );
+	vec = vector_neg(vector(1, -2, 3, -4));
+	EXPECT_VECTOREQ(vec, vector(-1, 2, -3, 4));
 
-	vec = vector_project3( vector( 1, 2, 3, 4 ), vector( 0, 0, 0, -5 ) );
-	EXPECT_VECTORALMOSTEQ( vec, vector( 0, 0, 0, 4 ) );
+	vec = vector_muladd(vector_one(), vector_zero(), vector_one());
+	EXPECT_VECTOREQ(vec, vector_one());
 
-	vec = vector_project3( vector( 1, 2, 3, 4 ), vector( 0, 1, 0, 2 ) );
-	EXPECT_VECTORALMOSTEQ( vec, vector( 0, 2, 0, 4 ) );
+	vec = vector_muladd(vector_zero(), vector_one(), vector_zero());
+	EXPECT_VECTOREQ(vec, vector_zero());
 
-	vec = vector_reflect( vector_zero(), vector_one() );
-	EXPECT_VECTOREQ( vec, vector_zero() );	
+	vec = vector_muladd(vector_one(), vector_one(), vector_one());
+	EXPECT_VECTOREQ(vec, vector_two());
 
-	vec = vector_reflect( vector_one(), vector_one() );
-	EXPECT_VECTORALMOSTEQ( vec, vector_one() );	
+	vec = vector_muladd(vector_two(), vector_zero(), vector_zero());
+	EXPECT_VECTOREQ(vec, vector_zero());
 
-	vec = vector_reflect( vector_uniform( -1 ), vector_one() );
-	EXPECT_VECTORALMOSTEQ( vec, vector_uniform( -1 ) );	
+	vec = vector_muladd(vector_two(), vector_half(), vector_one());
+	EXPECT_VECTOREQ(vec, vector_two());
 
-	vec = vector_reflect( vector( 1, 1, 0, 1 ), vector( 0, 1, 0, 1 ) );
-	EXPECT_VECTORALMOSTEQ( vec, vector( -1, 1, 0, 1 ) );	
+	vec = vector_muladd(vector(1, 2, 3, 4), vector(5, 6, 7, 8), vector(-1, -2, -3, -4));
+	EXPECT_VECTOREQ(vec, vector(4, 10, 18, 28));
 
-	vec = vector_reflect( vector( 2, 3, 4, 5 ), vector( -2, -3, 0, -5 ) );
-	EXPECT_VECTORALMOSTEQ( vec, vector( 2, 3, -4, 5 ) );	
-
-	vec = vector_reflect3( vector_zero(), vector_one() );
-	EXPECT_VECTOREQ( vec, vector_zero() );	
-
-	vec = vector_reflect3( vector_one(), vector_one() );
-	EXPECT_VECTORALMOSTEQ( vec, vector_one() );	
-
-	vec = vector_reflect3( vector_uniform( -1 ), vector_one() );
-	EXPECT_VECTORALMOSTEQ( vec, vector_uniform( -1 ) );	
-
-	vec = vector_reflect3( vector( 1, 1, 0, 1 ), vector( 0, 1, 0, 1 ) );
-	EXPECT_VECTORALMOSTEQ( vec, vector( -1, 1, 0, 1 ) );	
-
-	vec = vector_reflect3( vector( 2, 3, 4, 5 ), vector( -2, -3, 0, -5 ) );
-	EXPECT_VECTORALMOSTEQ( vec, vector( 2, 3, -4, 5 ) );	
-
-	vec = vector_reflect3( vector( 2, 3, 4, -5 ), vector( -2, -3, 0, 13 ) );
-	EXPECT_VECTORALMOSTEQ( vec, vector( 2, 3, -4, -5 ) );	
-	
 	return 0;
 }
 
 
-DECLARE_TEST( vector, length )
-{
+DECLARE_TEST(vector, shuffle) {
+	vector_t in = vector(1, 2, 3, 4);
 	vector_t vec;
 
-	vec = vector_length( vector_zero() );
-	EXPECT_VECTOREQ( vec, vector_zero() );
+	vec = vector_shuffle(in, VECTOR_MASK_XXXX);
+	EXPECT_REALEQ(vector_x(vec), REAL_C(1.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(1.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(1.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(1.0));
 
-	vec = vector_length( vector_one() );
-	EXPECT_VECTOREQ( vec, vector_two() );
+	vec = vector_shuffle(in, VECTOR_MASK_YYYY);
+	EXPECT_REALEQ(vector_x(vec), REAL_C(2.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(2.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(2.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(2.0));
 
-	vec = vector_length( vector_two() );
-	EXPECT_VECTOREQ( vec, vector_uniform( 4 ) );
+	vec = vector_shuffle(in, VECTOR_MASK_ZZZZ);
+	EXPECT_REALEQ(vector_x(vec), REAL_C(3.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(3.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(3.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(3.0));
 
-	vec = vector_length( vector( 1, -2, 3, -4 ) );
-	EXPECT_VECTOREQ( vec, vector_uniform( math_sqrt( 30 ) ) );
-	
-	vec = vector_length_fast( vector_zero() );
-	EXPECT_VECTOREQ( vec, vector_zero() );
+	vec = vector_shuffle(in, VECTOR_MASK_WWWW);
+	EXPECT_REALEQ(vector_x(vec), REAL_C(4.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(4.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(4.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(4.0));
 
-	vec = vector_length_fast( vector_one() );
-	EXPECT_VECTOREQ( vec, vector_two() );
+	vec = vector_shuffle(in, VECTOR_MASK_XYZW);
+	EXPECT_REALEQ(vector_x(vec), REAL_C(1.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(2.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(3.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(4.0));
 
-	vec = vector_length_fast( vector_two() );
-	EXPECT_VECTOREQ( vec, vector_uniform( 4 ) );
+	vec = vector_shuffle(in, VECTOR_MASK_WZYX);
+	EXPECT_REALEQ(vector_x(vec), REAL_C(4.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(3.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(2.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(1.0));
 
-	vec = vector_length_fast( vector( 1, -2, 3, -4 ) );
-	EXPECT_VECTOREQ( vec, vector_uniform( math_sqrt( 30 ) ) );
-	
-	vec = vector_length3( vector_zero() );
-	EXPECT_VECTOREQ( vec, vector_zero() );
+	vec = vector_shuffle(in, VECTOR_MASK_YXWZ);
+	EXPECT_REALEQ(vector_x(vec), REAL_C(2.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(1.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(4.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(3.0));
 
-	vec = vector_length3( vector_one() );
-	EXPECT_VECTOREQ( vec, vector_uniform( REAL_SQRT3 ) );
+	vec = vector_shuffle(in, VECTOR_MASK_ZWXY);
+	EXPECT_REALEQ(vector_x(vec), REAL_C(3.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(4.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(1.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(2.0));
 
-	vec = vector_length3( vector_two() );
-	EXPECT_VECTOREQ( vec, vector_uniform( math_sqrt( 12 ) ) );
+	vec = vector_shuffle(in, VECTOR_MASK_ZZXX);
+	EXPECT_REALEQ(vector_x(vec), REAL_C(3.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(3.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(1.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(1.0));
 
-	vec = vector_length3( vector( 1, -2, 3, -4 ) );
-	EXPECT_VECTOREQ( vec, vector_uniform( math_sqrt( 14 ) ) );
-	
-	vec = vector_length3_fast( vector_zero() );
-	EXPECT_VECTOREQ( vec, vector_zero() );
+	vec = vector_shuffle(in, VECTOR_MASK_YYZZ);
+	EXPECT_REALEQ(vector_x(vec), REAL_C(2.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(2.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(3.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(3.0));
 
-	vec = vector_length3_fast( vector_one() );
-	EXPECT_VECTOREQ( vec, vector_uniform( REAL_SQRT3 ) );
+	vec = vector_shuffle(in, VECTOR_MASK_WXXW);
+	EXPECT_REALEQ(vector_x(vec), REAL_C(4.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(1.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(1.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(4.0));
 
-	vec = vector_length3_fast( vector_two() );
-	EXPECT_VECTOREQ( vec, vector_uniform( math_sqrt( 12 ) ) );
+	vec = vector_shuffle(in, VECTOR_MASK_WYYZ);
+	EXPECT_REALEQ(vector_x(vec), REAL_C(4.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(2.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(2.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(3.0));
 
-	vec = vector_length3_fast( vector( 1, -2, 3, -4 ) );
-	EXPECT_VECTOREQ( vec, vector_uniform( math_sqrt( 14 ) ) );
-
-	vec = vector_length_sqr( vector_zero() );
-	EXPECT_VECTOREQ( vec, vector_zero() );
-
-	vec = vector_length_sqr( vector_one() );
-	EXPECT_VECTOREQ( vec, vector_uniform( 4 ) );
-
-	vec = vector_length_sqr( vector( 1, -2, 3, -4 ) );
-	EXPECT_VECTOREQ( vec, vector_uniform( 30 ) );
-
-	vec = vector_length3_sqr( vector_zero() );
-	EXPECT_VECTOREQ( vec, vector_zero() );
-
-	vec = vector_length3_sqr( vector_one() );
-	EXPECT_VECTOREQ( vec, vector_uniform( 3 ) );
-
-	vec = vector_length3_sqr( vector( 1, -2, 3, -4 ) );
-	EXPECT_VECTOREQ( vec, vector_uniform( 14 ) );
-	
 	return 0;
 }
 
 
-DECLARE_TEST( vector, minmax )
-{
+DECLARE_TEST(vector, util) {
 	vector_t vec;
 
-	vec = vector_min( vector_zero(), vector_one() );
-	EXPECT_VECTOREQ( vec, vector_zero() );	
+	vec = vector_scale(vector_zero(), 1);
+	EXPECT_VECTOREQ(vec, vector_zero());
 
-	vec = vector_min( vector_one(), vector_one() );
-	EXPECT_VECTOREQ( vec, vector_one() );	
+	vec = vector_scale(vector_one(), 1);
+	EXPECT_VECTOREQ(vec, vector_one());
 
-	vec = vector_min( vector( 1, 2, 3, 4 ), vector( 2, -3, 4, -5 ) );
-	EXPECT_VECTOREQ( vec, vector( 1, -3, 3, -5 ) );	
+	vec = vector_scale(vector_two(), 0);
+	EXPECT_VECTOREQ(vec, vector_zero());
 
-	vec = vector_max( vector_zero(), vector_one() );
-	EXPECT_VECTOREQ( vec, vector_one() );	
+	vec = vector_scale(vector_two(), 1);
+	EXPECT_VECTOREQ(vec, vector_two());
 
-	vec = vector_max( vector_one(), vector_one() );
-	EXPECT_VECTOREQ( vec, vector_one() );	
+	vec = vector_scale(vector_one(), 2);
+	EXPECT_VECTOREQ(vec, vector_two());
 
-	vec = vector_max( vector( 1, 2, 3, 4 ), vector( 2, -3, 4, -5 ) );
-	EXPECT_VECTOREQ( vec, vector( 2, 2, 4, 4 ) );	
-	
+	vec = vector_scale(vector(1, 2, 3, 4), 5);
+	EXPECT_VECTOREQ(vec, vector(5, 10, 15, 20));
+
+	vec = vector_lerp(vector_zero(), vector_zero(), 0);
+	EXPECT_VECTOREQ(vec, vector_zero());
+
+	vec = vector_lerp(vector_zero(), vector_zero(), 1);
+	EXPECT_VECTOREQ(vec, vector_zero());
+
+	vec = vector_lerp(vector_zero(), vector_one(), 0);
+	EXPECT_VECTOREQ(vec, vector_zero());
+
+	vec = vector_lerp(vector_zero(), vector_one(), 1);
+	EXPECT_VECTOREQ(vec, vector_one());
+
+	vec = vector_lerp(vector_one(), vector_one(), 1);
+	EXPECT_VECTOREQ(vec, vector_one());
+
+	vec = vector_lerp(vector_one(), vector_one(), 10);
+	EXPECT_VECTOREQ(vec, vector_one());
+
+	vec = vector_lerp(vector_zero(), vector_one(), 2);
+	EXPECT_VECTOREQ(vec, vector_two());
+
+	vec = vector_lerp(vector_zero(), vector_one(), -1);
+	EXPECT_VECTOREQ(vec, vector_uniform(-1));
+
+	vec = vector_lerp(vector(1, -2, 3, -4), vector(11, -12, -13, 14), REAL_C(0.5));
+	EXPECT_VECTOREQ(vec, vector(6, -7, -5, 5));
+
+	vec = vector_project(vector_zero(), vector_one());
+	EXPECT_VECTOREQ(vec, vector_zero());
+
+	vec = vector_project(vector_one(), vector_one());
+	EXPECT_VECTORALMOSTEQ(vec, vector_one());
+
+	vec = vector_project(vector_uniform(-1), vector_one());
+	EXPECT_VECTORALMOSTEQ(vec, vector_uniform(-1));
+
+	vec = vector_project(vector(1, 2, 3, 4), vector(2, 0, 0, 0));
+	EXPECT_VECTORALMOSTEQ(vec, vector(1, 0, 0, 0));
+
+	vec = vector_project(vector(1, 2, 3, 4), vector(0, -3, 0, 0));
+	EXPECT_VECTORALMOSTEQ(vec, vector(0, 2, 0, 0));
+
+	vec = vector_project(vector(1, 2, 3, 4), vector(0, 0, 4, 0));
+	EXPECT_VECTORALMOSTEQ(vec, vector(0, 0, 3, 0));
+
+	vec = vector_project(vector(1, 2, 3, 4), vector(0, 0, 0, -5));
+	EXPECT_VECTORALMOSTEQ(vec, vector(0, 0, 0, 4));
+
+	vec = vector_project(vector(1, 2, 3, 4), vector(0, 1, 0, 2));
+	EXPECT_VECTORALMOSTEQ(vec, vector(0, 2, 0, 4));
+
+	vec = vector_project3(vector_zero(), vector_one());
+	EXPECT_VECTOREQ(vec, vector_zero());
+
+	vec = vector_project3(vector_one(), vector_one());
+	EXPECT_VECTORALMOSTEQ(vec, vector_one());
+
+	vec = vector_project3(vector_uniform(-1), vector_one());
+	EXPECT_VECTORALMOSTEQ(vec, vector_uniform(-1));
+
+	vec = vector_project3(vector(1, 2, 3, 4), vector(2, 0, 0, 0));
+	EXPECT_VECTORALMOSTEQ(vec, vector(1, 0, 0, 4));
+
+	vec = vector_project3(vector(1, 2, 3, 4), vector(0, -3, 0, 0));
+	EXPECT_VECTORALMOSTEQ(vec, vector(0, 2, 0, 4));
+
+	vec = vector_project3(vector(1, 2, 3, 4), vector(0, 0, 4, 0));
+	EXPECT_VECTORALMOSTEQ(vec, vector(0, 0, 3, 4));
+
+	vec = vector_project3(vector(1, 2, 3, 4), vector(0, 0, 0, -5));
+	EXPECT_VECTORALMOSTEQ(vec, vector(0, 0, 0, 4));
+
+	vec = vector_project3(vector(1, 2, 3, 4), vector(0, 1, 0, 2));
+	EXPECT_VECTORALMOSTEQ(vec, vector(0, 2, 0, 4));
+
+	vec = vector_reflect(vector_zero(), vector_one());
+	EXPECT_VECTOREQ(vec, vector_zero());
+
+	vec = vector_reflect(vector_one(), vector_one());
+	EXPECT_VECTORALMOSTEQ(vec, vector_one());
+
+	vec = vector_reflect(vector_uniform(-1), vector_one());
+	EXPECT_VECTORALMOSTEQ(vec, vector_uniform(-1));
+
+	vec = vector_reflect(vector(1, 1, 0, 1), vector(0, 1, 0, 1));
+	EXPECT_VECTORALMOSTEQ(vec, vector(-1, 1, 0, 1));
+
+	vec = vector_reflect(vector(2, 3, 4, 5), vector(-2, -3, 0, -5));
+	EXPECT_VECTORALMOSTEQ(vec, vector(2, 3, -4, 5));
+
+	vec = vector_reflect3(vector_zero(), vector_one());
+	EXPECT_VECTOREQ(vec, vector_zero());
+
+	vec = vector_reflect3(vector_one(), vector_one());
+	EXPECT_VECTORALMOSTEQ(vec, vector_one());
+
+	vec = vector_reflect3(vector_uniform(-1), vector_one());
+	EXPECT_VECTORALMOSTEQ(vec, vector_uniform(-1));
+
+	vec = vector_reflect3(vector(1, 1, 0, 1), vector(0, 1, 0, 1));
+	EXPECT_VECTORALMOSTEQ(vec, vector(-1, 1, 0, 1));
+
+	vec = vector_reflect3(vector(2, 3, 4, 5), vector(-2, -3, 0, -5));
+	EXPECT_VECTORALMOSTEQ(vec, vector(2, 3, -4, 5));
+
+	vec = vector_reflect3(vector(2, 3, 4, -5), vector(-2, -3, 0, 13));
+	EXPECT_VECTORALMOSTEQ(vec, vector(2, 3, -4, -5));
+
 	return 0;
 }
 
 
-DECLARE_TEST( vector, component )
-{
-	EXPECT_REALEQ( vector_x( vector_zero() ), REAL_ZERO );
-	EXPECT_REALEQ( vector_y( vector_zero() ), REAL_ZERO );
-	EXPECT_REALEQ( vector_z( vector_zero() ), REAL_ZERO );
-	EXPECT_REALEQ( vector_w( vector_zero() ), REAL_ZERO );
+DECLARE_TEST(vector, length) {
+	vector_t vec;
 
-	EXPECT_REALEQ( vector_x( vector_one() ), REAL_ONE );
-	EXPECT_REALEQ( vector_y( vector_one() ), REAL_ONE );
-	EXPECT_REALEQ( vector_z( vector_one() ), REAL_ONE );
-	EXPECT_REALEQ( vector_w( vector_one() ), REAL_ONE );
+	vec = vector_length(vector_zero());
+	EXPECT_VECTOREQ(vec, vector_zero());
 
-	EXPECT_REALEQ( vector_x( vector( 1, -2, 3, -4 ) ), 1 );
-	EXPECT_REALEQ( vector_y( vector( 1, -2, 3, -4 ) ), -2 );
-	EXPECT_REALEQ( vector_z( vector( 1, -2, 3, -4 ) ), 3 );
-	EXPECT_REALEQ( vector_w( vector( 1, -2, 3, -4 ) ), -4 );
+	vec = vector_length(vector_one());
+	EXPECT_VECTOREQ(vec, vector_two());
 
-	EXPECT_REALEQ( vector_component( vector( 1, -2, 3, -4 ), 0 ), 1 );
-	EXPECT_REALEQ( vector_component( vector( 1, -2, 3, -4 ), 1 ), -2 );
-	EXPECT_REALEQ( vector_component( vector( 1, -2, 3, -4 ), 2 ), 3 );
-	EXPECT_REALEQ( vector_component( vector( 1, -2, 3, -4 ), 3 ), -4 );
-	
+	vec = vector_length(vector_two());
+	EXPECT_VECTOREQ(vec, vector_uniform(4));
+
+	vec = vector_length(vector(1, -2, 3, -4));
+	EXPECT_VECTOREQ(vec, vector_uniform(math_sqrt(30)));
+
+	vec = vector_length_fast(vector_zero());
+	EXPECT_VECTOREQ(vec, vector_zero());
+
+	vec = vector_length_fast(vector_one());
+	EXPECT_VECTOREQ(vec, vector_two());
+
+	vec = vector_length_fast(vector_two());
+	EXPECT_VECTOREQ(vec, vector_uniform(4));
+
+	vec = vector_length_fast(vector(1, -2, 3, -4));
+	EXPECT_VECTOREQ(vec, vector_uniform(math_sqrt(30)));
+
+	vec = vector_length3(vector_zero());
+	EXPECT_VECTOREQ(vec, vector_zero());
+
+	vec = vector_length3(vector_one());
+	EXPECT_VECTOREQ(vec, vector_uniform(REAL_SQRT3));
+
+	vec = vector_length3(vector_two());
+	EXPECT_VECTOREQ(vec, vector_uniform(math_sqrt(12)));
+
+	vec = vector_length3(vector(1, -2, 3, -4));
+	EXPECT_VECTOREQ(vec, vector_uniform(math_sqrt(14)));
+
+	vec = vector_length3_fast(vector_zero());
+	EXPECT_VECTOREQ(vec, vector_zero());
+
+	vec = vector_length3_fast(vector_one());
+	EXPECT_VECTOREQ(vec, vector_uniform(REAL_SQRT3));
+
+	vec = vector_length3_fast(vector_two());
+	EXPECT_VECTOREQ(vec, vector_uniform(math_sqrt(12)));
+
+	vec = vector_length3_fast(vector(1, -2, 3, -4));
+	EXPECT_VECTOREQ(vec, vector_uniform(math_sqrt(14)));
+
+	vec = vector_length_sqr(vector_zero());
+	EXPECT_VECTOREQ(vec, vector_zero());
+
+	vec = vector_length_sqr(vector_one());
+	EXPECT_VECTOREQ(vec, vector_uniform(4));
+
+	vec = vector_length_sqr(vector(1, -2, 3, -4));
+	EXPECT_VECTOREQ(vec, vector_uniform(30));
+
+	vec = vector_length3_sqr(vector_zero());
+	EXPECT_VECTOREQ(vec, vector_zero());
+
+	vec = vector_length3_sqr(vector_one());
+	EXPECT_VECTOREQ(vec, vector_uniform(3));
+
+	vec = vector_length3_sqr(vector(1, -2, 3, -4));
+	EXPECT_VECTOREQ(vec, vector_uniform(14));
+
 	return 0;
 }
 
 
-DECLARE_TEST( vector, equal )
-{
-	EXPECT_TRUE( vector_equal( vector_zero(), vector_zero() ) );
-	EXPECT_TRUE( vector_equal( vector_one(), vector_one() ) );
-	EXPECT_TRUE( vector_equal( vector_uniform( -5 ), vector_uniform( -5 ) ) );
-	EXPECT_TRUE( vector_equal( vector( 1, -2, 3, -4 ), vector( 1, -2, 3, -4 ) ) );
+DECLARE_TEST(vector, minmax) {
+	vector_t vec;
 
-	EXPECT_FALSE( vector_equal( vector_zero(), vector_one() ) );
-	EXPECT_FALSE( vector_equal( vector_one(), vector_zero() ) );
-	EXPECT_FALSE( vector_equal( vector_uniform( -5 ), vector_uniform( 5 ) ) );
-	EXPECT_FALSE( vector_equal( vector( 1, -2, 3, -4 ), vector( 1, 2, 3, -4 ) ) );
-	
+	vec = vector_min(vector_zero(), vector_one());
+	EXPECT_VECTOREQ(vec, vector_zero());
+
+	vec = vector_min(vector_one(), vector_one());
+	EXPECT_VECTOREQ(vec, vector_one());
+
+	vec = vector_min(vector(1, 2, 3, 4), vector(2, -3, 4, -5));
+	EXPECT_VECTOREQ(vec, vector(1, -3, 3, -5));
+
+	vec = vector_max(vector_zero(), vector_one());
+	EXPECT_VECTOREQ(vec, vector_one());
+
+	vec = vector_max(vector_one(), vector_one());
+	EXPECT_VECTOREQ(vec, vector_one());
+
+	vec = vector_max(vector(1, 2, 3, 4), vector(2, -3, 4, -5));
+	EXPECT_VECTOREQ(vec, vector(2, 2, 4, 4));
+
 	return 0;
 }
 
 
-void test_vector_declare( void )
-{
+DECLARE_TEST(vector, component) {
+	EXPECT_REALEQ(vector_x(vector_zero()), REAL_ZERO);
+	EXPECT_REALEQ(vector_y(vector_zero()), REAL_ZERO);
+	EXPECT_REALEQ(vector_z(vector_zero()), REAL_ZERO);
+	EXPECT_REALEQ(vector_w(vector_zero()), REAL_ZERO);
+
+	EXPECT_REALEQ(vector_x(vector_one()), REAL_ONE);
+	EXPECT_REALEQ(vector_y(vector_one()), REAL_ONE);
+	EXPECT_REALEQ(vector_z(vector_one()), REAL_ONE);
+	EXPECT_REALEQ(vector_w(vector_one()), REAL_ONE);
+
+	EXPECT_REALEQ(vector_x(vector(1, -2, 3, -4)), 1);
+	EXPECT_REALEQ(vector_y(vector(1, -2, 3, -4)), -2);
+	EXPECT_REALEQ(vector_z(vector(1, -2, 3, -4)), 3);
+	EXPECT_REALEQ(vector_w(vector(1, -2, 3, -4)), -4);
+
+	EXPECT_REALEQ(vector_component(vector(1, -2, 3, -4), 0), 1);
+	EXPECT_REALEQ(vector_component(vector(1, -2, 3, -4), 1), -2);
+	EXPECT_REALEQ(vector_component(vector(1, -2, 3, -4), 2), 3);
+	EXPECT_REALEQ(vector_component(vector(1, -2, 3, -4), 3), -4);
+
+	return 0;
+}
+
+
+DECLARE_TEST(vector, equal) {
+	EXPECT_TRUE(vector_equal(vector_zero(), vector_zero()));
+	EXPECT_TRUE(vector_equal(vector_one(), vector_one()));
+	EXPECT_TRUE(vector_equal(vector_uniform(-5), vector_uniform(-5)));
+	EXPECT_TRUE(vector_equal(vector(1, -2, 3, -4), vector(1, -2, 3, -4)));
+
+	EXPECT_FALSE(vector_equal(vector_zero(), vector_one()));
+	EXPECT_FALSE(vector_equal(vector_one(), vector_zero()));
+	EXPECT_FALSE(vector_equal(vector_uniform(-5), vector_uniform(5)));
+	EXPECT_FALSE(vector_equal(vector(1, -2, 3, -4), vector(1, 2, 3, -4)));
+
+	return 0;
+}
+
+static void 
+test_vector_declare(void) {
 #if FOUNDATION_ARCH_SSE4
-	log_infof( "Using SSE4 implementation" );
+	log_info(HASH_TEST, STRING_CONST("Using SSE4 implementation"));
 #elif FOUNDATION_ARCH_SSE3
-	log_infof( "Using SSE3 implementation" );
+	log_info(HASH_TEST, STRING_CONST("Using SSE3 implementation"));
 #elif FOUNDATION_ARCH_SSE2
-	log_infof( "Using SSE2 implementation" );
+	log_info(HASH_TEST, STRING_CONST("Using SSE2 implementation"));
 #elif FOUNDATION_ARCH_NEON
-	log_infof( "Using NEON implementation" );
+	log_info(HASH_TEST, STRING_CONST("Using NEON implementation"));
 #else
-	log_infof( "Using fallback implementation" );
+	log_info(HASH_TEST, STRING_CONST("Using fallback implementation"));
 #endif
 
-	ADD_TEST( vector, construct );
-	ADD_TEST( vector, normalize );
-	ADD_TEST( vector, dot );
-	ADD_TEST( vector, cross );
-	ADD_TEST( vector, ops );
-	ADD_TEST( vector, shuffle );
-	ADD_TEST( vector, util );
-	ADD_TEST( vector, length );
-	ADD_TEST( vector, minmax );
-	ADD_TEST( vector, component );
-	ADD_TEST( vector, equal );
+	ADD_TEST(vector, construct);
+	ADD_TEST(vector, normalize);
+	ADD_TEST(vector, dot);
+	ADD_TEST(vector, cross);
+	ADD_TEST(vector, ops);
+	ADD_TEST(vector, shuffle);
+	ADD_TEST(vector, util);
+	ADD_TEST(vector, length);
+	ADD_TEST(vector, minmax);
+	ADD_TEST(vector, component);
+	ADD_TEST(vector, equal);
 }
-
 
 test_suite_t test_vector_suite = {
 	test_vector_application,
+	test_vector_memory_system,
+	test_vector_config,
 	test_vector_declare,
 	test_vector_initialize,
-	test_vector_shutdown
+	test_vector_finalize
 };
 
 
-#if FOUNDATION_PLATFORM_ANDROID
+#if BUILD_MONOLITHIC
 
-int test_vector_run( void )
-{
+int
+test_vector_run(void);
+
+int
+test_vector_run(void) {
 	test_suite = test_vector_suite;
 	return test_run_all();
 }
 
 #else
 
-test_suite_t test_suite_define( void )
-{
+test_suite_t
+test_suite_define(void);
+
+test_suite_t
+test_suite_define(void) {
 	return test_vector_suite;
 }
 

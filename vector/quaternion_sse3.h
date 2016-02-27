@@ -14,4 +14,4 @@
  *
  */
 
-#include <vector/quaternion_sse3.h>
+#include <vector/quaternion_sse2.h>

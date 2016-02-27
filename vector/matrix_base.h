@@ -16,23 +16,23 @@
 
 #ifndef VECTOR_HAVE_MATRIX_ZERO
 
-matrix_t matrix_zero( void )
-{
-	static const ALIGN(16) float32_t _zero_matrix[16] = { 0 };
-	return matrix_aligned( _zero_matrix );
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL matrix_t
+matrix_zero(void) {
+	static const FOUNDATION_ALIGN(16) float32_t _zero_matrix[16] = { 0 };
+	return matrix_aligned(_zero_matrix);
 }
 
 #endif
 
 #ifndef VECTOR_HAVE_MATRIX_UNALIGNED
 
-matrix_t matrix_unaligned( const float32_t* RESTRICT m )
-{
+static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL matrix_t
+matrix_unaligned(const float32_t* FOUNDATION_RESTRICT m) {
 	matrix_t mtx;
-	mtx.row[0] = vector_unaligned( m );
-	mtx.row[1] = vector_unaligned( m + 4 );
-	mtx.row[2] = vector_unaligned( m + 8 );
-	mtx.row[3] = vector_unaligned( m + 12 );
+	mtx.row[0] = vector_unaligned(m);
+	mtx.row[1] = vector_unaligned(m + 4);
+	mtx.row[2] = vector_unaligned(m + 8);
+	mtx.row[3] = vector_unaligned(m + 12);
 	return mtx;
 }
 
@@ -40,8 +40,8 @@ matrix_t matrix_unaligned( const float32_t* RESTRICT m )
 
 #ifndef VECTOR_HAVE_MATRIX_ALIGNED
 
-matrix_t matrix_aligned( const float32_aligned128_t* RESTRICT m )
-{
+static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL matrix_t
+matrix_aligned(const float32_aligned128_t* FOUNDATION_RESTRICT m) {
 	return *(const matrix_t*)m;
 }
 
@@ -49,26 +49,26 @@ matrix_t matrix_aligned( const float32_aligned128_t* RESTRICT m )
 
 #ifndef VECTOR_HAVE_MATRIX_IDENTITY
 
-matrix_t matrix_identity( void )
-{
-	static const ALIGN(16) float32_t _identity_matrix[16] = {
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL matrix_t
+matrix_identity(void) {
+	static const FOUNDATION_ALIGN(16) float32_t _identity_matrix[16] = {
 		1, 0, 0, 0,
 		0, 1, 0, 0,
 		0, 0, 1, 0,
 		0, 0, 0, 1
 	};
-	return matrix_aligned( _identity_matrix );
+	return matrix_aligned(_identity_matrix);
 }
 
 #endif
 
 #ifndef VECTOR_HAVE_MATRIX_TRANSPOSE
 
-matrix_t matrix_transpose( const matrix_t m )
-{
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL matrix_t
+matrix_transpose(const matrix_t m) {
 	matrix_t mt;
-	for( int row = 0; row < 4; ++row )
-		for( int col = 0; col < 4; ++col )
+	for (int row = 0; row < 4; ++row)
+		for (int col = 0; col < 4; ++col)
 			mt.frow[row][col]  = m.frow[col][row];
 	return mt;
 }
@@ -77,16 +77,16 @@ matrix_t matrix_transpose( const matrix_t m )
 
 #ifndef VECTOR_HAVE_MATRIX_MUL
 
-matrix_t matrix_mul( const matrix_t m0, const matrix_t m1 )
-{
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL matrix_t
+matrix_mul(const matrix_t m0, const matrix_t m1) {
 	matrix_t r;
-	for( int row = 0; row < 4; ++row )
-		for( int col = 0; col < 4; ++col )
+	for (int row = 0; row < 4; ++row)
+		for (int col = 0; col < 4; ++col)
 			r.frow[row][col] =
-			m0.frow[row][0] * m1.frow[0][col] +
-			m0.frow[row][1] * m1.frow[1][col] +
-			m0.frow[row][2] * m1.frow[2][col] +
-			m0.frow[row][3] * m1.frow[3][col];
+			    m0.frow[row][0] * m1.frow[0][col] +
+			    m0.frow[row][1] * m1.frow[1][col] +
+			    m0.frow[row][2] * m1.frow[2][col] +
+			    m0.frow[row][3] * m1.frow[3][col];
 	return r;
 }
 
@@ -94,13 +94,13 @@ matrix_t matrix_mul( const matrix_t m0, const matrix_t m1 )
 
 #ifndef VECTOR_HAVE_MATRIX_ADD
 
-matrix_t matrix_add( const matrix_t m0, const matrix_t m1 )
-{
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL matrix_t
+matrix_add(const matrix_t m0, const matrix_t m1) {
 	matrix_t r;
-	r.row[0] = vector_add( m0.row[0], m1.row[0] );
-	r.row[1] = vector_add( m0.row[1], m1.row[1] );
-	r.row[2] = vector_add( m0.row[2], m1.row[2] );
-	r.row[3] = vector_add( m0.row[3], m1.row[3] );
+	r.row[0] = vector_add(m0.row[0], m1.row[0]);
+	r.row[1] = vector_add(m0.row[1], m1.row[1]);
+	r.row[2] = vector_add(m0.row[2], m1.row[2]);
+	r.row[3] = vector_add(m0.row[3], m1.row[3]);
 	return r;
 }
 
@@ -108,13 +108,13 @@ matrix_t matrix_add( const matrix_t m0, const matrix_t m1 )
 
 #ifndef VECTOR_HAVE_MATRIX_SUB
 
-matrix_t matrix_sub( const matrix_t m0, const matrix_t m1 )
-{
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL matrix_t
+matrix_sub(const matrix_t m0, const matrix_t m1) {
 	matrix_t r;
-	r.row[0] = vector_sub( m0.row[0], m1.row[0] );
-	r.row[1] = vector_sub( m0.row[1], m1.row[1] );
-	r.row[2] = vector_sub( m0.row[2], m1.row[2] );
-	r.row[3] = vector_sub( m0.row[3], m1.row[3] );
+	r.row[0] = vector_sub(m0.row[0], m1.row[0]);
+	r.row[1] = vector_sub(m0.row[1], m1.row[1]);
+	r.row[2] = vector_sub(m0.row[2], m1.row[2]);
+	r.row[3] = vector_sub(m0.row[3], m1.row[3]);
 	return r;
 }
 
@@ -122,26 +122,26 @@ matrix_t matrix_sub( const matrix_t m0, const matrix_t m1 )
 
 #ifndef VECTOR_HAVE_MATRIX_ROTATE
 
-vector_t matrix_rotate( const matrix_t m, const vector_t v )
-{
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
+matrix_rotate(const matrix_t m, const vector_t v) {
 	return vector(
-	  m.frow[0][0] * v.x + m.frow[1][0] * v.y + m.frow[2][0] * v.z,
-	  m.frow[0][1] * v.x + m.frow[1][1] * v.y + m.frow[2][1] * v.z,
-	  m.frow[0][2] * v.x + m.frow[1][2] * v.y + m.frow[2][2] * v.z,
-	  v.w );
+	           m.frow[0][0] * v.x + m.frow[1][0] * v.y + m.frow[2][0] * v.z,
+	           m.frow[0][1] * v.x + m.frow[1][1] * v.y + m.frow[2][1] * v.z,
+	           m.frow[0][2] * v.x + m.frow[1][2] * v.y + m.frow[2][2] * v.z,
+	           v.w);
 }
 
 #endif
 
 #ifndef VECTOR_HAVE_MATRIX_TRANSFORM
 
-vector_t matrix_transform( const matrix_t m, const vector_t v )
-{
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
+matrix_transform(const matrix_t m, const vector_t v) {
 	return vector(
-	  m.frow[0][0] * v.x + m.frow[1][0] * v.y + m.frow[2][0] * v.z + m.frow[3][0] * v.w,
-	  m.frow[0][1] * v.x + m.frow[1][1] * v.y + m.frow[2][1] * v.z + m.frow[3][1] * v.w,
-	  m.frow[0][2] * v.x + m.frow[1][2] * v.y + m.frow[2][2] * v.z + m.frow[3][2] * v.w,
-	  m.frow[0][3] * v.x + m.frow[1][3] * v.y + m.frow[2][3] * v.z + m.frow[3][3] * v.w );
+	           m.frow[0][0] * v.x + m.frow[1][0] * v.y + m.frow[2][0] * v.z + m.frow[3][0] * v.w,
+	           m.frow[0][1] * v.x + m.frow[1][1] * v.y + m.frow[2][1] * v.z + m.frow[3][1] * v.w,
+	           m.frow[0][2] * v.x + m.frow[1][2] * v.y + m.frow[2][2] * v.z + m.frow[3][2] * v.w,
+	           m.frow[0][3] * v.x + m.frow[1][3] * v.y + m.frow[2][3] * v.z + m.frow[3][3] * v.w);
 }
 
 #endif
