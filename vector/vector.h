@@ -206,3 +206,6 @@ string_from_vector_static(const vector_t v);
 #  undef  VECTOR_IMPLEMENTATION_FALLBACK
 #  define VECTOR_IMPLEMENTATION_FALLBACK 1
 #endif
+
+#include <vector/quaternion.h>
+#include <vector/matrix.h>

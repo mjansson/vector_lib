@@ -27,10 +27,9 @@
 //#undef  FOUNDATION_ARCH_NEON
 //#define FOUNDATION_ARCH_NEON 0
 
-#include <vector/quaternion.h>
+#include <vector/vector.h>
 
-#define EXPECT_VECTOREQ( var, expect ) do { if( !vector_equal((var), (expect) )) { log_warnf(HASH_TEST, WARNING_SUSPICIOUS, STRING_CONST("Test failed, %s != %s vector (at %s:%u): (%.6" PRIreal ", %.6" PRIreal ", %.6" PRIreal ", %.6" PRIreal ") (%.6" PRIreal ", %.6" PRIreal ", %.6" PRIreal ", %.6" PRIreal ")"), FOUNDATION_PREPROCESSOR_TOSTRING(var), FOUNDATION_PREPROCESSOR_TOSTRING(expect), __FILE__, __LINE__, (real)vector_x((var)), (real)vector_y((var)), (real)vector_z((var)), (real)vector_w((var)), (real)vector_x((expect)), (real)vector_y((expect)), (real)vector_z((expect)), (real)vector_w((expect)) ); return FAILED_TEST; } } while(0)
-#define EXPECT_VECTORALMOSTEQ( var, expect ) do { real diff = vector_test_difference((var), (expect)); if( diff > 0.0075f ) { log_warnf(HASH_TEST, WARNING_SUSPICIOUS, STRING_CONST("Test failed, %s != %s vector (at %s:%u): (%.6" PRIreal ", %.6" PRIreal ", %.6" PRIreal ", %.6" PRIreal ") (%.6" PRIreal ", %.6" PRIreal ", %.6" PRIreal ", %.6" PRIreal ") diff %.6" PRIreal), FOUNDATION_PREPROCESSOR_TOSTRING(var), FOUNDATION_PREPROCESSOR_TOSTRING(expect), __FILE__, __LINE__, (real)vector_x((var)), (real)vector_y((var)), (real)vector_z((var)), (real)vector_w((var)), (real)vector_x((expect)), (real)vector_y((expect)), (real)vector_z((expect)), (real)vector_w((expect)), diff ); return FAILED_TEST; } } while(0)
+#include "../test/vector.h"
 
 static application_t
 test_quaternion_application(void) {
@@ -87,6 +86,37 @@ DECLARE_TEST(quaternion, construct) {
 	return 0;
 }
 
+DECLARE_TEST(quaternion, ops) {
+	quaternion_t q, r, p;
+	VECTOR_ALIGN float32_t aligned[] = { 1, -2, 3, -4 };
+	float32_t qnorm = 1*1 + 2*2 + 3*3 + 4*4;
+
+	q = quaternion_aligned(aligned);
+	r = quaternion_conjugate(q);
+	EXPECT_VECTOREQ(r, vector(-1, 2, -3, -4));
+
+	r = quaternion_inverse(q);
+	EXPECT_VECTOREQ(r, vector(-1.0f / qnorm, 2.0f / qnorm, -3.0f / qnorm, -4.0f / qnorm));
+	p = quaternion_mul(q, r);
+	EXPECT_VECTORALMOSTEQ(p, vector(0, 0, 0, 1));
+
+	//quaternion_conjugate(const quaternion_t q);
+	//quaternion_inverse(const quaternion_t q);
+	//quaternion_neg(const quaternion_t q);
+	//quaternion_normalize(const quaternion_t q);
+	//quaternion_mul(const quaternion_t q0, const quaternion_t q1);
+	//quaternion_add(const quaternion_t q0, const quaternion_t q1);
+	//quaternion_sub(const quaternion_t q0, const quaternion_t q1);
+	//quaternion_slerp(const quaternion_t q0, const quaternion_t q1, real factor);
+
+	return 0;
+}
+
+DECLARE_TEST(quaternion, vec) {
+
+	return 0;
+}
+
 static void
 test_quaternion_declare(void) {
 #if FOUNDATION_ARCH_SSE4
@@ -102,6 +132,8 @@ test_quaternion_declare(void) {
 #endif
 
 	ADD_TEST(quaternion, construct);
+	ADD_TEST(quaternion, ops);
+	ADD_TEST(quaternion, vec);
 }
 
 test_suite_t test_quaternion_suite = {

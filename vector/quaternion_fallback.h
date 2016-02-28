@@ -14,4 +14,30 @@
  *
 */
 
+#ifndef VECTOR_HAVE_QUATERNION_CONJUGATE
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
+quaternion_conjugate(const quaternion_t q) {
+	return vector(-q.x, -q.y, -q.z, q.w);
+}
+
+#define VECTOR_HAVE_QUATERNION_CONJUGATE
+#endif
+
+#ifndef VECTOR_HAVE_QUATERNION_INVERSE
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
+quaternion_inverse(const quaternion_t q) {
+	quaternion_t r = q;
+	const float32_t norm = 1.0f / vector_length_sqr(q).x;
+	r.x *= -norm;
+	r.y *= -norm;
+	r.z *= -norm;
+	r.w *=  norm;
+	return r;
+}
+
+#define VECTOR_HAVE_QUATERNION_INVERSE 1
+#endif
+
 #include <vector/quaternion_base.h>

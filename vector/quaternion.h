@@ -37,9 +37,13 @@ quaternion_unaligned(const float32_t* FOUNDATION_RESTRICT q);
 static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL quaternion_t
 quaternion_aligned(const float32_aligned128_t* FOUNDATION_RESTRICT q);
 
+// Quaternion conjugate, negating vector component of quaterinon, q' = (-q.x, -q.y, -q.z, q.w)
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
 quaternion_conjugate(const quaternion_t q);
 
+// Quaternion inverse. For a unit quaternion equivalent to conjugate.
+//in = 1 / vector_length_sqr(q)
+//q' = (q.x * -in, q.y * -in, q.z * -in, q.w * in)
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
 quaternion_inverse(const quaternion_t q);
 

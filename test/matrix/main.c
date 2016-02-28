@@ -27,10 +27,9 @@
 //#undef  FOUNDATION_ARCH_NEON
 //#define FOUNDATION_ARCH_NEON 0
 
-#include <vector/matrix.h>
+#include <vector/vector.h>
 
-#define EXPECT_VECTOREQ( var, expect ) do { if( !vector_equal((var), (expect) )) { log_warnf(HASH_TEST, WARNING_SUSPICIOUS, STRING_CONST("Test failed, %s != %s vector (at %s:%u): (%.6" PRIreal ", %.6" PRIreal ", %.6" PRIreal ", %.6" PRIreal ") (%.6" PRIreal ", %.6" PRIreal ", %.6" PRIreal ", %.6" PRIreal ")"), FOUNDATION_PREPROCESSOR_TOSTRING(var), FOUNDATION_PREPROCESSOR_TOSTRING(expect), __FILE__, __LINE__, (real)vector_x((var)), (real)vector_y((var)), (real)vector_z((var)), (real)vector_w((var)), (real)vector_x((expect)), (real)vector_y((expect)), (real)vector_z((expect)), (real)vector_w((expect)) ); return FAILED_TEST; } } while(0)
-#define EXPECT_VECTORALMOSTEQ( var, expect ) do { real diff = vector_test_difference((var), (expect)); if( diff > 0.0075f ) { log_warnf(HASH_TEST, WARNING_SUSPICIOUS, STRING_CONST("Test failed, %s != %s vector (at %s:%u): (%.6" PRIreal ", %.6" PRIreal ", %.6" PRIreal ", %.6" PRIreal ") (%.6" PRIreal ", %.6" PRIreal ", %.6" PRIreal ", %.6" PRIreal ") diff %.6" PRIreal), FOUNDATION_PREPROCESSOR_TOSTRING(var), FOUNDATION_PREPROCESSOR_TOSTRING(expect), __FILE__, __LINE__, (real)vector_x((var)), (real)vector_y((var)), (real)vector_z((var)), (real)vector_w((var)), (real)vector_x((expect)), (real)vector_y((expect)), (real)vector_z((expect)), (real)vector_w((expect)), diff ); return FAILED_TEST; } } while(0)
+#include "../test/vector.h"
 
 static application_t
 test_matrix_application(void) {
@@ -110,7 +109,6 @@ DECLARE_TEST(matrix, construct) {
 
 	return 0;
 }
-
 
 DECLARE_TEST(matrix, ops) {
 	matrix_t mat;
