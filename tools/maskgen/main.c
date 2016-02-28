@@ -41,6 +41,7 @@ int main_initialize(void) {
 
 int main_run(void* main_arg) {
 	const char element[4][2] = { "X", "Y", "Z", "W" };
+	FOUNDATION_UNUSED(main_arg);
 
 	log_set_suppress(HASH_TOOL, ERRORLEVEL_DEBUG);
 
