@@ -40,13 +40,27 @@ quaternion_mul(const quaternion_t q0, const quaternion_t q1) {
 	const vector_t q1_yxzw = vector_shuffle(q1, VECTOR_MASK_YXZW);
 	const vector_t q0z_q1yxzw = _mm_mul_ps(q0_zzzz, q1_yxzw);
 
+#if FOUNDATION_ARCH_SSE3 || FOUNDATION_ARCH_SSE4
 	vector_t e = _mm_addsub_ps(q0w_q1yxzw, q0x_q1zwxy);
+#else
+	static const FOUNDATION_ALIGN(16) float32_t signs[] = {-1, 1, -1, 1};
+	const vector_t signshuffle = vector_aligned(signs);
+	vector_t e = _mm_add_ps(q0w_q1yxzw, _mm_mul_ps(q0x_q1zwxy, signshuffle));
+#endif
 	e = vector_shuffle(e, VECTOR_MASK_ZXWY);
 
+#if FOUNDATION_ARCH_SSE3 || FOUNDATION_ARCH_SSE4
 	e = _mm_addsub_ps(e, q0y_q1ywxz);
+#else
+	e = _mm_add_ps(e, _mm_mul_ps(q0y_q1ywxz, signshuffle));
+#endif
 	e = vector_shuffle(e, VECTOR_MASK_WYXZ);
 
+#if FOUNDATION_ARCH_SSE3 || FOUNDATION_ARCH_SSE4
 	e = _mm_addsub_ps(e, q0z_q1yxzw);
+#else
+	e = _mm_add_ps(e, _mm_mul_ps(q0z_q1yxzw, signshuffle));
+#endif
 	return vector_shuffle(e, VECTOR_MASK_XYWZ);
 }
 #define VECTOR_HAVE_QUATERNION_MUL 1
@@ -64,8 +78,6 @@ quaternion_rotate(const quaternion_t q, const vector_t v) {
 	const vector_t dot = vector_dot(q, v);
 	const vector_t v4 = vector_muladd(v2, qw, vector_neg(v3));
 	const vector_t r = vector_muladd(q, dot, v4);
-
-	//store 1 in q component...
 
 	return r;
 }

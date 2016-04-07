@@ -24,7 +24,7 @@ int main_initialize(void) {
 	memset(&application, 0, sizeof(application));
 	application.name = string_const(STRING_CONST("Vector mask generator"));
 	application.short_name = string_const(STRING_CONST("maskgen"));
-	application.config_dir = string_const(STRING_CONST("maskgen"));
+	application.company = string_const(STRING_CONST("Rampant Pixels"));
 	application.version = vector_module_version();
 	application.flags = APPLICATION_UTILITY;
 

@@ -37,8 +37,9 @@ test_vector_application(void) {
 	memset(&app, 0, sizeof(app));
 	app.name = string_const(STRING_CONST("Vector tests"));
 	app.short_name = string_const(STRING_CONST("test_vector"));
-	app.config_dir = string_const(STRING_CONST("test_vector"));
+	app.company = string_const(STRING_CONST("Rampant Pixels"));
 	app.version = vector_module_version();
+	app.exception_handler = test_exception_handler;
 	app.flags = APPLICATION_UTILITY;
 	return app;
 }

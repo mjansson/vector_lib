@@ -38,6 +38,10 @@ typedef __m128 vector_t VECTOR_ALIGN;
 typedef VECTOR_ALIGN __m128 vector_t;
 #endif
 
+#if FOUNDATION_ARCH_SSE4 || FOUNDATION_ARCH_SSE3
+#include <pmmintrin.h>
+#endif
+
 #else
 
 #define VECTOR_ALIGN

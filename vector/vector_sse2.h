@@ -18,6 +18,7 @@
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_shuffle(const vector_t v, const unsigned int mask) {
 	FOUNDATION_ASSERT_FAIL("Unreachable code");
+	FOUNDATION_UNUSED(mask);
 	//return _mm_shuffle_epi32(__m128i(v), mask);
 	return v;
 }
@@ -90,7 +91,7 @@ vector_zaxis(void) {
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_normalize(const vector_t v) {
-	return vector_mul(v, _mm_rsqrt_ps(vector_dot(v, v)));
+	return _mm_mul_ps(v, _mm_rsqrt_ps(vector_dot(v, v)));
 }
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
@@ -103,19 +104,26 @@ vector_normalize3(const vector_t v) {
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_dot(const vector_t v0, const vector_t v1) {
-	const vector_t r = _mm_mul_ps(v0, v1);
-	return _mm_add_ps(_mm_add_ps(vector_shuffle(r, VECTOR_MASK_XXXX),
-	                             vector_shuffle(r, VECTOR_MASK_YYYY)),
-	                  _mm_add_ps(vector_shuffle(r, VECTOR_MASK_ZZZZ),
-	                             vector_shuffle(r, VECTOR_MASK_WWWW)));
+	vector_t r = _mm_mul_ps(v0, v1);
+	vector_t rp = _mm_shuffle_ps(r, r, _MM_SHUFFLE(2, 3, 0, 1));
+	r = _mm_add_ps(r, rp);
+	rp = _mm_shuffle_ps(r, r, _MM_SHUFFLE(0, 1, 2, 3));
+	return _mm_add_ps(r, rp);
 }
-
+#include <foundation/log.h>
+#include <foundation/hashstrings.h>
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_dot3(const vector_t v0, const vector_t v1) {
-	vector_t r = _mm_mul_ps(v0, v1);
-	return _mm_add_ps(_mm_add_ps(vector_shuffle(r, VECTOR_MASK_XXXX),
-	                             vector_shuffle(r, VECTOR_MASK_YYYY)),
-	                  vector_shuffle(r, VECTOR_MASK_ZZZZ));
+	vector_t zero = vector_zero();
+	__m128i one = _mm_setzero_si128();
+	one = _mm_cmpeq_epi32(one, one);
+	vector_t mask = _mm_move_ss((__m128)one, zero);
+	mask = _mm_shuffle_ps(mask, mask, _MM_SHUFFLE(0, 1, 2, 3));
+	vector_t r = _mm_and_ps(_mm_mul_ps(v0, v1), mask);
+	vector_t rp = _mm_shuffle_ps(r, r, _MM_SHUFFLE(2, 3, 0, 1));
+	r = _mm_add_ps(r, rp);
+	rp = _mm_shuffle_ps(r, r, _MM_SHUFFLE(0, 1, 2, 3));
+	return _mm_add_ps(r, rp);
 }
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t

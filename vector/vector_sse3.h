@@ -123,7 +123,8 @@ vector_t vector_normalize3( const vector_t v )
 vector_t vector_dot( const vector_t v0, const vector_t v1 )
 {
 	const vector_t r = _mm_mul_ps( v0, v1 );
-	return _mm_add_ps( _mm_add_ps( vector_shuffle( r, VECTOR_MASK_XXXX ), vector_shuffle( r, VECTOR_MASK_YYYY ) ), _mm_add_ps( vector_shuffle( r, VECTOR_MASK_ZZZZ ), vector_shuffle( r, VECTOR_MASK_WWWW ) ) );
+	const vector_t rp = _mm_hadd_ps(r, r);
+	return _mm_hadd_ps(rp, rp);
 }
 
 

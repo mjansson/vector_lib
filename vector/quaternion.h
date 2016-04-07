@@ -62,9 +62,12 @@ quaternion_add(const quaternion_t q0, const quaternion_t q1);
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
 quaternion_sub(const quaternion_t q0, const quaternion_t q1);
 
+//Quaternions must be unit length
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
 quaternion_slerp(const quaternion_t q0, const quaternion_t q1, real factor);
 
+//Vector is treated as directional vector [x, y, z, 0] and returns
+//a directional vector [x', y', z', 0]
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 quaternion_rotate(const quaternion_t q, const vector_t v);
 

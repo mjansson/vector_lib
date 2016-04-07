@@ -36,9 +36,10 @@ test_quaternion_application(void) {
 	application_t app = {0};
 	app.name = string_const(STRING_CONST("Quaternion tests"));
 	app.short_name = string_const(STRING_CONST("test_quaternion"));
-	app.config_dir = string_const(STRING_CONST("test_quaternion"));
+	app.company = string_const(STRING_CONST("Rampant Pixels"));
 	app.version = vector_module_version();
 	app.flags = APPLICATION_UTILITY;
+	app.exception_handler = test_exception_handler;
 	return app;
 }
 
@@ -89,30 +90,82 @@ DECLARE_TEST(quaternion, construct) {
 DECLARE_TEST(quaternion, ops) {
 	quaternion_t q, r, p;
 	VECTOR_ALIGN float32_t aligned[] = { 1, -2, 3, -4 };
+	VECTOR_ALIGN float32_t secondaligned[] = { 0.5f, -1.5f, 1.0f, 2.5f };
 	float32_t qnorm = 1*1 + 2*2 + 3*3 + 4*4;
+	float32_t qlen = math_sqrt(qnorm);
+
+	q = quaternion_identity();
+	r = quaternion_conjugate(q);
+	EXPECT_VECTOREQ(r, q);
 
 	q = quaternion_aligned(aligned);
 	r = quaternion_conjugate(q);
 	EXPECT_VECTOREQ(r, vector(-1, 2, -3, -4));
 
+	q = quaternion_identity();
+	r = quaternion_inverse(q);
+	EXPECT_VECTOREQ(r, q);
+
+	q = quaternion_aligned(aligned);
 	r = quaternion_inverse(q);
 	EXPECT_VECTOREQ(r, vector(-1.0f / qnorm, 2.0f / qnorm, -3.0f / qnorm, -4.0f / qnorm));
 	p = quaternion_mul(q, r);
 	EXPECT_VECTORALMOSTEQ(p, vector(0, 0, 0, 1));
 
-	//quaternion_conjugate(const quaternion_t q);
-	//quaternion_inverse(const quaternion_t q);
-	//quaternion_neg(const quaternion_t q);
-	//quaternion_normalize(const quaternion_t q);
-	//quaternion_mul(const quaternion_t q0, const quaternion_t q1);
-	//quaternion_add(const quaternion_t q0, const quaternion_t q1);
-	//quaternion_sub(const quaternion_t q0, const quaternion_t q1);
-	//quaternion_slerp(const quaternion_t q0, const quaternion_t q1, real factor);
+	q = quaternion_identity();
+	r = quaternion_neg(q);
+	EXPECT_VECTOREQ(r, vector(0, 0, 0, -1));
+
+	q = quaternion_aligned(aligned);
+	r = quaternion_neg(q);
+	EXPECT_VECTOREQ(r, vector(-1, 2, -3, 4));
+
+	q = quaternion_identity();
+	r = quaternion_normalize(q);
+	EXPECT_VECTORALMOSTEQ(r, q);
+
+	q = quaternion_aligned(aligned);
+	r = quaternion_normalize(q);
+	EXPECT_VECTORALMOSTEQ(r, vector(1.0f / qlen, -2.0f / qlen, 3.0f / qlen, -4.0f / qlen));
+
+	q = quaternion_identity();
+	r = quaternion_mul(q, quaternion_identity());
+	EXPECT_VECTOREQ(r, q);
+
+	q = quaternion_identity();
+	r = quaternion_identity();
+	EXPECT_VECTOREQ(quaternion_add(q, r), vector(0, 0, 0, 2.0f));
+
+	q = quaternion_aligned(aligned);
+	r = quaternion_aligned(secondaligned);
+	EXPECT_VECTOREQ(quaternion_add(q, r), vector(1.5f, -3.5f, 4.0f, -1.5f));
+
+	q = quaternion_identity();
+	r = quaternion_identity();
+	EXPECT_VECTOREQ(quaternion_sub(q, r), vector_zero());
+
+	q = quaternion_aligned(aligned);
+	r = quaternion_aligned(secondaligned);
+	EXPECT_VECTOREQ(quaternion_sub(q, r), vector(0.5f, -0.5f, 2.0f, -6.5f));
+	EXPECT_VECTOREQ(quaternion_sub(r, q), vector(-0.5f, 0.5f, -2.0f, 6.5f));
+
+	q = quaternion_normalize(q);
+	r = quaternion_normalize(r);
+	EXPECT_VECTORALMOSTEQ(quaternion_slerp(q, q, REAL_C(0.5)), q);
+	EXPECT_VECTORALMOSTEQ(quaternion_slerp(q, r, 0), q);
+	EXPECT_VECTORALMOSTEQ(quaternion_slerp(q, r, 1), vector_neg(r)); //Negated to avoid extra spins
+	EXPECT_VECTORALMOSTEQ(quaternion_slerp(q, vector_neg(q), REAL_C(0.5)), q);
 
 	return 0;
 }
 
 DECLARE_TEST(quaternion, vec) {
+	quaternion_t q;
+	vector_t v;
+
+	q = quaternion_identity();
+	v = vector(1, -2, 3, 0);
+	EXPECT_VECTOREQ(quaternion_rotate(q, v), vector(1, -2, 3, 0));
 
 	return 0;
 }

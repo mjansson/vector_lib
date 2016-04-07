@@ -17,19 +17,16 @@
 
 #include <smmintrin.h>
 
-
 //Index for shuffle must be constant integer - hide function with a define
-vector_t vector_shuffle( const vector_t v, unsigned int mask )
-{
-	FOUNDATION_ASSERT_FAIL( "Unreachable code" );
+vector_t vector_shuffle( const vector_t v, unsigned int mask ) {
+	FOUNDATION_ASSERT_FAIL("Unreachable code");
+	FOUNDATION_UNUSED(mask);
 	//return _mm_shuffle_ps( v, v, mask );
 	return v;
 }
 #define vector_shuffle( v, mask ) _mm_shuffle_ps( v, v, mask )
 
-
-vector_t vector( real x, real y, real z, real w )
-{
+vector_t vector( real x, real y, real z, real w ) {
 	return _mm_setr_ps( x, y, z, w );
 }
 

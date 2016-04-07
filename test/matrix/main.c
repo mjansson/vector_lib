@@ -36,9 +36,10 @@ test_matrix_application(void) {
 	application_t app = {0};
 	app.name = string_const(STRING_CONST("Matrix tests"));
 	app.short_name = string_const(STRING_CONST("test_matrix"));
-	app.config_dir = string_const(STRING_CONST("test_matrix"));
+	app.company = string_const(STRING_CONST("Rampant Pixels"));
 	app.version = vector_module_version();
 	app.flags = APPLICATION_UTILITY;
+	app.exception_handler = test_exception_handler;
 	return app;
 }
 
