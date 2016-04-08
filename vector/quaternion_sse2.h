@@ -78,7 +78,6 @@ quaternion_rotate(const quaternion_t q, const vector_t v) {
 	const vector_t dot = vector_dot(q, v);
 	const vector_t v4 = vector_muladd(v2, qw, vector_neg(v3));
 	const vector_t r = vector_muladd(q, dot, v4);
-
 	return r;
 }
 #define VECTOR_HAVE_QUATERNION_ROTATE 1
