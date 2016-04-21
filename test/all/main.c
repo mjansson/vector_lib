@@ -80,7 +80,7 @@ event_loop(void* arg) {
 #include <test/test.h>
 
 static void
-test_log_callback(hash_t context, error_level_t severity, const char* msg, size_t length) {
+test_log_handler(hash_t context, error_level_t severity, const char* msg, size_t length) {
 	FOUNDATION_UNUSED(context);
 	FOUNDATION_UNUSED(severity);
 
@@ -149,14 +149,14 @@ main_initialize(void) {
 	application.name = string_const(STRING_CONST("Vector library test suite"));
 	application.short_name = string_const(STRING_CONST("test_all"));
 	application.company = string_const(STRING_CONST("Rampant Pixels"));
-	application.version = foundation_version();
+	application.version = vector_module_version();
 	application.flags = APPLICATION_UTILITY;
 	application.exception_handler = test_exception_handler;
 
 	log_set_suppress(0, ERRORLEVEL_INFO);
 
 #if ( FOUNDATION_PLATFORM_IOS || FOUNDATION_PLATFORM_ANDROID ) && BUILD_ENABLE_LOG
-	log_set_callback(test_log_callback);
+	log_set_handler(test_log_handler);
 #endif
 
 #if !FOUNDATION_PLATFORM_IOS && !FOUNDATION_PLATFORM_ANDROID && !FOUNDATION_PLATFORM_PNACL
@@ -170,12 +170,11 @@ main_initialize(void) {
 #if BUILD_MONOLITHIC
 	if (ret == 0) {
 		vector_config_t vector_config;
-		memset(&vector_config, 0, sizeof(vector_config));
-		ret = vector_module_initialize(vector_config);
+		memset(&vector_config, 0, sizeof(vector_config_t));
+		ret = vector_module_initialize(&vector_config);
 	}
 
-	if (ret == 0)
-		test_set_suitable_working_directory();
+	test_set_suitable_working_directory();
 #endif
 	return ret;
 }

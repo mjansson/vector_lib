@@ -110,8 +110,7 @@ vector_dot(const vector_t v0, const vector_t v1) {
 	rp = _mm_shuffle_ps(r, r, _MM_SHUFFLE(0, 1, 2, 3));
 	return _mm_add_ps(r, rp);
 }
-#include <foundation/log.h>
-#include <foundation/hashstrings.h>
+
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_dot3(const vector_t v0, const vector_t v1) {
 	vector_t zero = vector_zero();
