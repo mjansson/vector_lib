@@ -113,10 +113,9 @@ vector_dot(const vector_t v0, const vector_t v1) {
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_dot3(const vector_t v0, const vector_t v1) {
-	vector_t zero = vector_zero();
 	__m128i one = _mm_setzero_si128();
 	one = _mm_cmpeq_epi32(one, one);
-	vector_t mask = _mm_move_ss((__m128)one, zero);
+	vector_t mask = _mm_move_ss(_mm_castsi128_ps(one), vector_zero());
 	mask = _mm_shuffle_ps(mask, mask, _MM_SHUFFLE(0, 1, 2, 3));
 	vector_t r = _mm_and_ps(_mm_mul_ps(v0, v1), mask);
 	vector_t rp = _mm_shuffle_ps(r, r, _MM_SHUFFLE(2, 3, 0, 1));
