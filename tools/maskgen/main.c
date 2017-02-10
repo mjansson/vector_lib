@@ -20,7 +20,7 @@
 int main_initialize(void) {
 	int ret = 0;
 
-	application_t application = {0};
+	application_t application;
 	memset(&application, 0, sizeof(application));
 	application.name = string_const(STRING_CONST("Vector mask generator"));
 	application.short_name = string_const(STRING_CONST("maskgen"));

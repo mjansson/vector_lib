@@ -804,13 +804,14 @@ test_vector_declare(void) {
 	ADD_TEST(vector, equal);
 }
 
-test_suite_t test_vector_suite = {
+static test_suite_t test_vector_suite = {
 	test_vector_application,
 	test_vector_memory_system,
 	test_vector_config,
 	test_vector_declare,
 	test_vector_initialize,
-	test_vector_finalize
+	test_vector_finalize,
+	0
 };
 
 

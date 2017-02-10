@@ -138,8 +138,8 @@ quaternion_slerp(const quaternion_t q0, const quaternion_t q1, real factor) {
 	}
 
 	real angle = 0.0f;
-	if (-1.0f < cosval) {
-		if (cosval < 1.0)
+	if (REAL_C(-1.0) < cosval) {
+		if (cosval < REAL_C(1.0))
 			angle = math_acos(cosval);
 		else
 			return qd;

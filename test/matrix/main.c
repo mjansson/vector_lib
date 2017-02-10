@@ -33,13 +33,14 @@
 
 static application_t
 test_matrix_application(void) {
-	application_t app = {0};
+	application_t app;
+	memset(&app, 0, sizeof(app));
 	app.name = string_const(STRING_CONST("Matrix tests"));
 	app.short_name = string_const(STRING_CONST("test_matrix"));
 	app.company = string_const(STRING_CONST("Rampant Pixels"));
 	app.version = vector_module_version();
-	app.flags = APPLICATION_UTILITY;
 	app.exception_handler = test_exception_handler;
+	app.flags = APPLICATION_UTILITY;
 	return app;
 }
 
@@ -307,13 +308,14 @@ test_matrix_declare(void) {
 	ADD_TEST(matrix, vec);
 }
 
-test_suite_t test_matrix_suite = {
+static test_suite_t test_matrix_suite = {
 	test_matrix_application,
 	test_matrix_memory_system,
 	test_matrix_config,
 	test_matrix_declare,
 	test_matrix_initialize,
-	test_matrix_finalize
+	test_matrix_finalize,
+	0
 };
 
 #if BUILD_MONOLITHIC

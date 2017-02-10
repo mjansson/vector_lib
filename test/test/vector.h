@@ -21,6 +21,9 @@
 #include <vector/vector.h>
 
 VECTOR_API real
+vector_test_difference(const vector_t v0, const vector_t v1);
+
+VECTOR_API real
 vector_test_difference(const vector_t v0, const vector_t v1) {
 	return (math_abs(vector_x(v0) - vector_x(v1)) +
 	        math_abs(vector_y(v0) - vector_y(v1)) +

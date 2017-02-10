@@ -149,5 +149,5 @@ FOUNDATION_STATIC_ASSERT(sizeof(transform_t) == sizeof(float32_t)*8, "transform 
 FOUNDATION_STATIC_ASSERT(sizeof(euler_angles_t) == sizeof(float32_t)*4, "euler angles size" );
 
 struct vector_config_t {
-	int __unused;
+	int __unused_field;
 };

@@ -33,13 +33,14 @@
 
 static application_t
 test_quaternion_application(void) {
-	application_t app = {0};
+	application_t app;
+	memset(&app, 0, sizeof(app));
 	app.name = string_const(STRING_CONST("Quaternion tests"));
 	app.short_name = string_const(STRING_CONST("test_quaternion"));
 	app.company = string_const(STRING_CONST("Rampant Pixels"));
 	app.version = vector_module_version();
-	app.flags = APPLICATION_UTILITY;
 	app.exception_handler = test_exception_handler;
+	app.flags = APPLICATION_UTILITY;
 	return app;
 }
 
@@ -189,13 +190,14 @@ test_quaternion_declare(void) {
 	ADD_TEST(quaternion, vec);
 }
 
-test_suite_t test_quaternion_suite = {
+static test_suite_t test_quaternion_suite = {
 	test_quaternion_application,
 	test_quaternion_memory_system,
 	test_quaternion_config,
 	test_quaternion_declare,
 	test_quaternion_initialize,
-	test_quaternion_finalize
+	test_quaternion_finalize,
+	0
 };
 
 #if BUILD_MONOLITHIC

@@ -42,7 +42,7 @@ vector_module_is_initialized(void) {
 string_t
 string_from_vector(char* buffer, size_t capacity, const vector_t v) {
 	return string_format(buffer, capacity, STRING_CONST("(%.6" PRIreal ", %.6" PRIreal ", %.6" PRIreal ", %.6" PRIreal ")"),
-		(real)vector_x(v), (real)vector_y(v), (real)vector_z(v), (real)vector_w(v));
+		(double)vector_x(v), (double)vector_y(v), (double)vector_z(v), (double)vector_w(v));
 }
 
 string_const_t
