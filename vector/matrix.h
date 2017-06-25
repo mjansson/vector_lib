@@ -17,8 +17,9 @@
 #pragma once
 
 /*! \file matrix.h
-    Matrix math, row major treating vectors as row vectors. Rotation matrix axes in
-    matrix rows for efficient vector transform operations */
+    Matrix math, row major (matrix row elements reside next to each
+    other in memory), treating vectors as row vectors. Rotation matrix
+    axes in matrix rows for efficient vector transform operations. */
 
 #include <vector/types.h>
 #include <vector/mask.h>

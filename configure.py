@@ -24,6 +24,10 @@ if not target.is_ios() and not target.is_android() and not target.is_tizen():
   if not configs == []:
     generator.bin('maskgen', ['main.c'], 'maskgen', basepath = 'tools', implicit_deps = [vector_lib], libs = ['vector', 'foundation'], configs = configs)
 
+#No test cases if we're a submodule
+if generator.is_subninja():
+  sys.exit()
+
 includepaths = generator.test_includepaths()
 
 test_cases = [
