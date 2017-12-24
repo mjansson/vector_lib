@@ -17,7 +17,7 @@ writer = generator.writer
 toolchain = generator.toolchain
 
 vector_lib = generator.lib(module = 'vector', sources = [
-  'vector.c', 'version.c'])
+  'euler.c', 'vector.c', 'version.c'])
 
 if not target.is_ios() and not target.is_android() and not target.is_tizen():
   configs = [config for config in toolchain.configs if config not in ['profile', 'deploy']]

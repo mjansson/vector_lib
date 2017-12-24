@@ -39,6 +39,9 @@ matrix_unaligned(const float32_t* FOUNDATION_RESTRICT m);
 static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL matrix_t
 matrix_aligned(const float32_aligned128_t* FOUNDATION_RESTRICT m);
 
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL matrix_t
+matrix_from_quaternion(const quaternion_t q);
+
 static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL matrix_t
 matrix_transpose(const matrix_t m);
 

@@ -209,3 +209,4 @@ string_from_vector_static(const vector_t v);
 
 #include <vector/quaternion.h>
 #include <vector/matrix.h>
+#include <vector/euler.h>

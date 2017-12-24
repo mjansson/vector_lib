@@ -146,6 +146,53 @@ matrix_transform(const matrix_t m, const vector_t v) {
 
 #endif
 
+#ifndef VECTOR_HAVE_MATRIX_FROM_QUATERNION
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL matrix_t
+matrix_from_quaternion(const quaternion_t q) {
+	matrix_t mat;
+
+	float32_t x   = vector_x(q);
+	float32_t y   = vector_y(q);
+	float32_t z   = vector_z(q);
+	float32_t w   = vector_w(q);
+	float32_t tx  = 2.0f * x;
+	float32_t ty  = 2.0f * y;
+	float32_t tz  = 2.0f * z;
+	float32_t tsx = tx * w;
+	float32_t tsy = ty * w;
+	float32_t tsz = tz * w;
+	float32_t txx = tx * x;
+	float32_t txy = ty * x;
+	float32_t txz = tz * x;
+	float32_t tyy = ty * y;
+	float32_t tyz = tz * y;
+	float32_t tzz = tz * z;
+
+	mat.frow[0][0] = 1.0f - (tyy + tzz);
+	mat.frow[0][1] = txy - tsz;
+	mat.frow[0][2] = txz + tsy;
+	mat.frow[0][3] = 0;
+
+	mat.frow[1][0] = txy + tsz;
+	mat.frow[1][1] = 1.0f - (txx + tzz);
+	mat.frow[1][2] = tyz - tsx;
+	mat.frow[1][3] = 0;
+
+	mat.frow[2][0] = txz - tsy;
+	mat.frow[2][1] = tyz + tsx;
+	mat.frow[2][2] = 1.0f - (txx + tyy);
+	mat.frow[2][3] = 0;
+
+	mat.frow[3][0] = 0;
+	mat.frow[3][1] = 0;
+	mat.frow[3][2] = 0;
+	mat.frow[3][3] = 1;
+
+	return mat;
+}
+
+#endif
 
 #undef VECTOR_HAVE_MATRIX_ZERO
 #undef VECTOR_HAVE_MATRIX_IDENTITY
@@ -157,3 +204,4 @@ matrix_transform(const matrix_t m, const vector_t v) {
 #undef VECTOR_HAVE_MATRIX_SUB
 #undef VECTOR_HAVE_MATRIX_ROTATE
 #undef VECTOR_HAVE_MATRIX_TRANSFORM
+#undef VECTOR_HAVE_MATRIX_FROM_QUATERNION
