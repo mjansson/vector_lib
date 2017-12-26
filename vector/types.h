@@ -137,7 +137,7 @@ typedef enum euler_angles_order_t {
 	EULER_ZYZr         = VECTOR_GETEULERORDER(2, VECTOR_EULER_ODD,  VECTOR_EULER_REPEAT,   VECTOR_EULER_ROTATEFRAME)
 } euler_angles_order_t;
 
-typedef FOUNDATION_ALIGN(16) float32_t float32_aligned128_t;
+typedef VECTOR_ALIGN float32_t float32_aligned128_t;
 
 FOUNDATION_STATIC_ASSERT(sizeof(vector_t) == sizeof(float32_t)*4, "vector size" );
 FOUNDATION_STATIC_ASSERT(sizeof(matrix_t) == sizeof(float32_t)*16, "matrix size" );
