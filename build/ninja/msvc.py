@@ -16,19 +16,22 @@ class MSVCToolchain(toolchain.Toolchain):
     self.includepaths = []
     self.libpaths = libpaths
     self.ccompiler = 'cl'
+    self.cxxcompiler = 'cl'
     self.archiver = 'lib'
     self.linker = 'link'
     self.dller = 'dll'
 
     #Command definitions
     self.cccmd = '$toolchain$cc /showIncludes /I. $includepaths $moreincludepaths $cflags $carchflags $cconfigflags $cmoreflags /c $in /Fo$out /Fd$pdbpath /FS /nologo'
+    self.cxxcmd = '$toolchain$cxx /showIncludes /I. $includepaths $moreincludepaths $cxxflags $carchflags $cconfigflags $cmoreflags /c $in /Fo$out /Fd$pdbpath /FS /nologo'
     self.ccdepfile = None
     self.ccdeps = 'msvc'
     self.arcmd = '$toolchain$ar $arflags $ararchflags $arconfigflags /NOLOGO /OUT:$out $in'
     self.linkcmd = '$toolchain$link $libpaths $configlibpaths $linkflags $linkarchflags $linkconfigflags /DEBUG /NOLOGO /SUBSYSTEM:CONSOLE /DYNAMICBASE /NXCOMPAT /MANIFEST /MANIFESTUAC:\"level=\'asInvoker\' uiAccess=\'false\'\" /TLBID:1 /PDB:$pdbpath /OUT:$out $in $libs $archlibs $oslibs'
     self.dllcmd = self.linkcmd + ' /DLL'
 
-    self.cflags = ['/D', '"' + project.upper() + '_COMPILE=1"', '/D', '"_UNICODE"',  '/D', '"UNICODE"', '/Zi', '/W3', '/WX', '/Oi', '/Oy-', '/GS-', '/Gy-', '/Qpar-', '/fp:fast', '/fp:except-', '/Zc:forScope', '/Zc:wchar_t', '/GR-', '/openmp-']
+    self.cflags = ['/D', '"' + project.upper() + '_COMPILE=1"', '/D', '"_UNICODE"',  '/D', '"UNICODE"', '/Zi', '/Oi', '/Oy-', '/GS-', '/Gy-', '/Qpar-', '/fp:fast', '/fp:except-', '/Zc:forScope', '/Zc:wchar_t', '/GR-', '/openmp-']
+    self.cwarnflags = ['/W3', '/WX']
     self.cmoreflags = []
     self.arflags = ['/ignore:4221'] #Ignore empty object file warning]
     self.linkflags = ['/DEBUG']
@@ -49,11 +52,17 @@ class MSVCToolchain(toolchain.Toolchain):
     if self.is_monolithic():
       self.cflags += ['/D', '"BUILD_MONOLITHIC=1"']
 
+    if not 'nowarning' in variables or not variables['nowarning']:
+      self.cflags += self.cwarnflags
+    self.cxxflags = list(self.cflags)
+
     #Overrides
     self.objext = '.obj'
 
     #Builders
     self.builders['c'] = self.builder_cc
+    self.builders['cc'] = self.builder_cxx
+    self.builders['cpp'] = self.builder_cxx
     self.builders['lib'] = self.builder_lib
     self.builders['multilib'] = self.builder_multicopy
     self.builders['sharedlib'] = self.builder_sharedlib
@@ -79,6 +88,7 @@ class MSVCToolchain(toolchain.Toolchain):
   def write_variables(self, writer):
     super(MSVCToolchain, self).write_variables(writer)
     writer.variable('cc', self.ccompiler)
+    writer.variable('cxx', self.cxxcompiler)
     writer.variable('ar', self.archiver)
     writer.variable('link', self.linker)
     writer.variable('dll', self.dller)
@@ -89,6 +99,7 @@ class MSVCToolchain(toolchain.Toolchain):
     writer.variable('cflags', self.cflags)
     writer.variable('carchflags', '')
     writer.variable('cconfigflags', '')
+    writer.variable('cxxflags', self.cxxflags)
     writer.variable('cmoreflags', self.cmoreflags)
     writer.variable('arflags', self.arflags)
     writer.variable('ararchflags', '')
@@ -106,6 +117,7 @@ class MSVCToolchain(toolchain.Toolchain):
   def write_rules(self, writer):
     super(MSVCToolchain, self).write_rules(writer)
     writer.rule('cc', command = self.cccmd, depfile = self.ccdepfile, deps = self.ccdeps, description = 'CC $in')
+    writer.rule('cxx', command = self.cxxcmd, depfile = self.ccdepfile, deps = self.ccdeps, description = 'CXX $in')
     writer.rule('ar', command = self.arcmd, description = 'LIB $out')
     writer.rule('link', command = self.linkcmd, description = 'LINK $out')
     writer.rule('dll', command = self.dllcmd, description = 'DLL $out')
@@ -331,7 +343,10 @@ class MSVCToolchain(toolchain.Toolchain):
     if cconfigflags != []:
       localvariables += [('cconfigflags', cconfigflags)]
     if 'defines' in variables:
-      localvariables += [('cmoreflags', ['/D' + define for define in variables['defines']])]
+      definelist = []
+      for define in variables['defines']:
+        definelist += ['/D', '"' + define + '"']
+      localvariables += [('cmoreflags', definelist)]
     return localvariables
 
   def ar_variables(self, config, arch, targettype, variables):
@@ -366,6 +381,9 @@ class MSVCToolchain(toolchain.Toolchain):
 
   def builder_cc(self, writer, config, arch, targettype, infile, outfile, variables):
     return writer.build(outfile, 'cc', infile, implicit = self.implicit_deps(config, variables), variables = self.cc_variables(config, arch, targettype, variables))
+
+  def builder_cxx(self, writer, config, arch, targettype, infile, outfile, variables):
+    return writer.build(outfile, 'cxx', infile, implicit = self.implicit_deps(config, variables), variables = self.cc_variables(config, arch, targettype, variables))
 
   def builder_lib(self, writer, config, arch, targettype, infiles, outfile, variables):
     return writer.build(outfile, 'ar', infiles, implicit = self.implicit_deps(config, variables), variables = self.ar_variables(config, arch, targettype, variables))

@@ -1,3 +1,4 @@
+.gitconfig
 *.pydevproject
 .project
 .metadata
@@ -39,8 +40,9 @@ build/xcode/foundation/build
 #Doxygen generated
 doc/html
 
-#Local config
-SConfig
+#Coverity scan
+cov-int/
+cov-int.*
 
 #################
 ## Visual Studio
@@ -80,6 +82,11 @@ SConfig
 *.dotCover
 *.lastbuildstate
 *.unsuccessfulbuild
+*.opendb
+*.vc
+*.VC.db
+*.db-shm
+*.db-wal
 
 ## TODO: If you have NuGet Package Restore enabled, uncomment this
 #packages/
