@@ -55,7 +55,7 @@ euler_angles_to_quaternion(const euler_angles_t angles) {
 	real angle[3] = { vector_x(angles), vector_y(angles), vector_z(angles) };
 	real ti, tj, th, ci, cj, ch, si, sj, sh, cc, cs, sc, ss;
 	float32_aligned128_t q[4];
-	int i,j,k,n,s,f;
+	unsigned int i,j,k,n,s,f;
 
 	EULER_SPLICE_ORDER_DATA(order);
 
