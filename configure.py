@@ -9,7 +9,7 @@ sys.path.insert(0, os.path.join('build', 'ninja'))
 
 import generator
 
-dependlibs = ['foundation']
+dependlibs = ['vector', 'foundation']
 
 generator = generator.Generator(project = 'vector', dependlibs = dependlibs, variables = [('bundleidentifier', 'com.rampantpixels.vector.$(binname)')])
 target = generator.target
@@ -55,11 +55,11 @@ if toolchain.is_monolithic() or target.is_ios() or target.is_android() or target
       'tizen-manifest.xml', os.path.join('res', 'tizenapp.png')
     ]]
   if target.is_ios() or target.is_android() or target.is_tizen():
-    generator.app(module = '', sources = [os.path.join(module, 'main.c') for module in test_cases] + test_extrasources, binname = 'test-all', basepath = 'test', implicit_deps = [vector_lib], libs = ['test', 'vector'] + dependlibs, resources = test_resources, includepaths = includepaths)
+    generator.app(module = '', sources = [os.path.join(module, 'main.c') for module in test_cases] + test_extrasources, binname = 'test-all', basepath = 'test', implicit_deps = [vector_lib], libs = ['test'] + dependlibs, resources = test_resources, includepaths = includepaths)
   else:
-    generator.bin(module = '', sources = [os.path.join(module, 'main.c') for module in test_cases] + test_extrasources, binname = 'test-all', basepath = 'test', implicit_deps = [vector_lib], libs = ['test', 'vector'] + dependlibs, resources = test_resources, includepaths = includepaths)
+    generator.bin(module = '', sources = [os.path.join(module, 'main.c') for module in test_cases] + test_extrasources, binname = 'test-all', basepath = 'test', implicit_deps = [vector_lib], libs = ['test'] + dependlibs, resources = test_resources, includepaths = includepaths)
 else:
   #Build one binary per test case
-  generator.bin(module = 'all', sources = ['main.c'], binname = 'test-all', basepath = 'test', implicit_deps = [vector_lib], libs = ['vector'] + dependlibs, includepaths = includepaths)
+  generator.bin(module = 'all', sources = ['main.c'], binname = 'test-all', basepath = 'test', implicit_deps = [vector_lib], libs = dependlibs, includepaths = includepaths)
   for test in test_cases:
-    generator.bin(module = test, sources = ['main.c'], binname = 'test-' + test, basepath = 'test', implicit_deps = [vector_lib], libs = ['test', 'vector'] + dependlibs, includepaths = includepaths)
+    generator.bin(module = test, sources = ['main.c'], binname = 'test-' + test, basepath = 'test', implicit_deps = [vector_lib], libs = ['test'] + dependlibs, includepaths = includepaths)
