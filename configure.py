@@ -33,7 +33,7 @@ includepaths = generator.test_includepaths()
 test_cases = [
   'matrix', 'quaternion', 'vector'
 ]
-if toolchain.is_monolithic() or target.is_ios() or target.is_android() or target.is_tizen() or target.is_pnacl():
+if toolchain.is_monolithic() or target.is_ios() or target.is_android() or target.is_tizen():
   #Build one fat binary with all test cases
   test_resources = []
   test_extrasources = []
@@ -54,7 +54,7 @@ if toolchain.is_monolithic() or target.is_ios() or target.is_android() or target
     test_resources = [os.path.join('all', 'tizen', item) for item in [
       'tizen-manifest.xml', os.path.join('res', 'tizenapp.png')
     ]]
-  if target.is_ios() or target.is_android() or target.is_tizen():
+  if target.is_macos() or target.is_ios() or target.is_android() or target.is_tizen():
     generator.app(module = '', sources = [os.path.join(module, 'main.c') for module in test_cases] + test_extrasources, binname = 'test-all', basepath = 'test', implicit_deps = [vector_lib], libs = ['test'] + dependlibs, resources = test_resources, includepaths = includepaths)
   else:
     generator.bin(module = '', sources = [os.path.join(module, 'main.c') for module in test_cases] + test_extrasources, binname = 'test-all', basepath = 'test', implicit_deps = [vector_lib], libs = ['test'] + dependlibs, resources = test_resources, includepaths = includepaths)

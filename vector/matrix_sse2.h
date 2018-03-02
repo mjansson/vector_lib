@@ -31,7 +31,7 @@ matrix_unaligned(const float32_t* FOUNDATION_RESTRICT m) {
 
 #ifndef VECTOR_HAVE_MATRIX_TRANSPOSE
 
-matrix_t
+matrix_t FOUNDATION_PURECALL
 matrix_transpose(const matrix_t m) {
 	matrix_t mt = m;
 	_MM_TRANSPOSE4_PS( mt.row[0], mt.row[1], mt.row[2], mt.row[3] );
@@ -43,7 +43,7 @@ matrix_transpose(const matrix_t m) {
 
 #ifndef VECTOR_HAVE_MATRIX_MUL
 
-matrix_t
+matrix_t FOUNDATION_CONSTCALL
 matrix_mul(const matrix_t m0, const matrix_t m1) {
 	matrix_t ret;
 
@@ -89,7 +89,7 @@ matrix_mul(const matrix_t m0, const matrix_t m1) {
 
 #ifndef VECTOR_HAVE_MATRIX_ROTATE
 
-vector_t
+vector_t FOUNDATION_CONSTCALL
 matrix_rotate(const matrix_t m, const vector_t v) {
 	vector_t vr;
 	vr = vector_mul(m.row[0], vector_shuffle(v, VECTOR_MASK_XXXX));
@@ -105,7 +105,7 @@ matrix_rotate(const matrix_t m, const vector_t v) {
 
 #ifndef VECTOR_HAVE_MATRIX_TRANSFORM
 
-vector_t
+vector_t FOUNDATION_CONSTCALL
 matrix_transform(const matrix_t m, const vector_t v) {
 	vector_t vr;
 	vr = vector_mul(m.row[0], vector_shuffle(v, VECTOR_MASK_XXXX));

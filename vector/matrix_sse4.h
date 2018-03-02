@@ -15,7 +15,11 @@
  */
 
 
-/*matrix_t matrix_mul( const matrix_t m0, const matrix_t m1 )
+/*
+#ifndef VECTOR_HAVE_MATRIX_MUL
+
+matrix_t FOUNDATION_CONSTCALL
+matrix_mul( const matrix_t m0, const matrix_t m1 )
 {
 	//For SSE4 dot+or we need to zero out initial memory
 	matrix_t ret = matrix_zero();
@@ -27,7 +31,10 @@
 
 	return ret;
 }
-#define VECTOR_HAVE_MATRIX_MUL*/
+
+#define VECTOR_HAVE_MATRIX_MUL
+#endif
+*/
 
 
 #include <vector/matrix_sse3.h>
