@@ -18,7 +18,7 @@
 
 #include <foundation/platform.h>
 
-#if defined( VECTOR_COMPILE ) && VECTOR_COMPILE
+#if defined(VECTOR_COMPILE) && VECTOR_COMPILE
 #  ifdef __cplusplus
 #  define VECTOR_EXTERN extern "C"
 #  define VECTOR_API extern "C"
@@ -34,4 +34,17 @@
 #  define VECTOR_EXTERN extern
 #  define VECTOR_API extern
 #  endif
+#endif
+
+#if FOUNDATION_ARCH_SSE4
+#  undef FOUNDATION_ARCH_SSE4
+#  define FOUNDATION_ARCH_SSE4 0
+#endif
+#if FOUNDATION_ARCH_SSE3
+#  undef FOUNDATION_ARCH_SSE3
+#  define FOUNDATION_ARCH_SSE3 0
+#endif
+#if FOUNDATION_ARCH_SSE2
+#  undef FOUNDATION_ARCH_SSE2
+#  define FOUNDATION_ARCH_SSE2 0
 #endif

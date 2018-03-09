@@ -286,3 +286,23 @@ vector_equal(const vector_t v0, const vector_t v1) {
 	return math_real_eq(v0.x, v1.x, 100) && math_real_eq(v0.y, v1.y, 100) &&
 	       math_real_eq(v0.z, v1.z, 100) && math_real_eq(v0.w, v1.w, 100);
 }
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
+vector_rotate(const vector_t v, const matrix_t m) {
+	return vector(
+	           m.frow[0][0] * v.x + m.frow[1][0] * v.y + m.frow[2][0] * v.z,
+	           m.frow[0][1] * v.x + m.frow[1][1] * v.y + m.frow[2][1] * v.z,
+	           m.frow[0][2] * v.x + m.frow[1][2] * v.y + m.frow[2][2] * v.z,
+	           v.w);
+}
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
+vector_transform(const vector_t v, const matrix_t m) {
+	return vector(
+	           m.frow[0][0] * v.x + m.frow[1][0] * v.y + m.frow[2][0] * v.z + m.frow[3][0] * v.w,
+	           m.frow[0][1] * v.x + m.frow[1][1] * v.y + m.frow[2][1] * v.z + m.frow[3][1] * v.w,
+	           m.frow[0][2] * v.x + m.frow[1][2] * v.y + m.frow[2][2] * v.z + m.frow[3][2] * v.w,
+	           m.frow[0][3] * v.x + m.frow[1][3] * v.y + m.frow[2][3] * v.z + m.frow[3][3] * v.w);
+}
+
+#include "vector_base.h"
