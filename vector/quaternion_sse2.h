@@ -40,7 +40,7 @@ quaternion_mul(const quaternion_t q0, const quaternion_t q1) {
 	const vector_t q1_yxzw = vector_shuffle(q1, VECTOR_MASK_YXZW);
 	const vector_t q0z_q1yxzw = _mm_mul_ps(q0_zzzz, q1_yxzw);
 
-#if FOUNDATION_ARCH_SSE3 || FOUNDATION_ARCH_SSE4
+#if VECTOR_IMPLEMENTATION_SSE3 || VECTOR_IMPLEMENTATION_SSE4
 	vector_t e = _mm_addsub_ps(q0w_q1yxzw, q0x_q1zwxy);
 #else
 	static const FOUNDATION_ALIGN(16) float32_t signs[] = {-1, 1, -1, 1};
@@ -49,14 +49,14 @@ quaternion_mul(const quaternion_t q0, const quaternion_t q1) {
 #endif
 	e = vector_shuffle(e, VECTOR_MASK_ZXWY);
 
-#if FOUNDATION_ARCH_SSE3 || FOUNDATION_ARCH_SSE4
+#if VECTOR_IMPLEMENTATION_SSE3 || VECTOR_IMPLEMENTATION_SSE4
 	e = _mm_addsub_ps(e, q0y_q1ywxz);
 #else
 	e = _mm_add_ps(e, _mm_mul_ps(q0y_q1ywxz, signshuffle));
 #endif
 	e = vector_shuffle(e, VECTOR_MASK_WYXZ);
 
-#if FOUNDATION_ARCH_SSE3 || FOUNDATION_ARCH_SSE4
+#if VECTOR_IMPLEMENTATION_SSE3 || VECTOR_IMPLEMENTATION_SSE4
 	e = _mm_addsub_ps(e, q0z_q1yxzw);
 #else
 	e = _mm_add_ps(e, _mm_mul_ps(q0z_q1yxzw, signshuffle));

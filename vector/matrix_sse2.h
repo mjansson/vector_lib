@@ -87,34 +87,4 @@ matrix_mul(const matrix_t m0, const matrix_t m1) {
 
 #endif
 
-#ifndef VECTOR_HAVE_VECTOR_ROTATE
-
-vector_t FOUNDATION_CONSTCALL
-vector_rotate(const vector_t v, const matrix_t m) {
-	vector_t vr;
-	vr = vector_mul(m.row[0], vector_shuffle(v, VECTOR_MASK_XXXX));
-	vr = vector_muladd(m.row[1], vector_shuffle(v, VECTOR_MASK_YYYY), vr);
-	vr = vector_muladd(m.row[2], vector_shuffle(v, VECTOR_MASK_ZZZZ), vr);
-
-	const vector_t splice = _mm_shuffle_ps(vr, v, VECTOR_MASK_ZZWW);
-	return _mm_shuffle_ps(vr, splice, VECTOR_MASK_XYXW);
-}
-#define VECTOR_HAVE_VECTOR_ROTATE
-
-#endif
-
-#ifndef VECTOR_HAVE_VECTOR_TRANSFORM
-
-vector_t FOUNDATION_CONSTCALL
-vector_transform(const vector_t v, const matrix_t m) {
-	vector_t vr;
-	vr = vector_mul(m.row[0], vector_shuffle(v, VECTOR_MASK_XXXX));
-	vr = vector_muladd(m.row[1], vector_shuffle(v, VECTOR_MASK_YYYY), vr);
-	vr = vector_muladd(m.row[2], vector_shuffle(v, VECTOR_MASK_ZZZZ), vr);
-	return vector_muladd(m.row[3], vector_shuffle(v, VECTOR_MASK_WWWW), vr);
-}
-#define VECTOR_HAVE_VECTOR_TRANSFORM
-
-#endif
-
 #include <vector/matrix_base.h>

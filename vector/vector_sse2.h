@@ -286,3 +286,22 @@ vector_equal(const vector_t v0, const vector_t v1) {
 	       math_real_eq(*((const float32_t*)&v0 + 3), *((const float32_t*)&v1 + 3), 100);
 }
 
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
+vector_rotate(const vector_t v, const matrix_t m) {
+	vector_t vr;
+	vr = vector_mul(m.row[0], vector_shuffle(v, VECTOR_MASK_XXXX));
+	vr = vector_muladd(m.row[1], vector_shuffle(v, VECTOR_MASK_YYYY), vr);
+	vr = vector_muladd(m.row[2], vector_shuffle(v, VECTOR_MASK_ZZZZ), vr);
+
+	const vector_t splice = _mm_shuffle_ps(vr, v, VECTOR_MASK_ZZWW);
+	return _mm_shuffle_ps(vr, splice, VECTOR_MASK_XYXW);
+}
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
+vector_transform(const vector_t v, const matrix_t m) {
+	vector_t vr;
+	vr = vector_mul(m.row[0], vector_shuffle(v, VECTOR_MASK_XXXX));
+	vr = vector_muladd(m.row[1], vector_shuffle(v, VECTOR_MASK_YYYY), vr);
+	vr = vector_muladd(m.row[2], vector_shuffle(v, VECTOR_MASK_ZZZZ), vr);
+	return vector_muladd(m.row[3], vector_shuffle(v, VECTOR_MASK_WWWW), vr);
+}

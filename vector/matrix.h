@@ -17,9 +17,23 @@
 #pragma once
 
 /*! \file matrix.h
-    Matrix math, row major (matrix row elements reside next to each
-    other in memory), treating vectors as row vectors. Rotation matrix
-    axes in matrix rows for efficient vector transform operations. */
+    Matrix math, row major where each element in one row of the matrix
+    reside next to each other in memory. Matrix components are laid out like
+      m00  m01  m02  m03  -- Row 0
+      m10  m11  m12  m13  -- Row 1
+      m20  m21  m22  m23  -- Row 2
+      m30  m31  m32  m33  -- Row 3
+    mapping to a two-dimensional C array with row as major array index like
+      frow[0][0]  frow[0][1]  frow[0][2]  frow[0][3]  -- Row 0
+      frow[1][0]  frow[1][1]  frow[1][2]  frow[1][3]  -- Row 1
+      frow[2][0]  frow[2][1]  frow[2][2]  frow[2][3]  -- Row 2
+      frow[3][0]  frow[3][1]  frow[3][2]  frow[3][3]  -- Row 3
+    mapping to a flat C array like
+      arr[0]  arr[1]  arr[2]  arr[3]   -- Row 0
+      arr[4]  arr[5]  arr[6]  arr[7]   -- Row 1
+      arr[8]  arr[9]  arr[10] arr[11]  -- Row 2
+      arr[12] arr[13] arr[14] arr[15]  -- Row 3
+    */
 
 #include <vector/types.h>
 #include <vector/mask.h>
@@ -54,13 +68,13 @@ matrix_add(const matrix_t m0, const matrix_t m1);
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL matrix_t
 matrix_sub(const matrix_t m0, const matrix_t m1);
 
-#if FOUNDATION_ARCH_SSE4
+#if VECTOR_IMPLEMENTATION_SSE4
 #  include <vector/matrix_sse4.h>
-#elif FOUNDATION_ARCH_SSE3
+#elif VECTOR_IMPLEMENTATION_SSE3
 #  include <vector/matrix_sse3.h>
-#elif FOUNDATION_ARCH_SSE2
+#elif VECTOR_IMPLEMENTATION_SSE2
 #  include <vector/matrix_sse2.h>
-#elif FOUNDATION_ARCH_NEON
+#elif VECTOR_IMPLEMENTATION_NEON
 #  include <vector/matrix_neon.h>
 #else
 #  include <vector/matrix_fallback.h>

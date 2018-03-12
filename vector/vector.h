@@ -173,13 +173,18 @@ static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL bool
 vector_equal(const vector_t v0, const vector_t v1);
 
 //! Treat vectors as row vectors, which puts axes in rows in matrix
-//                 [ m00 m01 m02 m03 ]
-// [ vx vy vz vw ] [ m10 m11 m12 m13 ] = [ m00*vx + m10*vy + m20*vz + m30*vw, m01*vx ... ]
-//                 [ m20 m21 m22 m23 ]
-//                 [ m30 m31 m32 m33 ]
+//                 [ m00 m01 m02 --- ]
+// [ vx vy vz vw ] [ m10 m11 m12 --- ] = [ m00*vx + m10*vy + m20*vz, m01*vx ..., ..., vw ]
+//                 [ m20 m21 m22 --- ]
+//                 [ --- --- --- --- ]
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_rotate(const vector_t v, const matrix_t m);
 
+//! Treat vectors as row vectors, which puts axes in rows in matrix
+//                 [ m00 m01 m02 m03 ]
+// [ vx vy vz vw ] [ m10 m11 m12 m13 ] = [ m00*vx + m10*vy + m20*vz + m30*vw, m01*vx ..., ..., ... ]
+//                 [ m20 m21 m22 m23 ]
+//                 [ m30 m31 m32 m33 ]
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_transform(const vector_t v, const matrix_t m);
 
@@ -189,33 +194,16 @@ string_from_vector(char* buffer, size_t capacity, const vector_t v);
 VECTOR_API string_const_t
 string_from_vector_static(const vector_t v);
 
-#define VECTOR_IMPLEMENTATION_SSE4 0
-#define VECTOR_IMPLEMENTATION_SSE3 0
-#define VECTOR_IMPLEMENTATION_SSE2 0
-#define VECTOR_IMPLEMENTATION_NEON 0
-#define VECTOR_IMPLEMENTATION_FALLBACK 0
-
-
-#if FOUNDATION_ARCH_SSE4
+#if VECTOR_IMPLEMENTATION_SSE4
 #  include <vector/vector_sse4.h>
-#  undef  VECTOR_IMPLEMENTATION_SSE4
-#  define VECTOR_IMPLEMENTATION_SSE4 1
-#elif FOUNDATION_ARCH_SSE3
+#elif VECTOR_IMPLEMENTATION_SSE3
 #  include <vector/vector_sse3.h>
-#  undef  VECTOR_IMPLEMENTATION_SSE3
-#  define VECTOR_IMPLEMENTATION_SSE3 1
-#elif FOUNDATION_ARCH_SSE2
+#elif VECTOR_IMPLEMENTATION_SSE2
 #  include <vector/vector_sse2.h>
-#  undef  VECTOR_IMPLEMENTATION_SSE2
-#  define VECTOR_IMPLEMENTATION_SSE2 1
-#elif FOUNDATION_ARCH_NEON
+#elif VECTOR_IMPLEMENTATION_NEON
 #  include <vector/vector_neon.h>
-#  undef  VECTOR_IMPLEMENTATION_NEON
-#  define VECTOR_IMPLEMENTATION_NEON 1
 #else
 #  include <vector/vector_fallback.h>
-#  undef  VECTOR_IMPLEMENTATION_FALLBACK
-#  define VECTOR_IMPLEMENTATION_FALLBACK 1
 #endif
 
 #include <vector/quaternion.h>

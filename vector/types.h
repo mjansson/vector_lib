@@ -25,7 +25,7 @@
 
 #include <vector/build.h>
 
-#if FOUNDATION_ARCH_SSE4 || FOUNDATION_ARCH_SSE3 || FOUNDATION_ARCH_SSE2
+#if VECTOR_IMPLEMENTATION_SSE4 || VECTOR_IMPLEMENTATION_SSE3 || VECTOR_IMPLEMENTATION_SSE2
 
 #include <emmintrin.h>
 
@@ -38,7 +38,7 @@ typedef __m128 vector_t VECTOR_ALIGN;
 typedef VECTOR_ALIGN __m128 vector_t;
 #endif
 
-#if FOUNDATION_ARCH_SSE4 || FOUNDATION_ARCH_SSE3
+#if VECTOR_IMPLEMENTATION_SSE4 || VECTOR_IMPLEMENTATION_SSE3
 #include <pmmintrin.h>
 #endif
 
@@ -58,18 +58,22 @@ struct vector_t {
 
 #endif
 
-//! Row-major matrix
 typedef union matrix_t matrix_t;
 
+//! Row major matrix where matrix row elements reside next to each other in memory.
 union matrix_t {
+	//! Component access
 	VECTOR_ALIGNED_STRUCT(matrix_component_t) {
 		float32_t m00, m01, m02, m03; //Row 0
 		float32_t m10, m11, m12, m13; //Row 1
 		float32_t m20, m21, m22, m23; //Row 2
 		float32_t m30, m31, m32, m33; //Row 3
 	} comp;
+	//! Array access, flat layout
 	VECTOR_ALIGN float32_t arr[16];
-	VECTOR_ALIGN float32_t frow[4][4]; // frow[row][column]
+	//! 2-dimensional row access, each row in one major array, frow[row_index][column_index]
+	VECTOR_ALIGN float32_t frow[4][4];
+	//! Vector access, each row is one vector, row[row_index]
 	vector_t row[4];
 };
 

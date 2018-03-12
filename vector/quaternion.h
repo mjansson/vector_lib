@@ -71,13 +71,13 @@ quaternion_slerp(const quaternion_t q0, const quaternion_t q1, real factor);
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 quaternion_rotate(const quaternion_t q, const vector_t v);
 
-#if FOUNDATION_ARCH_SSE4
+#if VECTOR_IMPLEMENTATION_SSE4
 #  include <vector/quaternion_sse4.h>
-#elif FOUNDATION_ARCH_SSE3
+#elif VECTOR_IMPLEMENTATION_SSE3
 #  include <vector/quaternion_sse3.h>
-#elif FOUNDATION_ARCH_SSE2
+#elif VECTOR_IMPLEMENTATION_SSE2
 #  include <vector/quaternion_sse2.h>
-#elif FOUNDATION_ARCH_NEON
+#elif VECTOR_IMPLEMENTATION_NEON
 #  include <vector/quaternion_neon.h>
 #else
 #  include <vector/quaternion_fallback.h>

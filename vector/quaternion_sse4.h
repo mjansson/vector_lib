@@ -14,7 +14,6 @@
  *
  */
 
-
 #ifndef VECTOR_HAVE_QUATERNION_CONJUGATE
 
 quaternion_t
@@ -24,7 +23,6 @@ quaternion_conjugate(const quaternion_t q) {
 #define VECTOR_HAVE_QUATERNION_CONJUGATE 1
 
 #endif
-
 
 #ifndef VECTOR_HAVE_QUATERNION_INVERSE
 
@@ -38,6 +36,5 @@ quaternion_inverse(const quaternion_t q) {
 #define VECTOR_HAVE_QUATERNION_INVERSE 1
 
 #endif
-
 
 #include <vector/quaternion_sse3.h>
