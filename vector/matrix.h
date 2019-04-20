@@ -10,9 +10,10 @@
  *
  * https://github.com/rampantpixels/foundation_lib
  *
- * This library is put in the public domain; you can redistribute it and/or modify it without any restrictions.
+ * This library is put in the public domain; you can redistribute it and/or modify it without any
+ * restrictions.
  *
-*/
+ */
 
 #pragma once
 
@@ -56,6 +57,14 @@ matrix_aligned(const float32_aligned128_t* FOUNDATION_RESTRICT m);
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL matrix_t
 matrix_from_quaternion(const quaternion_t q);
 
+//! Create scaling matrix from scalar values
+static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL matrix_t
+matrix_scaling_scalar(float32_t x, float32_t y, float32_t z);
+
+//! Create translation matrix from scalar values
+static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL matrix_t
+matrix_translation_scalar(float32_t x, float32_t y, float32_t z);
+
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL matrix_t
 matrix_transpose(const matrix_t m);
 
@@ -69,14 +78,13 @@ static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL matrix_t
 matrix_sub(const matrix_t m0, const matrix_t m1);
 
 #if VECTOR_IMPLEMENTATION_SSE4
-#  include <vector/matrix_sse4.h>
+#include <vector/matrix_sse4.h>
 #elif VECTOR_IMPLEMENTATION_SSE3
-#  include <vector/matrix_sse3.h>
+#include <vector/matrix_sse3.h>
 #elif VECTOR_IMPLEMENTATION_SSE2
-#  include <vector/matrix_sse2.h>
+#include <vector/matrix_sse2.h>
 #elif VECTOR_IMPLEMENTATION_NEON
-#  include <vector/matrix_neon.h>
+#include <vector/matrix_neon.h>
 #else
-#  include <vector/matrix_fallback.h>
+#include <vector/matrix_fallback.h>
 #endif
-

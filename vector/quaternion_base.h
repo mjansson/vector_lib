@@ -10,7 +10,8 @@
  *
  * https://github.com/rampantpixels/foundation_lib
  *
- * This library is put in the public domain; you can redistribute it and/or modify it without any restrictions.
+ * This library is put in the public domain; you can redistribute it and/or modify it without any
+ * restrictions.
  *
  */
 
@@ -25,6 +26,12 @@ quaternion_zero(void) {
 }
 
 #endif
+
+static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL quaternion_t
+quaternion_scalar(float32_t x, float32_t y, float32_t z, float32_t w) {
+	FOUNDATION_ALIGN(16) float32_t aligned[4] = {x, y, z, w};
+	return quaternion_aligned(aligned);
+}
 
 #ifndef VECTOR_HAVE_QUATERNION_UNALIGNED
 
@@ -93,11 +100,10 @@ quaternion_normalize(const quaternion_t q) {
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
 quaternion_mul(const quaternion_t q0, const quaternion_t q1) {
-	return vector(
-	           q1.w * q0.x + q1.x * q0.w + q1.y * q0.z - q1.z * q0.y,
-	           q1.w * q0.y - q1.x * q0.z + q1.y * q0.w + q1.z * q0.x,
-	           q1.w * q0.z + q1.x * q0.y - q1.y * q0.x + q1.z * q0.w,
-	           q1.w * q0.w - q1.x * q0.x - q1.y * q0.y - q1.z * q0.z);
+	return vector(q1.w * q0.x + q1.x * q0.w + q1.y * q0.z - q1.z * q0.y,
+	              q1.w * q0.y - q1.x * q0.z + q1.y * q0.w + q1.z * q0.x,
+	              q1.w * q0.z + q1.x * q0.y - q1.y * q0.x + q1.z * q0.w,
+	              q1.w * q0.w - q1.x * q0.x - q1.y * q0.y - q1.z * q0.z);
 }
 
 #endif
@@ -127,13 +133,12 @@ quaternion_slerp(const quaternion_t q0, const quaternion_t q1, real factor) {
 	quaternion_t qd;
 	real cosval = vector_x(vector_dot(q0, q1));
 
-	//if cosval < 0 use slerp to negated target to get acute angle
-	//between quaternions and avoid extra spins
+	// if cosval < 0 use slerp to negated target to get acute angle
+	// between quaternions and avoid extra spins
 	if (cosval < 0) {
 		qd = quaternion_neg(q1);
 		cosval = vector_x(vector_dot(q0, qd));
-	}
-	else {
+	} else {
 		qd = q1;
 	}
 
@@ -143,8 +148,7 @@ quaternion_slerp(const quaternion_t q0, const quaternion_t q1, real factor) {
 			angle = math_acos(cosval);
 		else
 			return qd;
-	}
-	else
+	} else
 		angle = REAL_PI;
 
 	if (math_real_is_zero(angle))
@@ -152,8 +156,8 @@ quaternion_slerp(const quaternion_t q0, const quaternion_t q1, real factor) {
 
 	real sinval = math_sin(angle);
 	real invsin = REAL_C(1.0) / sinval;
-	real c1     = math_sin((REAL_C(1.0) - factor) * angle) * invsin;
-	real c2     = math_sin(factor * angle) * invsin;
+	real c1 = math_sin((REAL_C(1.0) - factor) * angle) * invsin;
+	real c2 = math_sin(factor * angle) * invsin;
 
 	return vector_add(vector_scale(q0, c1), vector_scale(qd, c2));
 }
@@ -164,8 +168,8 @@ quaternion_slerp(const quaternion_t q0, const quaternion_t q1, real factor) {
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 quaternion_rotate(const quaternion_t q, const vector_t v) {
-	//Quaternion "q" rotation of vector "w" is calculated by constructing
-	//a quaternion "v" with values (0,w) and the formula (where q' is the conjugate of q)
+	// Quaternion "q" rotation of vector "w" is calculated by constructing
+	// a quaternion "v" with values (0,w) and the formula (where q' is the conjugate of q)
 	// q * v * q'
 	//
 	// Breaking this down and calculating q * v =
@@ -180,9 +184,9 @@ quaternion_rotate(const quaternion_t q, const vector_t v) {
 	//
 	//  qv * ( qv . w ) + v1 * qs - v1 % qv
 
-	//Potentially faster:
-	//t = 2 * cross(q.xyz, v)
-	//v' = v + q.w * t + cross(q.xyz, t)
+	// Potentially faster:
+	// t = 2 * cross(q.xyz, v)
+	// v' = v + q.w * t + cross(q.xyz, t)
 
 	vector_t v1 = vector_cross3(q, v);
 
@@ -193,18 +197,13 @@ quaternion_rotate(const quaternion_t q, const vector_t v) {
 	vector_t v2 = vector_cross3(v1, q);
 	float32_t dot = (q.x * v.x + q.y * v.y + q.z * v.z);
 
-	vector_t r = {
-		q.x* dot + v1.x* q.w - v2.x,
-		q.y* dot + v1.y* q.w - v2.y,
-		q.z* dot + v1.z* q.w - v2.z,
-		v.w
-	};
+	vector_t r = {q.x * dot + v1.x * q.w - v2.x, q.y * dot + v1.y * q.w - v2.y, q.z * dot + v1.z * q.w - v2.z,
+	              v.w};
 
 	return r;
 }
 
 #endif
-
 
 #undef VECTOR_HAVE_QUATERNION_ZERO
 #undef VECTOR_HAVE_QUATERNION_IDENTITY

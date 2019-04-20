@@ -10,9 +10,10 @@
  *
  * https://github.com/rampantpixels/foundation_lib
  *
- * This library is put in the public domain; you can redistribute it and/or modify it without any restrictions.
+ * This library is put in the public domain; you can redistribute it and/or modify it without any
+ * restrictions.
  *
-*/
+ */
 
 #pragma once
 
@@ -29,6 +30,10 @@ quaternion_zero(void);
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
 quaternion_identity(void);
 
+//! Load scalars
+static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL quaternion_t
+quaternion_scalar(float32_t x, float32_t y, float32_t z, float32_t w);
+
 //! Load unaligned
 static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL quaternion_t
 quaternion_unaligned(const float32_t* FOUNDATION_RESTRICT q);
@@ -42,8 +47,8 @@ static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
 quaternion_conjugate(const quaternion_t q);
 
 // Quaternion inverse. For a unit quaternion equivalent to conjugate.
-//in = 1 / vector_length_sqr(q)
-//q' = (q.x * -in, q.y * -in, q.z * -in, q.w * in)
+// in = 1 / vector_length_sqr(q)
+// q' = (q.x * -in, q.y * -in, q.z * -in, q.w * in)
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
 quaternion_inverse(const quaternion_t q);
 
@@ -62,24 +67,23 @@ quaternion_add(const quaternion_t q0, const quaternion_t q1);
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
 quaternion_sub(const quaternion_t q0, const quaternion_t q1);
 
-//Quaternions must be unit length
+// Quaternions must be unit length
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
 quaternion_slerp(const quaternion_t q0, const quaternion_t q1, real factor);
 
-//Vector is treated as directional vector [x, y, z, 0] and returns
-//a directional vector [x', y', z', 0]
+// Vector is treated as directional vector [x, y, z, 0] and returns
+// a directional vector [x', y', z', 0]
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 quaternion_rotate(const quaternion_t q, const vector_t v);
 
 #if VECTOR_IMPLEMENTATION_SSE4
-#  include <vector/quaternion_sse4.h>
+#include <vector/quaternion_sse4.h>
 #elif VECTOR_IMPLEMENTATION_SSE3
-#  include <vector/quaternion_sse3.h>
+#include <vector/quaternion_sse3.h>
 #elif VECTOR_IMPLEMENTATION_SSE2
-#  include <vector/quaternion_sse2.h>
+#include <vector/quaternion_sse2.h>
 #elif VECTOR_IMPLEMENTATION_NEON
-#  include <vector/quaternion_neon.h>
+#include <vector/quaternion_neon.h>
 #else
-#  include <vector/quaternion_fallback.h>
+#include <vector/quaternion_fallback.h>
 #endif
-

@@ -10,7 +10,8 @@
  *
  * https://github.com/rampantpixels/foundation_lib
  *
- * This library is put in the public domain; you can redistribute it and/or modify it without any restrictions.
+ * This library is put in the public domain; you can redistribute it and/or modify it without any
+ * restrictions.
  *
  */
 
@@ -18,7 +19,7 @@
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL matrix_t
 matrix_zero(void) {
-	static const FOUNDATION_ALIGN(16) float32_t _zero_matrix[16] = { 0 };
+	static const FOUNDATION_ALIGN(16) float32_t _zero_matrix[16] = {0};
 	return matrix_aligned(_zero_matrix);
 }
 
@@ -51,16 +52,26 @@ matrix_aligned(const float32_aligned128_t* FOUNDATION_RESTRICT m) {
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL matrix_t
 matrix_identity(void) {
-	static const FOUNDATION_ALIGN(16) float32_t _identity_matrix[16] = {
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 1, 0,
-		0, 0, 0, 1
-	};
+	static const FOUNDATION_ALIGN(16)
+	    float32_t _identity_matrix[16] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
 	return matrix_aligned(_identity_matrix);
 }
 
 #endif
+
+static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL matrix_t
+matrix_scaling_scalar(float32_t x, float32_t y, float32_t z) {
+	FOUNDATION_ALIGN(16)
+	float32_t aligned[16] = {x, 0, 0, 0, 0, y, 0, 0, 0, 0, z, 0, 0, 0, 0, 1};
+	return matrix_aligned(aligned);
+}
+
+static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL matrix_t
+matrix_translation_scalar(float32_t x, float32_t y, float32_t z) {
+	FOUNDATION_ALIGN(16)
+	float32_t aligned[16] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, y, z, 1};
+	return matrix_aligned(aligned);
+}
 
 #ifndef VECTOR_HAVE_MATRIX_TRANSPOSE
 
@@ -69,7 +80,7 @@ matrix_transpose(const matrix_t m) {
 	matrix_t mt;
 	for (int row = 0; row < 4; ++row)
 		for (int col = 0; col < 4; ++col)
-			mt.frow[row][col]  = m.frow[col][row];
+			mt.frow[row][col] = m.frow[col][row];
 	return mt;
 }
 
@@ -82,11 +93,8 @@ matrix_mul(const matrix_t m0, const matrix_t m1) {
 	matrix_t r;
 	for (int row = 0; row < 4; ++row)
 		for (int col = 0; col < 4; ++col)
-			r.frow[row][col] =
-			    m0.frow[row][0] * m1.frow[0][col] +
-			    m0.frow[row][1] * m1.frow[1][col] +
-			    m0.frow[row][2] * m1.frow[2][col] +
-			    m0.frow[row][3] * m1.frow[3][col];
+			r.frow[row][col] = m0.frow[row][0] * m1.frow[0][col] + m0.frow[row][1] * m1.frow[1][col] +
+			                   m0.frow[row][2] * m1.frow[2][col] + m0.frow[row][3] * m1.frow[3][col];
 	return r;
 }
 
@@ -126,13 +134,13 @@ static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL matrix_t
 matrix_from_quaternion(const quaternion_t q) {
 	matrix_t mat;
 
-	float32_t x   = vector_x(q);
-	float32_t y   = vector_y(q);
-	float32_t z   = vector_z(q);
-	float32_t w   = vector_w(q);
-	float32_t tx  = 2.0f * x;
-	float32_t ty  = 2.0f * y;
-	float32_t tz  = 2.0f * z;
+	float32_t x = vector_x(q);
+	float32_t y = vector_y(q);
+	float32_t z = vector_z(q);
+	float32_t w = vector_w(q);
+	float32_t tx = 2.0f * x;
+	float32_t ty = 2.0f * y;
+	float32_t tz = 2.0f * z;
 	float32_t tsx = tx * w;
 	float32_t tsy = ty * w;
 	float32_t tsz = tz * w;
