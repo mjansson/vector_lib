@@ -1,8 +1,8 @@
 /* matrix_base.h  -  Vector library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
  *
- * This library provides a cross-platform vector math library in C11 providing basic support data types and
- * functions to write applications and games in a platform-independent fashion. The latest source code is
- * always available at
+ * This library provides a cross-platform vector math library in C11 providing basic support data
+ * types and functions to write applications and games in a platform-independent fashion. The latest
+ * source code is always available at
  *
  * https://github.com/rampantpixels/vector_lib
  *
@@ -60,10 +60,24 @@ matrix_identity(void) {
 #endif
 
 static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL matrix_t
+matrix_scaling(const vector_t scale) {
+	return matrix_scaling_scalar(vector_component(scale, 0), vector_component(scale, 1),
+	                             vector_component(scale, 2));
+}
+
+static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL matrix_t
 matrix_scaling_scalar(float32_t x, float32_t y, float32_t z) {
 	FOUNDATION_ALIGN(16)
 	float32_t aligned[16] = {x, 0, 0, 0, 0, y, 0, 0, 0, 0, z, 0, 0, 0, 0, 1};
 	return matrix_aligned(aligned);
+}
+
+static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL matrix_t
+matrix_translation(const vector_t translation) {
+	matrix_t mtx = matrix_identity();
+	mtx.row[3] = vector_add(mtx.row[3], translation);
+	mtx.frow[2][3] = 1;
+	return mtx;
 }
 
 static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL matrix_t
@@ -93,8 +107,9 @@ matrix_mul(const matrix_t m0, const matrix_t m1) {
 	matrix_t r;
 	for (int row = 0; row < 4; ++row)
 		for (int col = 0; col < 4; ++col)
-			r.frow[row][col] = m0.frow[row][0] * m1.frow[0][col] + m0.frow[row][1] * m1.frow[1][col] +
-			                   m0.frow[row][2] * m1.frow[2][col] + m0.frow[row][3] * m1.frow[3][col];
+			r.frow[row][col] =
+			    m0.frow[row][0] * m1.frow[0][col] + m0.frow[row][1] * m1.frow[1][col] +
+			    m0.frow[row][2] * m1.frow[2][col] + m0.frow[row][3] * m1.frow[3][col];
 	return r;
 }
 

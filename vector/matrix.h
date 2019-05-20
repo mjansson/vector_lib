@@ -1,8 +1,8 @@
 /* matrix.h  -  Vector library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
  *
- * This library provides a cross-platform vector math library in C11 providing basic support data types and
- * functions to write applications and games in a platform-independent fashion. The latest source code is
- * always available at
+ * This library provides a cross-platform vector math library in C11 providing basic support data
+ * types and functions to write applications and games in a platform-independent fashion. The latest
+ * source code is always available at
  *
  * https://github.com/rampantpixels/vector_lib
  *
@@ -57,9 +57,17 @@ matrix_aligned(const float32_aligned128_t* FOUNDATION_RESTRICT m);
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL matrix_t
 matrix_from_quaternion(const quaternion_t q);
 
+//! Create scaling matrix from vector
+static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL matrix_t
+matrix_scaling(const vector_t scale);
+
 //! Create scaling matrix from scalar values
 static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL matrix_t
 matrix_scaling_scalar(float32_t x, float32_t y, float32_t z);
+
+//! Create translation matrix from vector
+static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL matrix_t
+matrix_translation(const vector_t translation);
 
 //! Create translation matrix from scalar values
 static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL matrix_t
