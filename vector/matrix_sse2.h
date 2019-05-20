@@ -1,8 +1,8 @@
 /* matrix_sse2.h  -  Vector library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
  *
- * This library provides a cross-platform vector math library in C11 providing basic support data types and
- * functions to write applications and games in a platform-independent fashion. The latest source code is
- * always available at
+ * This library provides a cross-platform vector math library in C11 providing basic support data
+ * types and functions to write applications and games in a platform-independent fashion. The latest
+ * source code is always available at
  *
  * https://github.com/rampantpixels/vector_lib
  *
@@ -10,7 +10,8 @@
  *
  * https://github.com/rampantpixels/foundation_lib
  *
- * This library is put in the public domain; you can redistribute it and/or modify it without any restrictions.
+ * This library is put in the public domain; you can redistribute it and/or modify it without any
+ * restrictions.
  *
  */
 
@@ -34,7 +35,7 @@ matrix_unaligned(const float32_t* FOUNDATION_RESTRICT m) {
 matrix_t FOUNDATION_PURECALL
 matrix_transpose(const matrix_t m) {
 	matrix_t mt = m;
-	_MM_TRANSPOSE4_PS( mt.row[0], mt.row[1], mt.row[2], mt.row[3] );
+	_MM_TRANSPOSE4_PS(mt.row[0], mt.row[1], mt.row[2], mt.row[3]);
 	return mt;
 }
 #define VECTOR_HAVE_MATRIX_TRANSPOSE
@@ -80,7 +81,7 @@ matrix_mul(const matrix_t m0, const matrix_t m1) {
 	ret.row[1] = r1;
 	ret.row[2] = r2;
 	ret.row[3] = r3;
-	
+
 	return ret;
 }
 #define VECTOR_HAVE_MATRIX_MUL

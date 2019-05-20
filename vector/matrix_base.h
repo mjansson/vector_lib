@@ -76,7 +76,7 @@ static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL matrix_t
 matrix_translation(const vector_t translation) {
 	matrix_t mtx = matrix_identity();
 	mtx.row[3] = vector_add(mtx.row[3], translation);
-	mtx.frow[2][3] = 1;
+	mtx.frow[3][3] = 1;
 	return mtx;
 }
 
@@ -167,23 +167,23 @@ matrix_from_quaternion(const quaternion_t q) {
 	float32_t tzz = tz * z;
 
 	mat.frow[0][0] = 1.0f - (tyy + tzz);
-	mat.frow[0][1] = txy - tsz;
-	mat.frow[0][2] = txz + tsy;
-	mat.frow[0][3] = 0;
-
-	mat.frow[1][0] = txy + tsz;
-	mat.frow[1][1] = 1.0f - (txx + tzz);
-	mat.frow[1][2] = tyz - tsx;
-	mat.frow[1][3] = 0;
-
-	mat.frow[2][0] = txz - tsy;
-	mat.frow[2][1] = tyz + tsx;
-	mat.frow[2][2] = 1.0f - (txx + tyy);
-	mat.frow[2][3] = 0;
-
+	mat.frow[1][0] = txy - tsz;
+	mat.frow[2][0] = txz + tsy;
 	mat.frow[3][0] = 0;
+
+	mat.frow[0][1] = txy + tsz;
+	mat.frow[1][1] = 1.0f - (txx + tzz);
+	mat.frow[2][1] = tyz - tsx;
 	mat.frow[3][1] = 0;
+
+	mat.frow[0][2] = txz - tsy;
+	mat.frow[1][2] = tyz + tsx;
+	mat.frow[2][2] = 1.0f - (txx + tyy);
 	mat.frow[3][2] = 0;
+
+	mat.frow[0][3] = 0;
+	mat.frow[1][3] = 0;
+	mat.frow[2][3] = 0;
 	mat.frow[3][3] = 1;
 
 	return mat;
