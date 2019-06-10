@@ -1,8 +1,8 @@
 /* quaternion_sse2.h  -  Vector library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
  *
- * This library provides a cross-platform vector math library in C11 providing basic support data types and
- * functions to write applications and games in a platform-independent fashion. The latest source code is
- * always available at
+ * This library provides a cross-platform vector math library in C11 providing basic support data
+ * types and functions to write applications and games in a platform-independent fashion. The latest
+ * source code is always available at
  *
  * https://github.com/rampantpixels/vector_lib
  *
@@ -10,7 +10,8 @@
  *
  * https://github.com/rampantpixels/foundation_lib
  *
- * This library is put in the public domain; you can redistribute it and/or modify it without any restrictions.
+ * This library is put in the public domain; you can redistribute it and/or modify it without any
+ * restrictions.
  *
  */
 
@@ -18,7 +19,7 @@
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
 quaternion_mul(const quaternion_t q0, const quaternion_t q1) {
-	//From http://momchil-velikov.blogspot.de/2013/10/fast-sse-quternion-multiplication.html
+	// From http://momchil-velikov.blogspot.de/2013/10/fast-sse-quternion-multiplication.html
 	const vector_t q0_wwww = vector_shuffle(q0, VECTOR_MASK_WWWW);
 	const vector_t q1_yxwz = vector_shuffle(q1, VECTOR_MASK_YXWZ);
 	const vector_t q0_xxxx = vector_shuffle(q0, VECTOR_MASK_XXXX);
@@ -81,6 +82,23 @@ quaternion_rotate(const quaternion_t q, const vector_t v) {
 	return r;
 }
 #define VECTOR_HAVE_QUATERNION_ROTATE 1
+
+#endif
+
+#ifndef VECTOR_HAVE_QUATERNION_ROTATING_VECTOR
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
+quaternion_rotating_vector(const vector_t from, const vector_t to) {
+	// xyz: from x to
+	vector_t axis = vector_cross3(from, to);
+	// w: sqrt((from . from) * (to . to)) + (from . to)
+	vector_t scalar =
+	    vector_add(vector_sqrt(vector_mul(vector_length3_sqr(from), vector_length3_sqr(to))),
+	               vector_dot3(from, to));
+	vector_t comb = vector_shuffle2(axis, scalar, VECTOR_MASK_ZWXX);
+	return quaternion_normalize(vector_shuffle2(axis, comb, VECTOR_MASK_XYXZ));
+}
+#define VECTOR_HAVE_QUATERNION_ROTATING_VECTOR 1
 
 #endif
 

@@ -1,8 +1,8 @@
 /* vector_sse4.h  -  Vector library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
  *
- * This library provides a cross-platform vector math library in C11 providing basic support data types and
- * functions to write applications and games in a platform-independent fashion. The latest source code is
- * always available at
+ * This library provides a cross-platform vector math library in C11 providing basic support data
+ * types and functions to write applications and games in a platform-independent fashion. The latest
+ * source code is always available at
  *
  * https://github.com/rampantpixels/vector_lib
  *
@@ -10,21 +10,32 @@
  *
  * https://github.com/rampantpixels/foundation_lib
  *
- * This library is put in the public domain; you can redistribute it and/or modify it without any restrictions.
+ * This library is put in the public domain; you can redistribute it and/or modify it without any
+ * restrictions.
  *
  */
 
 #include <smmintrin.h>
 
-//Index for shuffle must be constant integer - hide function with a define
+// Index for shuffle must be constant integer - hide function with a define
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_shuffle(const vector_t v, unsigned int mask) {
 	FOUNDATION_ASSERT_FAIL("Unreachable code");
 	FOUNDATION_UNUSED(mask);
-	//return _mm_shuffle_ps(v, v, mask);
+	// return _mm_shuffle_ps(v, v, mask);
 	return v;
 }
 #define vector_shuffle(v, mask) _mm_shuffle_ps(v, v, mask)
+
+// Index for shuffle must be constant integer - hide function with a define
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
+vector_shuffle2(const vector_t v0, const vector_t v1, const unsigned int mask) {
+	FOUNDATION_ASSERT_FAIL("Unreachable code");
+	FOUNDATION_UNUSED(v1);
+	FOUNDATION_UNUSED(mask);
+	return v0;
+}
+#define vector_shuffle2(v0, v1, mask) _mm_shuffle_ps(v0, v1, mask)
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector(real x, real y, real z, real w) {
@@ -33,7 +44,7 @@ vector(real x, real y, real z, real w) {
 
 static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL vector_t
 vector_aligned(const float32_aligned128_t* v) {
-	FOUNDATION_ASSERT_ALIGNMENT( v, 16 );
+	FOUNDATION_ASSERT_ALIGNMENT(v, 16);
 	return _mm_load_ps(v);
 }
 
@@ -125,7 +136,7 @@ vector_cross3(const vector_t v0, const vector_t v1) {
 #endif
 }
 
-static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t 
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_mul(const vector_t v0, const vector_t v1) {
 	return _mm_mul_ps(v0, v1);
 }
@@ -239,6 +250,11 @@ vector_length3_sqr(const vector_t v) {
 }
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
+vector_sqrt(const vector_t v) {
+	return _mm_sqrt_ps(v);
+}
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_min(const vector_t v0, const vector_t v1) {
 	return _mm_min_ps(v0, v1);
 }
@@ -263,7 +279,7 @@ vector_z(const vector_t v) {
 	return *((const float32_t*)&v + 2);
 }
 
-static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL real 
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL real
 vector_w(const vector_t v) {
 	return *((const float32_t*)&v + 3);
 }
@@ -272,6 +288,14 @@ static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL real
 vector_component(const vector_t v, int c) {
 	FOUNDATION_ASSERT((c >= 0) && (c < 4));
 	return *((const float32_t*)&v + c);
+}
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
+vector_set_component(const vector_t v, int c, real val) {
+	FOUNDATION_ASSERT((c >= 0) && (c < 4));
+	vector_t vmod = v;
+	*((float32_t*)&vmod + c) = val;
+	return vmod;
 }
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL bool

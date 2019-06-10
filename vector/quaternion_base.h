@@ -1,8 +1,8 @@
 /* quaternion_base.h  -  Vector library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
  *
- * This library provides a cross-platform vector math library in C11 providing basic support data types and
- * functions to write applications and games in a platform-independent fashion. The latest source code is
- * always available at
+ * This library provides a cross-platform vector math library in C11 providing basic support data
+ * types and functions to write applications and games in a platform-independent fashion. The latest
+ * source code is always available at
  *
  * https://github.com/rampantpixels/vector_lib
  *
@@ -177,8 +177,8 @@ quaternion_rotate(const quaternion_t q, const vector_t v) {
 	//    qs*w + qv x w             (vector part)
 	//
 	// Final calculation of q * v * q'
-	//  (scalar part)  -(qv . w)*qs + (qs*w + qv x w) . qv   = -(qv.w)*qs + (qv.w)*qs + ((qv x w) . qv)    = 0
-	//  (vector part)  -qv*(-qv . w) + (qs*w + qv x w)*qs - (qs*w + qv x w) x qv
+	//  (scalar part)  -(qv . w)*qs + (qs*w + qv x w) . qv   = -(qv.w)*qs + (qv.w)*qs + ((qv x w) .
+	//  qv)    = 0 (vector part)  -qv*(-qv . w) + (qs*w + qv x w)*qs - (qs*w + qv x w) x qv
 	//
 	// Precalculating the vector v1 = (qs*w + qv x w) yields the final formula
 	//
@@ -197,10 +197,73 @@ quaternion_rotate(const quaternion_t q, const vector_t v) {
 	vector_t v2 = vector_cross3(v1, q);
 	float32_t dot = (q.x * v.x + q.y * v.y + q.z * v.z);
 
-	vector_t r = {q.x * dot + v1.x * q.w - v2.x, q.y * dot + v1.y * q.w - v2.y, q.z * dot + v1.z * q.w - v2.z,
-	              v.w};
+	vector_t r = {q.x * dot + v1.x * q.w - v2.x, q.y * dot + v1.y * q.w - v2.y,
+	              q.z * dot + v1.z * q.w - v2.z, v.w};
 
 	return r;
+}
+
+#endif
+
+#ifndef VECTOR_HAVE_QUATERNION_FROM_MATRIX
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
+quaternion_from_matrix(const matrix_t m) {
+	// Algorithm in Ken Shoemake's article in 1987 SIGGRAPH course notes
+	// article "Quaternion Calculus and Fast Animation".
+	real trace = m.frow[0][0] + m.frow[1][1] + m.frow[2][2];
+	real root;
+	quaternion_t q;
+
+	if (trace > 0) {
+		root = math_sqrt(trace + REAL_C(1.0));
+		real w = REAL_C(0.5) * root;
+		root = REAL_C(0.5) / root;
+		q = quaternion_scalar((m.frow[1][2] - m.frow[2][1]) * root,
+		                      (m.frow[2][0] - m.frow[0][2]) * root,
+		                      (m.frow[0][1] - m.frow[1][0]) * root, w);
+	} else {
+		int next[3] = {1, 2, 0};
+		int i = 0;
+
+		if (m.frow[1][1] > m.frow[0][0])
+			i = 1;
+		if (m.frow[2][2] > m.frow[i][i])
+			i = 2;
+
+		int j = next[i];
+		int k = next[j];
+
+		root = math_sqrt(m.frow[i][i] - m.frow[j][j] - m.frow[k][k] + REAL_C(1.0));
+
+		real FOUNDATION_ALIGN(16) quat[4] = {0, 0, 0, 0};
+
+		quat[i] = REAL_C(0.5) * root;
+		root = 0.5f / root;
+
+		quat[j] = (m.frow[i][j] + m.frow[j][i]) * root;
+		quat[k] = (m.frow[i][k] + m.frow[k][i]) * root;
+		quat[3] = (m.frow[j][k] - m.frow[k][j]) * root;
+
+		q = quaternion_aligned(quat);
+	}
+
+	// Since we represent a rotation, make sure we are unit length
+	return quaternion_normalize(q);
+}
+
+#endif
+
+#ifndef VECTOR_HAVE_QUATERNION_ROTATING_VECTOR
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
+quaternion_rotating_vector(const vector_t from, const vector_t to) {
+	// xyz: from x to
+	vector_t axis = vector_cross3(from, to);
+	// w: sqrt((from . from) * (to . to)) + (from . to)
+	real scalar =
+	    math_sqrt(vector_length3_sqr(from).x * vector_length3_sqr(to).x) + vector_dot3(from, to).x;
+	return quaternion_normalize(vector(axis.x, axis.y, axis.z, scalar));
 }
 
 #endif
@@ -218,3 +281,5 @@ quaternion_rotate(const quaternion_t q, const vector_t v) {
 #undef VECTOR_HAVE_QUATERNION_SUB
 #undef VECTOR_HAVE_QUATERNION_SLERP
 #undef VECTOR_HAVE_QUATERNION_ROTATE
+#undef VECTOR_HAVE_QUATERNION_FROM_MATRIX
+#undef VECTOR_HAVE_QUATERNION_ROTATING_VECTOR

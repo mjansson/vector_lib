@@ -1,8 +1,8 @@
 /* main.c  -  Vector tests  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
  *
- * This library provides a cross-platform vector math library in C11 providing basic support data types and
- * functions to write applications and games in a platform-independent fashion. The latest source code is
- * always available at
+ * This library provides a cross-platform vector math library in C11 providing basic support data
+ * types and functions to write applications and games in a platform-independent fashion. The latest
+ * source code is always available at
  *
  * https://github.com/rampantpixels/vector_lib
  *
@@ -10,19 +10,20 @@
  *
  * https://github.com/rampantpixels/foundation_lib
  *
- * This library is put in the public domain; you can redistribute it and/or modify it without any restrictions.
+ * This library is put in the public domain; you can redistribute it and/or modify it without any
+ * restrictions.
  *
  */
 
 #include <foundation/foundation.h>
 #include <test/test.h>
 
-//For testing specific implementations
+// For testing specific implementations
 //#undef  FOUNDATION_ARCH_SSE4
 //#define FOUNDATION_ARCH_SSE4 0
 //#undef  FOUNDATION_ARCH_SSE3
 //#define FOUNDATION_ARCH_SSE3 0
-//#undef  FOUNDATION_ARCH_SSE2
+//#undef FOUNDATION_ARCH_SSE2
 //#define FOUNDATION_ARCH_SSE2 0
 //#undef  FOUNDATION_ARCH_NEON
 //#define FOUNDATION_ARCH_NEON 0
@@ -70,8 +71,8 @@ test_quaternion_finalize(void) {
 
 DECLARE_TEST(quaternion, construct) {
 	quaternion_t q;
-	float32_t unaligned[] = { 1, -2, 3, -4 };
-	VECTOR_ALIGN float32_t aligned[] = { 1, -2, 3, -4 };
+	float32_t unaligned[] = {1, -2, 3, -4};
+	VECTOR_ALIGN float32_t aligned[] = {1, -2, 3, -4};
 
 	q = quaternion_zero();
 	EXPECT_VECTOREQ(q, vector_zero());
@@ -90,9 +91,9 @@ DECLARE_TEST(quaternion, construct) {
 
 DECLARE_TEST(quaternion, ops) {
 	quaternion_t q, r, p;
-	VECTOR_ALIGN float32_t aligned[] = { 1, -2, 3, -4 };
-	VECTOR_ALIGN float32_t secondaligned[] = { 0.5f, -1.5f, 1.0f, 2.5f };
-	float32_t qnorm = 1*1 + 2*2 + 3*3 + 4*4;
+	VECTOR_ALIGN float32_t aligned[] = {1, -2, 3, -4};
+	VECTOR_ALIGN float32_t secondaligned[] = {0.5f, -1.5f, 1.0f, 2.5f};
+	float32_t qnorm = 1 * 1 + 2 * 2 + 3 * 3 + 4 * 4;
 	float32_t qlen = math_sqrt(qnorm);
 
 	q = quaternion_identity();
@@ -154,7 +155,8 @@ DECLARE_TEST(quaternion, ops) {
 	r = quaternion_normalize(r);
 	EXPECT_VECTORALMOSTEQ(quaternion_slerp(q, q, REAL_C(0.5)), q);
 	EXPECT_VECTORALMOSTEQ(quaternion_slerp(q, r, 0), q);
-	EXPECT_VECTORALMOSTEQ(quaternion_slerp(q, r, 1), vector_neg(r)); //Negated to avoid extra spins
+	EXPECT_VECTORALMOSTEQ(quaternion_slerp(q, r, 1), vector_neg(r));  // Negated to avoid extra
+	                                                                  // spins
 	EXPECT_VECTORALMOSTEQ(quaternion_slerp(q, vector_neg(q), REAL_C(0.5)), q);
 
 	return 0;
@@ -162,11 +164,15 @@ DECLARE_TEST(quaternion, ops) {
 
 DECLARE_TEST(quaternion, vec) {
 	quaternion_t q;
-	vector_t v;
+	vector_t v0, v1;
 
 	q = quaternion_identity();
-	v = vector(1, -2, 3, 0);
-	EXPECT_VECTOREQ(quaternion_rotate(q, v), vector(1, -2, 3, 0));
+	v0 = vector(1, -2, 3, 0);
+	EXPECT_VECTOREQ(quaternion_rotate(q, v0), v0);
+
+	v0 = vector(1, -2, 3, 0);
+	v1 = vector(2, 1, -3, 0);
+	EXPECT_VECTORALMOSTEQ(quaternion_rotate(quaternion_rotating_vector(v0, v1), v0), v1);
 
 	return 0;
 }
@@ -190,15 +196,13 @@ test_quaternion_declare(void) {
 	ADD_TEST(quaternion, vec);
 }
 
-static test_suite_t test_quaternion_suite = {
-	test_quaternion_application,
-	test_quaternion_memory_system,
-	test_quaternion_config,
-	test_quaternion_declare,
-	test_quaternion_initialize,
-	test_quaternion_finalize,
-	0
-};
+static test_suite_t test_quaternion_suite = {test_quaternion_application,
+                                             test_quaternion_memory_system,
+                                             test_quaternion_config,
+                                             test_quaternion_declare,
+                                             test_quaternion_initialize,
+                                             test_quaternion_finalize,
+                                             0};
 
 #if BUILD_MONOLITHIC
 

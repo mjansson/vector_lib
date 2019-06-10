@@ -1,8 +1,8 @@
 /* vector.h  -  Vector library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
  *
- * This library provides a cross-platform vector math library in C11 providing basic support data types and
- * functions to write applications and games in a platform-independent fashion. The latest source code is
- * always available at
+ * This library provides a cross-platform vector math library in C11 providing basic support data
+ * types and functions to write applications and games in a platform-independent fashion. The latest
+ * source code is always available at
  *
  * https://github.com/rampantpixels/vector_lib
  *
@@ -10,7 +10,8 @@
  *
  * https://github.com/rampantpixels/foundation_lib
  *
- * This library is put in the public domain; you can redistribute it and/or modify it without any restrictions.
+ * This library is put in the public domain; you can redistribute it and/or modify it without any
+ * restrictions.
  *
  */
 
@@ -43,7 +44,7 @@ static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL vector_t
 vector_unaligned(const float32_t* FOUNDATION_RESTRICT v);
 
 //! Load aligned (16-byte alignment)
-static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL  vector_t
+static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL vector_t
 vector_aligned(const float32_aligned128_t* FOUNDATION_RESTRICT v);
 
 //! Load aligned (16-byte alignment) single uniform
@@ -52,28 +53,28 @@ vector_uniform(const real v);
 
 //! Load predefined vectors
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
-vector_zero(void);    // [ 0, 0, 0, 0 ]
+vector_zero(void);  // [ 0, 0, 0, 0 ]
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
-vector_one(void);     // [ 1, 1, 1, 1 ]
+vector_one(void);  // [ 1, 1, 1, 1 ]
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
-vector_half(void);    // [ 0.5, 0.5, 0.5, 0.5 ]
+vector_half(void);  // [ 0.5, 0.5, 0.5, 0.5 ]
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
-vector_two(void);     // [ 2, 2, 2, 2 ]
+vector_two(void);  // [ 2, 2, 2, 2 ]
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
-vector_origo(void);   // [ 0, 0, 0, 1 ]
+vector_origo(void);  // [ 0, 0, 0, 1 ]
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
-vector_xaxis(void);   // [ 1, 0, 0, 1 ]
+vector_xaxis(void);  // [ 1, 0, 0, 1 ]
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
-vector_yaxis(void);   // [ 0, 1, 0, 1 ]
+vector_yaxis(void);  // [ 0, 1, 0, 1 ]
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
-vector_zaxis(void);   // [ 0, 0, 1, 1 ]
+vector_zaxis(void);  // [ 0, 0, 1, 1 ]
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_normalize(const vector_t v);
@@ -110,6 +111,10 @@ vector_muladd(const vector_t v0, const vector_t v1, const vector_t v2);
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_shuffle(const vector_t v, const unsigned int mask);
+
+// Shuffle two components from each vector into final result
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
+vector_shuffle2(const vector_t v0, const vector_t v1, const unsigned int mask);
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_scale(const vector_t v, const real s);
@@ -149,6 +154,9 @@ static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_length3_sqr(const vector_t v);
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
+vector_sqrt(const vector_t v);
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_min(const vector_t v0, const vector_t v1);
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
@@ -168,6 +176,9 @@ vector_w(const vector_t v);
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL real
 vector_component(const vector_t v, int c);
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
+vector_set_component(const vector_t v, int c, real val);
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL bool
 vector_equal(const vector_t v0, const vector_t v1);
@@ -195,15 +206,15 @@ VECTOR_API string_const_t
 string_from_vector_static(const vector_t v);
 
 #if VECTOR_IMPLEMENTATION_SSE4
-#  include <vector/vector_sse4.h>
+#include <vector/vector_sse4.h>
 #elif VECTOR_IMPLEMENTATION_SSE3
-#  include <vector/vector_sse3.h>
+#include <vector/vector_sse3.h>
 #elif VECTOR_IMPLEMENTATION_SSE2
-#  include <vector/vector_sse2.h>
+#include <vector/vector_sse2.h>
 #elif VECTOR_IMPLEMENTATION_NEON
-#  include <vector/vector_neon.h>
+#include <vector/vector_neon.h>
 #else
-#  include <vector/vector_fallback.h>
+#include <vector/vector_fallback.h>
 #endif
 
 #include <vector/quaternion.h>

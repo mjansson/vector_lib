@@ -1,8 +1,8 @@
 /* quaternion.h  -  Vector library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
  *
- * This library provides a cross-platform vector math library in C11 providing basic support data types and
- * functions to write applications and games in a platform-independent fashion. The latest source code is
- * always available at
+ * This library provides a cross-platform vector math library in C11 providing basic support data
+ * types and functions to write applications and games in a platform-independent fashion. The latest
+ * source code is always available at
  *
  * https://github.com/rampantpixels/vector_lib
  *
@@ -42,13 +42,24 @@ quaternion_unaligned(const float32_t* FOUNDATION_RESTRICT q);
 static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL quaternion_t
 quaternion_aligned(const float32_aligned128_t* FOUNDATION_RESTRICT q);
 
-// Quaternion conjugate, negating vector component of quaterinon, q' = (-q.x, -q.y, -q.z, q.w)
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
+quaternion_from_matrix(const matrix_t m);
+
+//! Calculate quaternion representing rotation of "from" vector to "to" vector,
+//! i.e to = quaternion_rotate(quaternion_rotating_vector(from, to), from)
+//! \param from From vector
+//! \param to To vector
+//! \return Quaternion rotating "from" to "to"
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
+quaternion_rotating_vector(const vector_t from, const vector_t to);
+
+//! Quaternion conjugate, negating vector component of quaterinon, q' = (-q.x, -q.y, -q.z, q.w)
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
 quaternion_conjugate(const quaternion_t q);
 
-// Quaternion inverse. For a unit quaternion equivalent to conjugate.
-// in = 1 / vector_length_sqr(q)
-// q' = (q.x * -in, q.y * -in, q.z * -in, q.w * in)
+//! Quaternion inverse. For a unit quaternion equivalent to conjugate.
+//! in = 1 / vector_length_sqr(q)
+//! q' = (q.x * -in, q.y * -in, q.z * -in, q.w * in)
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
 quaternion_inverse(const quaternion_t q);
 

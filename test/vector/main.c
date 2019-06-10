@@ -1,8 +1,8 @@
 /* main.c  -  Vector tests  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
  *
- * This library provides a cross-platform vector math library in C11 providing basic support data types and
- * functions to write applications and games in a platform-independent fashion. The latest source code is
- * always available at
+ * This library provides a cross-platform vector math library in C11 providing basic support data
+ * types and functions to write applications and games in a platform-independent fashion. The latest
+ * source code is always available at
  *
  * https://github.com/rampantpixels/vector_lib
  *
@@ -10,14 +10,15 @@
  *
  * https://github.com/rampantpixels/foundation_lib
  *
- * This library is put in the public domain; you can redistribute it and/or modify it without any restrictions.
+ * This library is put in the public domain; you can redistribute it and/or modify it without any
+ * restrictions.
  *
  */
 
 #include <foundation/foundation.h>
 #include <test/test.h>
 
-//For testing specific implementations
+// For testing specific implementations
 //#undef  FOUNDATION_ARCH_SSE4
 //#define FOUNDATION_ARCH_SSE4 0
 //#undef  FOUNDATION_ARCH_SSE3
@@ -44,7 +45,7 @@ test_vector_application(void) {
 	return app;
 }
 
-static memory_system_t 
+static memory_system_t
 test_vector_memory_system(void) {
 	return memory_system_malloc();
 }
@@ -56,22 +57,22 @@ test_vector_config(void) {
 	return config;
 }
 
-static int 
+static int
 test_vector_initialize(void) {
 	vector_config_t config;
 	memset(&config, 0, sizeof(config));
 	return vector_module_initialize(config);
 }
 
-static void 
+static void
 test_vector_finalize(void) {
 	vector_module_finalize();
 }
 
 DECLARE_TEST(vector, construct) {
 	vector_t vec;
-	float32_t unaligned[4] = { 3, 2, 1, 0 };
-	VECTOR_ALIGN float32_t aligned[4] = { 0, 1, 2, 3 };
+	float32_t unaligned[4] = {3, 2, 1, 0};
+	VECTOR_ALIGN float32_t aligned[4] = {0, 1, 2, 3};
 
 	vec = vector(REAL_C(0.0), REAL_C(1.0), REAL_C(2.0), REAL_C(3.0));
 	EXPECT_REALEQ(vector_x(vec), REAL_C(0.0));
@@ -148,7 +149,6 @@ DECLARE_TEST(vector, construct) {
 	return 0;
 }
 
-
 DECLARE_TEST(vector, normalize) {
 	vector_t vec;
 	real ref;
@@ -175,7 +175,8 @@ DECLARE_TEST(vector, normalize) {
 
 	ref = math_sqrt(REAL_C(158.0));
 	vec = vector_normalize(vector(0, -3, 7, -10));
-	EXPECT_VECTORALMOSTEQ(vec, vector(0, -REAL_C(3.0) / ref, REAL_C(7.0) / ref, -REAL_C(10.0) / ref));
+	EXPECT_VECTORALMOSTEQ(vec,
+	                      vector(0, -REAL_C(3.0) / ref, REAL_C(7.0) / ref, -REAL_C(10.0) / ref));
 
 	vec = vector_normalize3(vector(1, 0, 0, 0));
 	EXPECT_VECTORALMOSTEQ(vec, vector(1, 0, 0, 0));
@@ -200,7 +201,6 @@ DECLARE_TEST(vector, normalize) {
 
 	return 0;
 }
-
 
 DECLARE_TEST(vector, dot) {
 	vector_t vec;
@@ -274,7 +274,6 @@ DECLARE_TEST(vector, dot) {
 	return 0;
 }
 
-
 DECLARE_TEST(vector, cross) {
 	vector_t vec;
 
@@ -330,7 +329,6 @@ DECLARE_TEST(vector, cross) {
 
 	return 0;
 }
-
 
 DECLARE_TEST(vector, ops) {
 	vector_t vec;
@@ -423,12 +421,15 @@ DECLARE_TEST(vector, ops) {
 	vec = vector_muladd(vector(1, 2, 3, 4), vector(5, 6, 7, 8), vector(-1, -2, -3, -4));
 	EXPECT_VECTOREQ(vec, vector(4, 10, 18, 28));
 
+	vec = vector_sqrt(vector(4, 9, 16, 25));
+	EXPECT_VECTOREQ(vec, vector(2, 3, 4, 5));
+
 	return 0;
 }
 
-
 DECLARE_TEST(vector, shuffle) {
 	vector_t in = vector(1, 2, 3, 4);
+	vector_t in2 = vector(5, 6, 7, 8);
 	vector_t vec;
 
 	vec = vector_shuffle(in, VECTOR_MASK_XXXX);
@@ -503,9 +504,80 @@ DECLARE_TEST(vector, shuffle) {
 	EXPECT_REALEQ(vector_z(vec), REAL_C(2.0));
 	EXPECT_REALEQ(vector_w(vec), REAL_C(3.0));
 
+	vec = vector_shuffle2(in, in2, VECTOR_MASK_XXXX);
+	EXPECT_REALEQ(vector_x(vec), REAL_C(1.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(1.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(5.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(5.0));
+
+	vec = vector_shuffle2(in, in2, VECTOR_MASK_YYYY);
+	EXPECT_REALEQ(vector_x(vec), REAL_C(2.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(2.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(6.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(6.0));
+
+	vec = vector_shuffle2(in, in2, VECTOR_MASK_ZZZZ);
+	EXPECT_REALEQ(vector_x(vec), REAL_C(3.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(3.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(7.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(7.0));
+
+	vec = vector_shuffle2(in, in2, VECTOR_MASK_WWWW);
+	EXPECT_REALEQ(vector_x(vec), REAL_C(4.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(4.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(8.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(8.0));
+
+	vec = vector_shuffle2(in, in2, VECTOR_MASK_XYZW);
+	EXPECT_REALEQ(vector_x(vec), REAL_C(1.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(2.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(7.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(8.0));
+
+	vec = vector_shuffle2(in, in2, VECTOR_MASK_WZYX);
+	EXPECT_REALEQ(vector_x(vec), REAL_C(4.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(3.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(6.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(5.0));
+
+	vec = vector_shuffle2(in, in2, VECTOR_MASK_YXWZ);
+	EXPECT_REALEQ(vector_x(vec), REAL_C(2.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(1.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(8.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(7.0));
+
+	vec = vector_shuffle2(in, in2, VECTOR_MASK_ZWXY);
+	EXPECT_REALEQ(vector_x(vec), REAL_C(3.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(4.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(5.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(6.0));
+
+	vec = vector_shuffle2(in, in2, VECTOR_MASK_ZZXX);
+	EXPECT_REALEQ(vector_x(vec), REAL_C(3.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(3.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(5.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(5.0));
+
+	vec = vector_shuffle2(in, in2, VECTOR_MASK_YYZZ);
+	EXPECT_REALEQ(vector_x(vec), REAL_C(2.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(2.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(7.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(7.0));
+
+	vec = vector_shuffle2(in, in2, VECTOR_MASK_WXXW);
+	EXPECT_REALEQ(vector_x(vec), REAL_C(4.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(1.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(5.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(8.0));
+
+	vec = vector_shuffle2(in, in2, VECTOR_MASK_WYYZ);
+	EXPECT_REALEQ(vector_x(vec), REAL_C(4.0));
+	EXPECT_REALEQ(vector_y(vec), REAL_C(2.0));
+	EXPECT_REALEQ(vector_z(vec), REAL_C(6.0));
+	EXPECT_REALEQ(vector_w(vec), REAL_C(7.0));
+
 	return 0;
 }
-
 
 DECLARE_TEST(vector, util) {
 	vector_t vec;
@@ -639,7 +711,6 @@ DECLARE_TEST(vector, util) {
 	return 0;
 }
 
-
 DECLARE_TEST(vector, length) {
 	vector_t vec;
 
@@ -712,7 +783,6 @@ DECLARE_TEST(vector, length) {
 	return 0;
 }
 
-
 DECLARE_TEST(vector, minmax) {
 	vector_t vec;
 
@@ -736,7 +806,6 @@ DECLARE_TEST(vector, minmax) {
 
 	return 0;
 }
-
 
 DECLARE_TEST(vector, component) {
 	EXPECT_REALEQ(vector_x(vector_zero()), REAL_ZERO);
@@ -762,7 +831,6 @@ DECLARE_TEST(vector, component) {
 	return 0;
 }
 
-
 DECLARE_TEST(vector, equal) {
 	EXPECT_TRUE(vector_equal(vector_zero(), vector_zero()));
 	EXPECT_TRUE(vector_equal(vector_one(), vector_one()));
@@ -777,7 +845,7 @@ DECLARE_TEST(vector, equal) {
 	return 0;
 }
 
-static void 
+static void
 test_vector_declare(void) {
 #if FOUNDATION_ARCH_SSE4
 	log_info(HASH_TEST, STRING_CONST("Using SSE4 implementation"));
@@ -804,16 +872,13 @@ test_vector_declare(void) {
 	ADD_TEST(vector, equal);
 }
 
-static test_suite_t test_vector_suite = {
-	test_vector_application,
-	test_vector_memory_system,
-	test_vector_config,
-	test_vector_declare,
-	test_vector_initialize,
-	test_vector_finalize,
-	0
-};
-
+static test_suite_t test_vector_suite = {test_vector_application,
+                                         test_vector_memory_system,
+                                         test_vector_config,
+                                         test_vector_declare,
+                                         test_vector_initialize,
+                                         test_vector_finalize,
+                                         0};
 
 #if BUILD_MONOLITHIC
 

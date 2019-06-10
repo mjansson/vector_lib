@@ -75,9 +75,13 @@ matrix_scaling_scalar(float32_t x, float32_t y, float32_t z) {
 static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL matrix_t
 matrix_translation(const vector_t translation) {
 	matrix_t mtx = matrix_identity();
-	mtx.row[3] = vector_add(mtx.row[3], translation);
-	mtx.frow[3][3] = 1;
+	mtx.row[3] = vector_set_component(translation, 3, REAL_C(1.0));
 	return mtx;
+}
+
+static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL vector_t
+matrix_get_translation(const matrix_t m) {
+	return m.row[3];
 }
 
 static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL matrix_t

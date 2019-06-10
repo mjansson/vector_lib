@@ -1,8 +1,8 @@
 /* vector_sse2.h  -  Vector library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
  *
- * This library provides a cross-platform vector math library in C11 providing basic support data types and
- * functions to write applications and games in a platform-independent fashion. The latest source code is
- * always available at
+ * This library provides a cross-platform vector math library in C11 providing basic support data
+ * types and functions to write applications and games in a platform-independent fashion. The latest
+ * source code is always available at
  *
  * https://github.com/rampantpixels/vector_lib
  *
@@ -10,19 +10,29 @@
  *
  * https://github.com/rampantpixels/foundation_lib
  *
- * This library is put in the public domain; you can redistribute it and/or modify it without any restrictions.
+ * This library is put in the public domain; you can redistribute it and/or modify it without any
+ * restrictions.
  *
  */
 
-//Index for shuffle must be constant integer - hide function with a define
+// Index for shuffle must be constant integer - hide function with a define
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_shuffle(const vector_t v, const unsigned int mask) {
 	FOUNDATION_ASSERT_FAIL("Unreachable code");
 	FOUNDATION_UNUSED(mask);
-	//return _mm_shuffle_epi32(__m128i(v), mask);
 	return v;
 }
-#define vector_shuffle(v, mask) _mm_castsi128_ps(_mm_shuffle_epi32(_mm_castps_si128(v), mask))
+#define vector_shuffle(v, mask) _mm_shuffle_ps(v, v, mask)
+
+// Index for shuffle must be constant integer - hide function with a define
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
+vector_shuffle2(const vector_t v0, const vector_t v1, const unsigned int mask) {
+	FOUNDATION_ASSERT_FAIL("Unreachable code");
+	FOUNDATION_UNUSED(v1);
+	FOUNDATION_UNUSED(mask);
+	return v0;
+}
+#define vector_shuffle2(v0, v1, mask) _mm_shuffle_ps(v0, v1, mask)
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector(const real x, const real y, const real z, const real w) {
@@ -96,7 +106,7 @@ vector_normalize(const vector_t v) {
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_normalize3(const vector_t v) {
-	//Shuffle to preserve w component of input vector
+	// Shuffle to preserve w component of input vector
 	const vector_t norm = vector_mul(v, _mm_rsqrt_ps(vector_dot3(v, v)));
 	const vector_t splice = _mm_shuffle_ps(norm, v, VECTOR_MASK_ZZWW);
 	return _mm_shuffle_ps(norm, splice, VECTOR_MASK_XYXW);
@@ -190,7 +200,7 @@ vector_reflect(const vector_t v, const vector_t at) {
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_project3(const vector_t v, const vector_t at) {
-	//Shuffle to preserve w component of input vector
+	// Shuffle to preserve w component of input vector
 	const vector_t normal = vector_mul(at, _mm_rsqrt_ps(vector_dot3(at, at)));
 	const vector_t result = vector_mul(normal, vector_dot3(normal, v));
 	const vector_t splice = _mm_shuffle_ps(result, v, VECTOR_MASK_ZZWW);
@@ -199,7 +209,7 @@ vector_project3(const vector_t v, const vector_t at) {
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_reflect3(const vector_t v, const vector_t at) {
-	//Shuffle to preserve w component of input vector
+	// Shuffle to preserve w component of input vector
 	const vector_t two = vector_two();
 	const vector_t normal = vector_normalize3(at);
 	const vector_t double_proj = vector_mul(normal, vector_mul(vector_dot3(normal, v), two));
@@ -243,6 +253,11 @@ vector_length3_sqr(const vector_t v) {
 }
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
+vector_sqrt(const vector_t v) {
+	return _mm_sqrt_ps(v);
+}
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_min(const vector_t v0, const vector_t v1) {
 	return _mm_min_ps(v0, v1);
 }
@@ -276,6 +291,14 @@ static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL real
 vector_component(const vector_t v, int c) {
 	FOUNDATION_ASSERT((c >= 0) && (c < 4));
 	return *((const float32_t*)&v + c);
+}
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
+vector_set_component(const vector_t v, int c, real val) {
+	FOUNDATION_ASSERT((c >= 0) && (c < 4));
+	vector_t vmod = v;
+	*((float32_t*)&vmod + c) = val;
+	return vmod;
 }
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL bool

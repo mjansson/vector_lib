@@ -85,6 +85,9 @@ matrix_add(const matrix_t m0, const matrix_t m1);
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL matrix_t
 matrix_sub(const matrix_t m0, const matrix_t m1);
 
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
+matrix_get_translation(const matrix_t m);
+
 #if VECTOR_IMPLEMENTATION_SSE4
 #include <vector/matrix_sse4.h>
 #elif VECTOR_IMPLEMENTATION_SSE3
