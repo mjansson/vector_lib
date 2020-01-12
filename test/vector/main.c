@@ -808,15 +808,15 @@ DECLARE_TEST(vector, minmax) {
 }
 
 DECLARE_TEST(vector, component) {
-	EXPECT_REALEQ(vector_x(vector_zero()), REAL_ZERO);
-	EXPECT_REALEQ(vector_y(vector_zero()), REAL_ZERO);
-	EXPECT_REALEQ(vector_z(vector_zero()), REAL_ZERO);
-	EXPECT_REALEQ(vector_w(vector_zero()), REAL_ZERO);
+	EXPECT_REALEQ(vector_x(vector_zero()), 0);
+	EXPECT_REALEQ(vector_y(vector_zero()), 0);
+	EXPECT_REALEQ(vector_z(vector_zero()), 0);
+	EXPECT_REALEQ(vector_w(vector_zero()), 0);
 
-	EXPECT_REALEQ(vector_x(vector_one()), REAL_ONE);
-	EXPECT_REALEQ(vector_y(vector_one()), REAL_ONE);
-	EXPECT_REALEQ(vector_z(vector_one()), REAL_ONE);
-	EXPECT_REALEQ(vector_w(vector_one()), REAL_ONE);
+	EXPECT_REALEQ(vector_x(vector_one()), 1);
+	EXPECT_REALEQ(vector_y(vector_one()), 1);
+	EXPECT_REALEQ(vector_z(vector_one()), 1);
+	EXPECT_REALEQ(vector_w(vector_one()), 1);
 
 	EXPECT_REALEQ(vector_x(vector(1, -2, 3, -4)), 1);
 	EXPECT_REALEQ(vector_y(vector(1, -2, 3, -4)), -2);
