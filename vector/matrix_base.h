@@ -1,14 +1,14 @@
-/* matrix_base.h  -  Vector library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
+/* matrix_base.h  -  Vector library  -  Public Domain  -  2013 Mattias Jansson
  *
  * This library provides a cross-platform vector math library in C11 providing basic support data
  * types and functions to write applications and games in a platform-independent fashion. The latest
  * source code is always available at
  *
- * https://github.com/rampantpixels/vector_lib
+ * https://github.com/mjansson/vector_lib
  *
  * This library is built on top of the foundation library available at
  *
- * https://github.com/rampantpixels/foundation_lib
+ * https://github.com/mjansson/foundation_lib
  *
  * This library is put in the public domain; you can redistribute it and/or modify it without any
  * restrictions.
@@ -52,8 +52,7 @@ matrix_aligned(const float32_aligned128_t* FOUNDATION_RESTRICT m) {
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL matrix_t
 matrix_identity(void) {
-	static const FOUNDATION_ALIGN(16)
-	    float32_t _identity_matrix[16] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
+	static const FOUNDATION_ALIGN(16) float32_t _identity_matrix[16] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
 	return matrix_aligned(_identity_matrix);
 }
 
@@ -61,8 +60,7 @@ matrix_identity(void) {
 
 static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL matrix_t
 matrix_scaling(const vector_t scale) {
-	return matrix_scaling_scalar(vector_component(scale, 0), vector_component(scale, 1),
-	                             vector_component(scale, 2));
+	return matrix_scaling_scalar(vector_component(scale, 0), vector_component(scale, 1), vector_component(scale, 2));
 }
 
 static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL matrix_t
@@ -111,9 +109,8 @@ matrix_mul(const matrix_t m0, const matrix_t m1) {
 	matrix_t r;
 	for (int row = 0; row < 4; ++row)
 		for (int col = 0; col < 4; ++col)
-			r.frow[row][col] =
-			    m0.frow[row][0] * m1.frow[0][col] + m0.frow[row][1] * m1.frow[1][col] +
-			    m0.frow[row][2] * m1.frow[2][col] + m0.frow[row][3] * m1.frow[3][col];
+			r.frow[row][col] = m0.frow[row][0] * m1.frow[0][col] + m0.frow[row][1] * m1.frow[1][col] +
+			                   m0.frow[row][2] * m1.frow[2][col] + m0.frow[row][3] * m1.frow[3][col];
 	return r;
 }
 

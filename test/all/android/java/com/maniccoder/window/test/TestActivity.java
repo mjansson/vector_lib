@@ -1,4 +1,4 @@
-package com.rampantpixels.vector.test;
+package com.maniccoder.vector.test;
 
 import android.os.Bundle;
 import android.app.NativeActivity;

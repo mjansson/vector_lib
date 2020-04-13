@@ -1,14 +1,14 @@
-/* main.c  -  Vector tests  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
+/* main.c  -  Vector tests  -  Public Domain  -  2013 Mattias Jansson
  *
  * This library provides a cross-platform vector math library in C11 providing basic support data
  * types and functions to write applications and games in a platform-independent fashion. The latest
  * source code is always available at
  *
- * https://github.com/rampantpixels/vector_lib
+ * https://github.com/mjansson/vector_lib
  *
  * This library is built on top of the foundation library available at
  *
- * https://github.com/rampantpixels/foundation_lib
+ * https://github.com/mjansson/foundation_lib
  *
  * This library is put in the public domain; you can redistribute it and/or modify it without any
  * restrictions.
@@ -38,7 +38,7 @@ test_vector_application(void) {
 	memset(&app, 0, sizeof(app));
 	app.name = string_const(STRING_CONST("Vector tests"));
 	app.short_name = string_const(STRING_CONST("test_vector"));
-	app.company = string_const(STRING_CONST("Rampant Pixels"));
+	app.company = string_const(STRING_CONST(""));
 	app.version = vector_module_version();
 	app.exception_handler = test_exception_handler;
 	app.flags = APPLICATION_UTILITY;
@@ -175,8 +175,7 @@ DECLARE_TEST(vector, normalize) {
 
 	ref = math_sqrt(REAL_C(158.0));
 	vec = vector_normalize(vector(0, -3, 7, -10));
-	EXPECT_VECTORALMOSTEQ(vec,
-	                      vector(0, -REAL_C(3.0) / ref, REAL_C(7.0) / ref, -REAL_C(10.0) / ref));
+	EXPECT_VECTORALMOSTEQ(vec, vector(0, -REAL_C(3.0) / ref, REAL_C(7.0) / ref, -REAL_C(10.0) / ref));
 
 	vec = vector_normalize3(vector(1, 0, 0, 0));
 	EXPECT_VECTORALMOSTEQ(vec, vector(1, 0, 0, 0));
@@ -361,8 +360,8 @@ DECLARE_TEST(vector, ops) {
 	EXPECT_VECTOREQ(vec, vector_two());
 
 	vec = vector_div(vector(1, 2, 3, 4), vector(5, 6, 7, 8));
-	EXPECT_VECTOREQ(vec, vector(REAL_C(1.0) / REAL_C(5.0), REAL_C(2.0) / REAL_C(6.0),
-	                            REAL_C(3.0) / REAL_C(7.0), REAL_C(4.0) / REAL_C(8.0)));
+	EXPECT_VECTOREQ(vec, vector(REAL_C(1.0) / REAL_C(5.0), REAL_C(2.0) / REAL_C(6.0), REAL_C(3.0) / REAL_C(7.0),
+	                            REAL_C(4.0) / REAL_C(8.0)));
 
 	vec = vector_add(vector_zero(), vector_zero());
 	EXPECT_VECTOREQ(vec, vector_zero());

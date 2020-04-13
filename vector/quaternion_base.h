@@ -1,14 +1,14 @@
-/* quaternion_base.h  -  Vector library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
+/* quaternion_base.h  -  Vector library  -  Public Domain  -  2013 Mattias Jansson
  *
  * This library provides a cross-platform vector math library in C11 providing basic support data
  * types and functions to write applications and games in a platform-independent fashion. The latest
  * source code is always available at
  *
- * https://github.com/rampantpixels/vector_lib
+ * https://github.com/mjansson/vector_lib
  *
  * This library is built on top of the foundation library available at
  *
- * https://github.com/rampantpixels/foundation_lib
+ * https://github.com/mjansson/foundation_lib
  *
  * This library is put in the public domain; you can redistribute it and/or modify it without any
  * restrictions.
@@ -100,10 +100,9 @@ quaternion_normalize(const quaternion_t q) {
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
 quaternion_mul(const quaternion_t q0, const quaternion_t q1) {
-	return vector(q1.w * q0.x + q1.x * q0.w + q1.y * q0.z - q1.z * q0.y,
-	              q1.w * q0.y - q1.x * q0.z + q1.y * q0.w + q1.z * q0.x,
-	              q1.w * q0.z + q1.x * q0.y - q1.y * q0.x + q1.z * q0.w,
-	              q1.w * q0.w - q1.x * q0.x - q1.y * q0.y - q1.z * q0.z);
+	return vector(
+	    q1.w * q0.x + q1.x * q0.w + q1.y * q0.z - q1.z * q0.y, q1.w * q0.y - q1.x * q0.z + q1.y * q0.w + q1.z * q0.x,
+	    q1.w * q0.z + q1.x * q0.y - q1.y * q0.x + q1.z * q0.w, q1.w * q0.w - q1.x * q0.x - q1.y * q0.y - q1.z * q0.z);
 }
 
 #endif
@@ -197,8 +196,7 @@ quaternion_rotate(const quaternion_t q, const vector_t v) {
 	vector_t v2 = vector_cross3(v1, q);
 	float32_t dot = (q.x * v.x + q.y * v.y + q.z * v.z);
 
-	vector_t r = {q.x * dot + v1.x * q.w - v2.x, q.y * dot + v1.y * q.w - v2.y,
-	              q.z * dot + v1.z * q.w - v2.z, v.w};
+	vector_t r = {q.x * dot + v1.x * q.w - v2.x, q.y * dot + v1.y * q.w - v2.y, q.z * dot + v1.z * q.w - v2.z, v.w};
 
 	return r;
 }
@@ -219,8 +217,7 @@ quaternion_from_matrix(const matrix_t m) {
 		root = math_sqrt(trace + REAL_C(1.0));
 		real w = REAL_C(0.5) * root;
 		root = REAL_C(0.5) / root;
-		q = quaternion_scalar((m.frow[1][2] - m.frow[2][1]) * root,
-		                      (m.frow[2][0] - m.frow[0][2]) * root,
+		q = quaternion_scalar((m.frow[1][2] - m.frow[2][1]) * root, (m.frow[2][0] - m.frow[0][2]) * root,
 		                      (m.frow[0][1] - m.frow[1][0]) * root, w);
 	} else {
 		int next[3] = {1, 2, 0};
@@ -261,8 +258,7 @@ quaternion_rotating_vector(const vector_t from, const vector_t to) {
 	// xyz: from x to
 	vector_t axis = vector_cross3(from, to);
 	// w: sqrt((from . from) * (to . to)) + (from . to)
-	real scalar =
-	    math_sqrt(vector_length3_sqr(from).x * vector_length3_sqr(to).x) + vector_dot3(from, to).x;
+	real scalar = math_sqrt(vector_length3_sqr(from).x * vector_length3_sqr(to).x) + vector_dot3(from, to).x;
 	return quaternion_normalize(vector(axis.x, axis.y, axis.z, scalar));
 }
 

@@ -1,14 +1,14 @@
-/* quaternion_sse2.h  -  Vector library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
+/* quaternion_sse2.h  -  Vector library  -  Public Domain  -  2013 Mattias Jansson
  *
  * This library provides a cross-platform vector math library in C11 providing basic support data
  * types and functions to write applications and games in a platform-independent fashion. The latest
  * source code is always available at
  *
- * https://github.com/rampantpixels/vector_lib
+ * https://github.com/mjansson/vector_lib
  *
  * This library is built on top of the foundation library available at
  *
- * https://github.com/rampantpixels/foundation_lib
+ * https://github.com/mjansson/foundation_lib
  *
  * This library is put in the public domain; you can redistribute it and/or modify it without any
  * restrictions.
@@ -93,8 +93,7 @@ quaternion_rotating_vector(const vector_t from, const vector_t to) {
 	vector_t axis = vector_cross3(from, to);
 	// w: sqrt((from . from) * (to . to)) + (from . to)
 	vector_t scalar =
-	    vector_add(vector_sqrt(vector_mul(vector_length3_sqr(from), vector_length3_sqr(to))),
-	               vector_dot3(from, to));
+	    vector_add(vector_sqrt(vector_mul(vector_length3_sqr(from), vector_length3_sqr(to))), vector_dot3(from, to));
 	vector_t comb = vector_shuffle2(axis, scalar, VECTOR_MASK_ZWXX);
 	return quaternion_normalize(vector_shuffle2(axis, comb, VECTOR_MASK_XYXZ));
 }

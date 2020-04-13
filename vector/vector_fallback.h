@@ -1,14 +1,14 @@
-/* vector_fallback.h  -  Vector library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
+/* vector_fallback.h  -  Vector library  -  Public Domain  -  2013 Mattias Jansson
  *
  * This library provides a cross-platform vector math library in C11 providing basic support data
  * types and functions to write applications and games in a platform-independent fashion. The latest
  * source code is always available at
  *
- * https://github.com/rampantpixels/vector_lib
+ * https://github.com/mjansson/vector_lib
  *
  * This library is built on top of the foundation library available at
  *
- * https://github.com/rampantpixels/foundation_lib
+ * https://github.com/mjansson/foundation_lib
  *
  * This library is put in the public domain; you can redistribute it and/or modify it without any
  * restrictions.
@@ -109,8 +109,7 @@ vector_dot3(const vector_t v0, const vector_t v1) {
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_cross3(const vector_t v0, const vector_t v1) {
-	return (vector_t){v0.y * v1.z - v0.z * v1.y, v0.z * v1.x - v0.x * v1.z,
-	                  v0.x * v1.y - v0.y * v1.x, 1};
+	return (vector_t){v0.y * v1.z - v0.z * v1.y, v0.z * v1.x - v0.x * v1.z, v0.x * v1.y - v0.y * v1.x, 1};
 }
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
@@ -146,16 +145,16 @@ vector_muladd(const vector_t v0, const vector_t v1, const vector_t v2) {
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_shuffle(const vector_t v, const unsigned int mask) {
 	const float32_t* element = &v.x;
-	return (vector_t){element[(mask >> 0) & 0x3], element[(mask >> 2) & 0x3],
-	                  element[(mask >> 4) & 0x3], element[(mask >> 6) & 0x3]};
+	return (vector_t){element[(mask >> 0) & 0x3], element[(mask >> 2) & 0x3], element[(mask >> 4) & 0x3],
+	                  element[(mask >> 6) & 0x3]};
 }
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_shuffle2(const vector_t v0, const vector_t v1, const unsigned int mask) {
 	const float32_t* element0 = &v0.x;
 	const float32_t* element1 = &v1.x;
-	return (vector_t){element0[(mask >> 0) & 0x3], element0[(mask >> 2) & 0x3],
-	                  element1[(mask >> 4) & 0x3], element1[(mask >> 6) & 0x3]};
+	return (vector_t){element0[(mask >> 0) & 0x3], element0[(mask >> 2) & 0x3], element1[(mask >> 4) & 0x3],
+	                  element1[(mask >> 6) & 0x3]};
 }
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
@@ -173,8 +172,7 @@ static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_project(const vector_t v, const vector_t at) {
 	const vector_t normal = vector_normalize(at);
 	const vector_t ndotv = vector_dot(normal, v);
-	return (vector_t){normal.x * ndotv.x, normal.y * ndotv.y, normal.z * ndotv.z,
-	                  normal.w * ndotv.w};
+	return (vector_t){normal.x * ndotv.x, normal.y * ndotv.y, normal.z * ndotv.z, normal.w * ndotv.w};
 }
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
@@ -237,14 +235,14 @@ vector_sqrt(const vector_t v) {
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_min(const vector_t v0, const vector_t v1) {
-	return (vector_t){(v0.x < v1.x) ? v0.x : v1.x, (v0.y < v1.y) ? v0.y : v1.y,
-	                  (v0.z < v1.z) ? v0.z : v1.z, (v0.w < v1.w) ? v0.w : v1.w};
+	return (vector_t){(v0.x < v1.x) ? v0.x : v1.x, (v0.y < v1.y) ? v0.y : v1.y, (v0.z < v1.z) ? v0.z : v1.z,
+	                  (v0.w < v1.w) ? v0.w : v1.w};
 }
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_max(const vector_t v0, const vector_t v1) {
-	return (vector_t){(v0.x > v1.x) ? v0.x : v1.x, (v0.y > v1.y) ? v0.y : v1.y,
-	                  (v0.z > v1.z) ? v0.z : v1.z, (v0.w > v1.w) ? v0.w : v1.w};
+	return (vector_t){(v0.x > v1.x) ? v0.x : v1.x, (v0.y > v1.y) ? v0.y : v1.y, (v0.z > v1.z) ? v0.z : v1.z,
+	                  (v0.w > v1.w) ? v0.w : v1.w};
 }
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL real
@@ -283,8 +281,8 @@ vector_set_component(const vector_t v, int c, real val) {
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL bool
 vector_equal(const vector_t v0, const vector_t v1) {
-	return math_real_eq(v0.x, v1.x, 100) && math_real_eq(v0.y, v1.y, 100) &&
-	       math_real_eq(v0.z, v1.z, 100) && math_real_eq(v0.w, v1.w, 100);
+	return math_real_eq(v0.x, v1.x, 100) && math_real_eq(v0.y, v1.y, 100) && math_real_eq(v0.z, v1.z, 100) &&
+	       math_real_eq(v0.w, v1.w, 100);
 }
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
@@ -296,9 +294,8 @@ vector_rotate(const vector_t v, const matrix_t m) {
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_transform(const vector_t v, const matrix_t m) {
-	return vector(
-	    (m.frow[0][0] * v.x) + (m.frow[1][0] * v.y) + (m.frow[2][0] * v.z) + (m.frow[3][0] * v.w),
-	    (m.frow[0][1] * v.x) + (m.frow[1][1] * v.y) + (m.frow[2][1] * v.z) + (m.frow[3][1] * v.w),
-	    (m.frow[0][2] * v.x) + (m.frow[1][2] * v.y) + (m.frow[2][2] * v.z) + (m.frow[3][2] * v.w),
-	    (m.frow[0][3] * v.x) + (m.frow[1][3] * v.y) + (m.frow[2][3] * v.z) + (m.frow[3][3] * v.w));
+	return vector((m.frow[0][0] * v.x) + (m.frow[1][0] * v.y) + (m.frow[2][0] * v.z) + (m.frow[3][0] * v.w),
+	              (m.frow[0][1] * v.x) + (m.frow[1][1] * v.y) + (m.frow[2][1] * v.z) + (m.frow[3][1] * v.w),
+	              (m.frow[0][2] * v.x) + (m.frow[1][2] * v.y) + (m.frow[2][2] * v.z) + (m.frow[3][2] * v.w),
+	              (m.frow[0][3] * v.x) + (m.frow[1][3] * v.y) + (m.frow[2][3] * v.z) + (m.frow[3][3] * v.w));
 }

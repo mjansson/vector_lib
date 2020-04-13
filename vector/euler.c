@@ -1,14 +1,14 @@
-/* euler.c  -  Vector library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
+/* euler.c  -  Vector library  -  Public Domain  -  2013 Mattias Jansson
  *
  * This library provides a cross-platform vector math library in C11 providing basic support data types and
  * functions to write applications and games in a platform-independent fashion. The latest source code is
  * always available at
  *
- * https://github.com/rampantpixels/vector_lib
+ * https://github.com/mjansson/vector_lib
  *
  * This library is built on top of the foundation library available at
  *
- * https://github.com/rampantpixels/foundation_lib
+ * https://github.com/mjansson/foundation_lib
  *
  * This library is put in the public domain; you can redistribute it and/or modify it without any restrictions.
  *
@@ -29,33 +29,36 @@ euler_angles(real rx, real ry, real rz, euler_angles_order_t order) {
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL unsigned int
 euler_get_safe(unsigned int order) {
-	static const unsigned int safe[] = { 0, 1, 2, 0 };
+	static const unsigned int safe[] = {0, 1, 2, 0};
 	return safe[order & 0x3];
 }
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL unsigned int
 euler_get_next(unsigned int order) {
-	static const unsigned int next[] = { 1, 2, 0, 1 };
+	static const unsigned int next[] = {1, 2, 0, 1};
 	return next[order & 0x3];
 }
 
-#define EULER_SPLICE_ORDER_DATA( order ) \
-	f = order & 0x1; order >>= 1; \
-	s = order & 0x1; order >>= 1; \
-	n = order & 0x1; order >>= 1; \
-	i = euler_get_safe(order); \
-	j = euler_get_next(i + n); \
+#define EULER_SPLICE_ORDER_DATA(order) \
+	f = order & 0x1;                   \
+	order >>= 1;                       \
+	s = order & 0x1;                   \
+	order >>= 1;                       \
+	n = order & 0x1;                   \
+	order >>= 1;                       \
+	i = euler_get_safe(order);         \
+	j = euler_get_next(i + n);         \
 	k = euler_get_next(i + 1 - n)
 
 quaternion_t
 euler_angles_to_quaternion(const euler_angles_t angles) {
-	//From http://etclab.mie.utoronto.ca/people/david_dir/GEMS/GEMS.html
-	//https://web.archive.org/web/20101204012751/http://etclab.mie.utoronto.ca/people/david_dir/GEMS/GEMS.html
+	// From http://etclab.mie.utoronto.ca/people/david_dir/GEMS/GEMS.html
+	// https://web.archive.org/web/20101204012751/http://etclab.mie.utoronto.ca/people/david_dir/GEMS/GEMS.html
 	uint32_t order = *((const uint32_t*)&angles + 3);
-	real angle[3] = { vector_x(angles), vector_y(angles), vector_z(angles) };
+	real angle[3] = {vector_x(angles), vector_y(angles), vector_z(angles)};
 	real ti, tj, th, ci, cj, ch, si, sj, sh, cc, cs, sc, ss;
 	float32_aligned128_t q[4];
-	unsigned int i,j,k,n,s,f;
+	unsigned int i, j, k, n, s, f;
 
 	EULER_SPLICE_ORDER_DATA(order);
 
@@ -88,8 +91,7 @@ euler_angles_to_quaternion(const euler_angles_t angles) {
 		q[j] = sj * (cc + ss);
 		q[k] = sj * (cs - sc);
 		q[3] = cj * (cc - ss);
-	}
-	else {
+	} else {
 		q[i] = cj * sc - sj * cs;
 		q[j] = cj * ss + sj * cc;
 		q[k] = cj * cs - sj * sc;
@@ -105,57 +107,57 @@ euler_angles_to_quaternion(const euler_angles_t angles) {
 /*
 euler_angles_t
 euler_angles_from_quaterion(const quaternion_t q, euler_angles_order_t order) {
-	uint32_t lorder = order;
-	matrix_t mat = quaternion_to_matrix(q);
+    uint32_t lorder = order;
+    matrix_t mat = quaternion_to_matrix(q);
 
-	//From http://etclab.mie.utoronto.ca/people/david_dir/GEMS/GEMS.html
-	//https://web.archive.org/web/20101204012751/http://etclab.mie.utoronto.ca/people/david_dir/GEMS/GEMS.html
-	int i,j,k,n,s,f;
-	float32_aligned128_t angles[4];
+    //From http://etclab.mie.utoronto.ca/people/david_dir/GEMS/GEMS.html
+    //https://web.archive.org/web/20101204012751/http://etclab.mie.utoronto.ca/people/david_dir/GEMS/GEMS.html
+    int i,j,k,n,s,f;
+    float32_aligned128_t angles[4];
 
-	EULER_SPLICE_ORDER_DATA(lorder);
+    EULER_SPLICE_ORDER_DATA(lorder);
 
-	if (s == VECTOR_EULER_REPEAT) {
-		real sy = math_sqrt(mat.frow[j][i] * mat.frow[j][i] + mat.frow[k][i] * mat.frow[k][i]);
+    if (s == VECTOR_EULER_REPEAT) {
+        real sy = math_sqrt(mat.frow[j][i] * mat.frow[j][i] + mat.frow[k][i] * mat.frow[k][i]);
 
-		if (!fltzero(sy)) {
-			angles[0] = math_atan2(mat.frow[j][i],  mat.frow[k][i]);
-			angles[1] = math_atan2(sy,              mat.frow[i][i]);
-			angles[2] = math_atan2(mat.frow[i][j], -mat.frow[i][k]);
-		}
-		else {
-			angles[0] = math_atan2(-mat.frow[k][j], mat.frow[j][j]);
-			angles[1] = math_atan2(sy,              mat.frow[i][i]);
-			angles[2] = 0.0f;
-		}
-	}
-	else
-	{
-		real cy = math_sqrt(mat.frow[i][i] * mat.frow[i][i] + mat.frow[i][j] * mat.frow[i][j]);
+        if (!fltzero(sy)) {
+            angles[0] = math_atan2(mat.frow[j][i],  mat.frow[k][i]);
+            angles[1] = math_atan2(sy,              mat.frow[i][i]);
+            angles[2] = math_atan2(mat.frow[i][j], -mat.frow[i][k]);
+        }
+        else {
+            angles[0] = math_atan2(-mat.frow[k][j], mat.frow[j][j]);
+            angles[1] = math_atan2(sy,              mat.frow[i][i]);
+            angles[2] = 0.0f;
+        }
+    }
+    else
+    {
+        real cy = math_sqrt(mat.frow[i][i] * mat.frow[i][i] + mat.frow[i][j] * mat.frow[i][j]);
 
-		if (!fltzero(cy)) {
-			angles[0] = math_atan2( mat.frow[j][k], mat.frow[k][k]);
-			angles[1] = math_atan2(-mat.frow[i][k], cy            );
-			angles[2] = math_atan2( mat.frow[i][j], mat.frow[i][i]);
-		}
-		else {
-			angles[0] = math_atan2(-mat.frow[k][j], mat.frow[j][j]);
-			angles[1] = math_atan2(-mat.frow[i][k], cy            );
-			angles[2] = 0.0f;
-		}
-	}
+        if (!fltzero(cy)) {
+            angles[0] = math_atan2( mat.frow[j][k], mat.frow[k][k]);
+            angles[1] = math_atan2(-mat.frow[i][k], cy            );
+            angles[2] = math_atan2( mat.frow[i][j], mat.frow[i][i]);
+        }
+        else {
+            angles[0] = math_atan2(-mat.frow[k][j], mat.frow[j][j]);
+            angles[1] = math_atan2(-mat.frow[i][k], cy            );
+            angles[2] = 0.0f;
+        }
+    }
 
-	if (n == VECTOR_EULER_ODD) {
-		angles[0] = -angles[0];
-		angles[1] = -angles[1];
-		angles[2] = -angles[2];
-	}
-	if (f == VECTOR_EULER_ROTATEFRAME) {
-		real t = angles[0];
-		angles[0] = angles[2];
-		angles[2] = t;
-	}
+    if (n == VECTOR_EULER_ODD) {
+        angles[0] = -angles[0];
+        angles[1] = -angles[1];
+        angles[2] = -angles[2];
+    }
+    if (f == VECTOR_EULER_ROTATEFRAME) {
+        real t = angles[0];
+        angles[0] = angles[2];
+        angles[2] = t;
+    }
 
-	return euler_angles(vector_aligned(angles), order);
+    return euler_angles(vector_aligned(angles), order);
 }
 */

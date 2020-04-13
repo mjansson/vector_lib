@@ -17,9 +17,9 @@ It is written with the following API design principles in mind:
 * Compact. The API needs to be compact, meaning the user can use it without using a manual. Note though that "compact" does not mean "small". A consistent naming scheme makes the API easier to use and remember.
 * Contained. Third party dependencies are kept to an absolute minimum and prefer to use primitive or well-defined data types.
   
-The latest source code maintained by Rampant Pixels is always available at
+The latest source code maintained by Mattias Jansson is always available at
 
-https://github.com/rampantpixels/vector_lib
+https://github.com/mjansson/vector_lib
 
 This library is put in the public domain; you can redistribute it and/or modify it without any restrictions.
 

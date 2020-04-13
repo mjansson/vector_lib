@@ -1,14 +1,14 @@
-/* main.c  -  Vector tests  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
+/* main.c  -  Vector tests  -  Public Domain  -  2013 Mattias Jansson
  *
  * This library provides a cross-platform vector math library in C11 providing basic support data
  * types and functions to write applications and games in a platform-independent fashion. The latest
  * source code is always available at
  *
- * https://github.com/rampantpixels/vector_lib
+ * https://github.com/mjansson/vector_lib
  *
  * This library is built on top of the foundation library available at
  *
- * https://github.com/rampantpixels/foundation_lib
+ * https://github.com/mjansson/foundation_lib
  *
  * This library is put in the public domain; you can redistribute it and/or modify it without any
  * restrictions.
@@ -38,7 +38,7 @@ test_matrix_application(void) {
 	memset(&app, 0, sizeof(app));
 	app.name = string_const(STRING_CONST("Matrix tests"));
 	app.short_name = string_const(STRING_CONST("test_matrix"));
-	app.company = string_const(STRING_CONST("Rampant Pixels"));
+	app.company = string_const(STRING_CONST(""));
 	app.version = vector_module_version();
 	app.exception_handler = test_exception_handler;
 	app.flags = APPLICATION_UTILITY;
@@ -92,8 +92,7 @@ DECLARE_TEST(matrix, construct) {
 	EXPECT_VECTOREQ(mat.row[2], vector(9, 10, 11, 12));
 	EXPECT_VECTOREQ(mat.row[3], vector(-13, -14, -15, -16));
 
-	VECTOR_ALIGN float32_t aligned[] = {1, -2, 3,  -4, -5,  6,   -7,  8,
-	                                    9, 10, 11, 12, -13, -14, -15, -16};
+	VECTOR_ALIGN float32_t aligned[] = {1, -2, 3, -4, -5, 6, -7, 8, 9, 10, 11, 12, -13, -14, -15, -16};
 
 	mat = matrix_aligned(aligned);
 	EXPECT_VECTOREQ(mat.row[0], vector(1, -2, 3, -4));
@@ -107,8 +106,7 @@ DECLARE_TEST(matrix, construct) {
 DECLARE_TEST(matrix, ops) {
 	matrix_t mat;
 
-	VECTOR_ALIGN float32_t aligned[] = {1, -2, 3,  -4, -5,  6,   -7,  8,
-	                                    9, 10, 11, 12, -13, -14, -15, -16};
+	VECTOR_ALIGN float32_t aligned[] = {1, -2, 3, -4, -5, 6, -7, 8, 9, 10, 11, 12, -13, -14, -15, -16};
 
 	float32_t unaligned[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
@@ -203,18 +201,13 @@ DECLARE_TEST(matrix, ops) {
 	EXPECT_VECTOREQ(mat.row[3], vector(0, 0, 0, 1));
 
 	mat = matrix_mul(matrix_aligned(aligned), matrix_unaligned(unaligned));
-	EXPECT_VECTOREQ(mat.row[0], vector(-8 + 24 - 48, 1 - 10 + 27 - 4 * 13, 2 - 12 + 30 - 4 * 14,
-	                                   3 - 14 + 33 - 4 * 15));
-	EXPECT_VECTOREQ(mat.row[1],
-	                vector(6 * 4 - 7 * 8 + 8 * 12, -5 * 1 + 6 * 5 - 7 * 9 + 8 * 13,
-	                       -5 * 2 + 6 * 6 - 7 * 10 + 8 * 14, -5 * 3 + 6 * 7 - 7 * 11 + 8 * 15));
-	EXPECT_VECTOREQ(mat.row[2],
-	                vector(10 * 4 + 11 * 8 + 12 * 12, 9 * 1 + 10 * 5 + 11 * 9 + 12 * 13,
-	                       9 * 2 + 10 * 6 + 11 * 10 + 12 * 14, 9 * 3 + 10 * 7 + 11 * 11 + 12 * 15));
-	EXPECT_VECTOREQ(
-	    mat.row[3],
-	    vector(-14 * 4 - 15 * 8 - 16 * 12, -13 * 1 - 14 * 5 - 15 * 9 - 16 * 13,
-	           -13 * 2 - 14 * 6 - 15 * 10 - 16 * 14, -13 * 3 - 14 * 7 - 15 * 11 - 16 * 15));
+	EXPECT_VECTOREQ(mat.row[0], vector(-8 + 24 - 48, 1 - 10 + 27 - 4 * 13, 2 - 12 + 30 - 4 * 14, 3 - 14 + 33 - 4 * 15));
+	EXPECT_VECTOREQ(mat.row[1], vector(6 * 4 - 7 * 8 + 8 * 12, -5 * 1 + 6 * 5 - 7 * 9 + 8 * 13,
+	                                   -5 * 2 + 6 * 6 - 7 * 10 + 8 * 14, -5 * 3 + 6 * 7 - 7 * 11 + 8 * 15));
+	EXPECT_VECTOREQ(mat.row[2], vector(10 * 4 + 11 * 8 + 12 * 12, 9 * 1 + 10 * 5 + 11 * 9 + 12 * 13,
+	                                   9 * 2 + 10 * 6 + 11 * 10 + 12 * 14, 9 * 3 + 10 * 7 + 11 * 11 + 12 * 15));
+	EXPECT_VECTOREQ(mat.row[3], vector(-14 * 4 - 15 * 8 - 16 * 12, -13 * 1 - 14 * 5 - 15 * 9 - 16 * 13,
+	                                   -13 * 2 - 14 * 6 - 15 * 10 - 16 * 14, -13 * 3 - 14 * 7 - 15 * 11 - 16 * 15));
 
 	return 0;
 }
