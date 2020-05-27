@@ -245,6 +245,11 @@ vector_max(const vector_t v0, const vector_t v1) {
 	                  (v0.w > v1.w) ? v0.w : v1.w};
 }
 
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
+vector_abs(const vector_t v) {
+	return (vector_t){math_abs(v.x), math_abs(v.y), math_abs(v.z), math_abs(v.w)};
+}
+
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL real
 vector_x(const vector_t v) {
 	return v.x;

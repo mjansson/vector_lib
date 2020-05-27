@@ -262,6 +262,11 @@ vector_max(const vector_t v0, const vector_t v1) {
 	return _mm_max_ps(v0, v1);
 }
 
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
+vector_abs(const vector_t v) {
+	return _mm_and_ps(_mm_castsi128_ps(_mm_srli_epi32(_mm_set1_epi32(-1), 1)), v);
+}
+
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL real
 vector_x(const vector_t v) {
 	return *(const float32_t*)&v;

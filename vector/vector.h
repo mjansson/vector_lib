@@ -47,7 +47,7 @@ vector_unaligned(const float32_t* FOUNDATION_RESTRICT v);
 static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL vector_t
 vector_aligned(const float32_aligned128_t* FOUNDATION_RESTRICT v);
 
-//! Load aligned (16-byte alignment) single uniform
+//! Load single uniform
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_uniform(const real v);
 
@@ -161,6 +161,9 @@ vector_min(const vector_t v0, const vector_t v1);
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_max(const vector_t v0, const vector_t v1);
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
+vector_abs(const vector_t v);
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL real
 vector_x(const vector_t v);
