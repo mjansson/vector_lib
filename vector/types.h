@@ -35,8 +35,10 @@
 
 #if FOUNDATION_COMPILER_GCC || FOUNDATION_COMPILER_CLANG
 typedef __m128 vector_t VECTOR_ALIGN;
+typedef __m128i vectori_t VECTOR_ALIGN;
 #else
 typedef VECTOR_ALIGN __m128 vector_t;
+typedef VECTOR_ALIGN __m128i vectori_t;
 #endif
 
 #if VECTOR_IMPLEMENTATION_SSE4 || VECTOR_IMPLEMENTATION_SSE3
@@ -49,12 +51,20 @@ typedef VECTOR_ALIGN __m128 vector_t;
 #define VECTOR_ALIGNED_STRUCT(s) struct s
 
 typedef struct vector_t vector_t;
+typedef struct vectori_t vectori_t;
 
 struct vector_t {
 	float32_t x;
 	float32_t y;
 	float32_t z;
 	float32_t w;
+};
+
+struct vectori_t {
+	int32_t x;
+	int32_t y;
+	int32_t z;
+	int32_t w;
 };
 
 #endif

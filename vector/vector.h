@@ -183,8 +183,41 @@ vector_component(const vector_t v, int c);
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_set_component(const vector_t v, int c, real val);
 
-static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL bool
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vectori_t
 vector_equal(const vector_t v0, const vector_t v1);
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vectori_t
+vector_lequal(const vector_t v0, const vector_t v1);
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vectori_t
+vector_less(const vector_t v0, const vector_t v1);
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vectori_t
+vector_gequal(const vector_t v0, const vector_t v1);
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vectori_t
+vector_greater(const vector_t v0, const vector_t v1);
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vectori_t
+vectori_zero(void);
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vectori_t
+vectori_one(void);
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL int32_t
+vectori_x(const vectori_t v);
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL int32_t
+vectori_y(const vectori_t v);
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL int32_t
+vectori_z(const vectori_t v);
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL int32_t
+vectori_w(const vectori_t v);
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL int32_t
+vectori_component(const vectori_t v, int c);
 
 //! Treat vectors as row vectors, which puts axes in rows in matrix
 //                 [ m00 m01 m02 --- ]

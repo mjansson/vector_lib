@@ -272,22 +272,74 @@ vector_w(const vector_t v) {
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL real
 vector_component(const vector_t v, int c) {
-	FOUNDATION_ASSERT((c >= 0) && (c < 4));
 	return *((const float32_t*)&v + c);
 }
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_set_component(const vector_t v, int c, real val) {
-	FOUNDATION_ASSERT((c >= 0) && (c < 4));
 	vector_t vmod = v;
 	*((float32_t*)&vmod + c) = val;
 	return vmod;
 }
 
-static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL bool
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vectori_t
+vectori_zero(void) {
+	return (vectori_t){0, 0, 0, 0};
+}
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vectori_t
+vectori_one(void) {
+	return (vector_t){1, 1, 1, 1};
+}
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL int32_t
+vectori_x(const vectori_t v) {
+	return v.x;
+}
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL int32_t
+vectori_y(const vectori_t v) {
+	return v.x;
+}
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL int32_t
+vectori_z(const vectori_t v) {
+	return v.x;
+}
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL int32_t
+vectori_w(const vectori_t v) {
+	return v.x;
+}
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL int32_t
+vectori_component(const vectori_t v, int c) {
+	return *((const int32_t*)&v + c);
+}
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vectori_t
 vector_equal(const vector_t v0, const vector_t v1) {
-	return math_real_eq(v0.x, v1.x, 100) && math_real_eq(v0.y, v1.y, 100) && math_real_eq(v0.z, v1.z, 100) &&
-	       math_real_eq(v0.w, v1.w, 100);
+	return (vectori_t){v0.x == v1.x, v0.y == v1.y, v0.z == v1.z, v0.w == v1.w};
+}
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vectori_t
+vector_lequal(const vector_t v0, const vector_t v1) {
+	return (vectori_t){v0.x <= v1.x, v0.y <= v1.y, v0.z <= v1.z, v0.w <= v1.w};
+}
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vectori_t
+vector_less(const vector_t v0, const vector_t v1) {
+	return (vectori_t){v0.x < v1.x, v0.y < v1.y, v0.z < v1.z, v0.w < v1.w};
+}
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vectori_t
+vector_gequal(const vector_t v0, const vector_t v1) {
+	return (vectori_t){v0.x >= v1.x, v0.y >= v1.y, v0.z >= v1.z, v0.w >= v1.w};
+}
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vectori_t
+vector_greater(const vector_t v0, const vector_t v1) {
+	return (vectori_t){v0.x > v1.x, v0.y > v1.y, v0.z > v1.z, v0.w > v1.w};
 }
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t

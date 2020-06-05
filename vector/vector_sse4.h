@@ -303,12 +303,64 @@ vector_set_component(const vector_t v, int c, real val) {
 	return vmod;
 }
 
-static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL bool
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vectori_t
+vectori_zero(void) {
+	return _mm_setzero_si128();
+}
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vectori_t
+vectori_one(void) {
+	return _mm_set1_epi32(1);
+}
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL int32_t
+vectori_x(const vectori_t v) {
+	return *(const int32_t*)&v;
+}
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL int32_t
+vectori_y(const vectori_t v) {
+	return *((const int32_t*)&v + 1);
+}
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL int32_t
+vectori_z(const vectori_t v) {
+	return *((const int32_t*)&v + 2);
+}
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL int32_t
+vectori_w(const vectori_t v) {
+	return *((const int32_t*)&v + 3);
+}
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL int32_t
+vectori_component(const vectori_t v, int c) {
+	return ((const int32_t*)&v)[c];
+}
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vectori_t
 vector_equal(const vector_t v0, const vector_t v1) {
-	return math_realeq(*(const float32_t*)&v0, *(const float32_t*)&v1, 100) &&
-	       math_realeq(*((const float32_t*)&v0 + 1), *((const float32_t*)&v1 + 1), 100) &&
-	       math_realeq(*((const float32_t*)&v0 + 2), *((const float32_t*)&v1 + 2), 100) &&
-	       math_realeq(*((const float32_t*)&v0 + 3), *((const float32_t*)&v1 + 3), 100);
+	return _mm_castps_si128(_mm_cmpeq_ps(v0, v1));
+}
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vectori_t
+vector_lequal(const vector_t v0, const vector_t v1) {
+	return _mm_castps_si128(_mm_cmple_ps(v0, v1));
+}
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vectori_t
+vector_less(const vector_t v0, const vector_t v1) {
+	return _mm_castps_si128(_mm_cmplt_ps(v0, v1));
+}
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vectori_t
+vector_gequal(const vector_t v0, const vector_t v1) {
+	return _mm_castps_si128(_mm_cmpge_ps(v0, v1));
+}
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vectori_t
+vector_greater(const vector_t v0, const vector_t v1) {
+	return _mm_castps_si128(_mm_cmpgt_ps(v0, v1));
 }
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
