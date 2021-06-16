@@ -104,12 +104,12 @@ vector_zaxis(void) {
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_normalize(const vector_t v) {
-	return vector_mul(v, _mm_rsqrt_ps(_mm_dp_ps(v, v, 0xFF)));
+	return vector_div(v, _mm_sqrt_ps(_mm_dp_ps(v, v, 0xFF)));
 }
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_normalize3(const vector_t v) {
-	return vector_mul(v, _mm_rsqrt_ps(_mm_dp_ps(v, v, 0x77)));
+	return vector_div(v, _mm_sqrt_ps(_mm_dp_ps(v, v, 0x77)));
 }
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
@@ -201,7 +201,7 @@ vector_reflect(const vector_t v, const vector_t at) {
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_project3(const vector_t v, const vector_t at) {
-	const vector_t normal = vector_mul(at, _mm_rsqrt_ps(vector_dot3(at, at)));
+	const vector_t normal = vector_div(at, _mm_sqrt_ps(vector_dot3(at, at)));
 	const vector_t result = vector_mul(normal, vector_dot3(normal, v));
 	return _mm_blend_ps(result, v, 8);
 }

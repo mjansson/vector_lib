@@ -101,13 +101,13 @@ vector_zaxis(void) {
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_normalize(const vector_t v) {
-	return _mm_mul_ps(v, _mm_rsqrt_ps(vector_dot(v, v)));
+	return _mm_div_ps(v, _mm_sqrt_ps(vector_dot(v, v)));
 }
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_normalize3(const vector_t v) {
 	// Shuffle to preserve w component of input vector
-	const vector_t norm = vector_mul(v, _mm_rsqrt_ps(vector_dot3(v, v)));
+	const vector_t norm = vector_div(v, _mm_sqrt_ps(vector_dot3(v, v)));
 	const vector_t splice = _mm_shuffle_ps(norm, v, VECTOR_MASK_ZZWW);
 	return _mm_shuffle_ps(norm, splice, VECTOR_MASK_XYXW);
 }
@@ -201,7 +201,7 @@ vector_reflect(const vector_t v, const vector_t at) {
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_project3(const vector_t v, const vector_t at) {
 	// Shuffle to preserve w component of input vector
-	const vector_t normal = vector_mul(at, _mm_rsqrt_ps(vector_dot3(at, at)));
+	const vector_t normal = vector_div(at, _mm_sqrt_ps(vector_dot3(at, at)));
 	const vector_t result = vector_mul(normal, vector_dot3(normal, v));
 	const vector_t splice = _mm_shuffle_ps(result, v, VECTOR_MASK_ZZWW);
 	return _mm_shuffle_ps(result, splice, VECTOR_MASK_XYXW);
