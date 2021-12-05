@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>vector</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ProjectGuid>{B9B84B84-958B-4380-8B23-C304A43714C0}</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <Import Project="$(SolutionDir)\build.default.props" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup>
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemGroup>
+    <ClInclude Include="..\..\vector\build.h" />
+    <ClInclude Include="..\..\vector\euler.h" />
+    <ClInclude Include="..\..\vector\hashstrings.h" />
+    <ClInclude Include="..\..\vector\internal.h" />
+    <ClInclude Include="..\..\vector\mask.h" />
+    <ClInclude Include="..\..\vector\matrix.h" />
+    <ClInclude Include="..\..\vector\matrix_base.h" />
+    <ClInclude Include="..\..\vector\matrix_fallback.h" />
+    <ClInclude Include="..\..\vector\matrix_neon.h" />
+    <ClInclude Include="..\..\vector\matrix_sse2.h" />
+    <ClInclude Include="..\..\vector\matrix_sse3.h" />
+    <ClInclude Include="..\..\vector\matrix_sse4.h" />
+    <ClInclude Include="..\..\vector\quaternion.h" />
+    <ClInclude Include="..\..\vector\quaternion_base.h" />
+    <ClInclude Include="..\..\vector\quaternion_fallback.h" />
+    <ClInclude Include="..\..\vector\quaternion_neon.h" />
+    <ClInclude Include="..\..\vector\quaternion_sse2.h" />
+    <ClInclude Include="..\..\vector\quaternion_sse3.h" />
+    <ClInclude Include="..\..\vector\quaternion_sse4.h" />
+    <ClInclude Include="..\..\vector\types.h" />
+    <ClInclude Include="..\..\vector\vector.h" />
+    <ClInclude Include="..\..\vector\vector_fallback.h" />
+    <ClInclude Include="..\..\vector\vector_neon.h" />
+    <ClInclude Include="..\..\vector\vector_sse2.h" />
+    <ClInclude Include="..\..\vector\vector_sse3.h" />
+    <ClInclude Include="..\..\vector\vector_sse4.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\vector\euler.c" />
+    <ClCompile Include="..\..\vector\vector.c" />
+    <ClCompile Include="..\..\vector\version.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\vector\hashstrings.txt" />
+  </ItemGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\foundation;$(ProjectDir)..\..\..\foundation_lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>VECTOR_COMPILE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>
