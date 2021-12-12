@@ -89,6 +89,13 @@ matrix_translation_scalar(float32_t x, float32_t y, float32_t z) {
 	return matrix_aligned(aligned);
 }
 
+#if FOUNDATION_COMPILER_CLANG
+#pragma clang diagnostic push
+#if __has_warning("-Wconditional-uninitialized")
+#pragma clang diagnostic ignored "-Wconditional-uninitialized"
+#endif
+#endif
+
 #ifndef VECTOR_HAVE_MATRIX_TRANSPOSE
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL matrix_t
@@ -190,6 +197,10 @@ matrix_from_quaternion(const quaternion_t q) {
 	return mat;
 }
 
+#endif
+
+#if FOUNDATION_COMPILER_CLANG
+#pragma clang diagnostic pop
 #endif
 
 #undef VECTOR_HAVE_MATRIX_ZERO

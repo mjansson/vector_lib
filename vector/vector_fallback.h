@@ -15,6 +15,13 @@
  *
  */
 
+#if FOUNDATION_COMPILER_CLANG
+#pragma clang diagnostic push
+#if __has_warning("-Wfloat-equal")
+#pragma clang diagnostic ignored "-Wfloat-equal"
+#endif
+#endif
+
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector(const real x, const real y, const real z, const real w) {
 	return (vector_t){x, y, z, w};
@@ -289,7 +296,7 @@ vectori_zero(void) {
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vectori_t
 vectori_one(void) {
-	return (vector_t){1, 1, 1, 1};
+	return (vectori_t){1, 1, 1, 1};
 }
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL int32_t
@@ -356,3 +363,7 @@ vector_transform(const vector_t v, const matrix_t m) {
 	              (m.frow[0][2] * v.x) + (m.frow[1][2] * v.y) + (m.frow[2][2] * v.z) + (m.frow[3][2] * v.w),
 	              (m.frow[0][3] * v.x) + (m.frow[1][3] * v.y) + (m.frow[2][3] * v.z) + (m.frow[3][3] * v.w));
 }
+
+#if FOUNDATION_COMPILER_CLANG
+#pragma clang diagnostic pop
+#endif

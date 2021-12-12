@@ -80,7 +80,7 @@ vector_two(void) {
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_origo(void) {
-	static const float32_t ALIGN(16) origo[] = {0, 0, 0, 1};
+	const float32_t FOUNDATION_ALIGN(16) origo[] = {0, 0, 0, 1};
 	return vector_aligned(origo);
 }
 
