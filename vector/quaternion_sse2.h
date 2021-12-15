@@ -44,7 +44,7 @@ quaternion_mul(const quaternion_t q0, const quaternion_t q1) {
 #if VECTOR_IMPLEMENTATION_SSE3 || VECTOR_IMPLEMENTATION_SSE4
 	vector_t e = _mm_addsub_ps(q0w_q1yxzw, q0x_q1zwxy);
 #else
-	static const FOUNDATION_ALIGN(16) float32_t signs[] = {-1, 1, -1, 1};
+	vector_arr_t signs = {-1, 1, -1, 1};
 	const vector_t signshuffle = vector_aligned(signs);
 	vector_t e = _mm_add_ps(q0w_q1yxzw, _mm_mul_ps(q0x_q1zwxy, signshuffle));
 #endif

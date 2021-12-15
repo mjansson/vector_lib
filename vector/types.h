@@ -36,9 +36,11 @@
 #if FOUNDATION_COMPILER_GCC || FOUNDATION_COMPILER_CLANG
 typedef __m128 vector_t VECTOR_ALIGN;
 typedef __m128i vectori_t VECTOR_ALIGN;
+typedef float vector_arr_t[4] VECTOR_ALIGN;
 #else
 typedef VECTOR_ALIGN __m128 vector_t;
 typedef VECTOR_ALIGN __m128i vectori_t;
+typedef VECTOR_ALIGN float vector_arr_t[4];
 #endif
 
 #if VECTOR_IMPLEMENTATION_SSE4 || VECTOR_IMPLEMENTATION_SSE3
@@ -161,5 +163,5 @@ FOUNDATION_STATIC_ASSERT(sizeof(transform_t) == sizeof(float32_t) * 8, "transfor
 FOUNDATION_STATIC_ASSERT(sizeof(euler_angles_t) == sizeof(float32_t) * 4, "euler angles size");
 
 struct vector_config_t {
-	int __unused_field;
+	int unused;
 };

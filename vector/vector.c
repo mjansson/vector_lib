@@ -16,27 +16,27 @@
 
 #include <vector/vector.h>
 
-static bool _vector_initialized = false;
+static bool vector_initialized;
 
 int
 vector_module_initialize(const vector_config_t config) {
 	FOUNDATION_UNUSED(config);
-	if (_vector_initialized)
+	if (vector_initialized)
 		return 0;
 
-	_vector_initialized = true;
+	vector_initialized = true;
 
 	return 0;
 }
 
 void
 vector_module_finalize(void) {
-	_vector_initialized = false;
+	vector_initialized = false;
 }
 
 bool
 vector_module_is_initialized(void) {
-	return _vector_initialized;
+	return vector_initialized;
 }
 
 string_t

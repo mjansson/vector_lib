@@ -15,9 +15,6 @@
  *
  */
 
-static const FOUNDATION_ALIGN(16) float32_t _identity_quat[4] = {0, 0, 0, 1};
-static const FOUNDATION_ALIGN(16) float32_t _inverse_quat[4] = {-1, -1, -1, 1};
-
 #ifndef VECTOR_HAVE_QUATERNION_ZERO
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
@@ -55,7 +52,8 @@ quaternion_aligned(const float32_aligned128_t* FOUNDATION_RESTRICT q) {
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
 quaternion_identity(void) {
-	return quaternion_aligned(_identity_quat);
+	vector_arr_t identity_quat = {0, 0, 0, 1};
+	return quaternion_aligned(identity_quat);
 }
 
 #endif
@@ -64,7 +62,8 @@ quaternion_identity(void) {
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
 quaternion_conjugate(const quaternion_t q) {
-	return vector_mul(q, vector_aligned(_inverse_quat));
+	vector_arr_t inverse_quat = {-1, -1, -1, 1};
+	return vector_mul(q, vector_aligned(inverse_quat));
 }
 
 #endif
@@ -73,7 +72,8 @@ quaternion_conjugate(const quaternion_t q) {
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL quaternion_t
 quaternion_inverse(const quaternion_t q) {
-	return vector_div(q, vector_mul(vector_length_sqr(q), vector_aligned(_inverse_quat)));
+	vector_arr_t inverse_quat = {-1, -1, -1, 1};
+	return vector_div(q, vector_mul(vector_length_sqr(q), vector_aligned(inverse_quat)));
 }
 
 #endif

@@ -19,8 +19,8 @@
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL matrix_t
 matrix_zero(void) {
-	static const FOUNDATION_ALIGN(16) float32_t _zero_matrix[16] = {0};
-	return matrix_aligned(_zero_matrix);
+	vector_arr_t zero_matrix[4] = {0};
+	return matrix_aligned((float32_aligned128_t*)zero_matrix);
 }
 
 #endif
@@ -52,8 +52,8 @@ matrix_aligned(const float32_aligned128_t* FOUNDATION_RESTRICT m) {
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL matrix_t
 matrix_identity(void) {
-	static const FOUNDATION_ALIGN(16) float32_t _identity_matrix[16] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
-	return matrix_aligned(_identity_matrix);
+	vector_arr_t identity_matrix[4] = {{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}};
+	return matrix_aligned((float32_aligned128_t*)identity_matrix);
 }
 
 #endif
@@ -65,9 +65,8 @@ matrix_scaling(const vector_t scale) {
 
 static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL matrix_t
 matrix_scaling_scalar(float32_t x, float32_t y, float32_t z) {
-	FOUNDATION_ALIGN(16)
-	float32_t aligned[16] = {x, 0, 0, 0, 0, y, 0, 0, 0, 0, z, 0, 0, 0, 0, 1};
-	return matrix_aligned(aligned);
+	vector_arr_t aligned_matrix[4] = {{x, 0, 0, 0}, {0, y, 0, 0}, {0, 0, z, 0}, {0, 0, 0, 1}};
+	return matrix_aligned((float32_aligned128_t*)aligned_matrix);
 }
 
 static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL matrix_t
@@ -84,9 +83,8 @@ matrix_get_translation(const matrix_t m) {
 
 static FOUNDATION_FORCEINLINE FOUNDATION_PURECALL matrix_t
 matrix_translation_scalar(float32_t x, float32_t y, float32_t z) {
-	FOUNDATION_ALIGN(16)
-	float32_t aligned[16] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, y, z, 1};
-	return matrix_aligned(aligned);
+	vector_arr_t aligned_matrix[4] = {{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {x, y, z, 1}};
+	return matrix_aligned((float32_aligned128_t*)aligned_matrix);
 }
 
 #if FOUNDATION_COMPILER_CLANG
