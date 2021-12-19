@@ -54,6 +54,7 @@ typedef VECTOR_ALIGN float vector_arr_t[4];
 
 typedef struct vector_t vector_t;
 typedef struct vectori_t vectori_t;
+typedef float vector_arr_t[4];
 
 struct vector_t {
 	float32_t x;
