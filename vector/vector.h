@@ -219,6 +219,12 @@ vectori_w(const vectori_t v);
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL int32_t
 vectori_component(const vectori_t v, int c);
 
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vectori_t
+vectori_and(const vectori_t v0, const vectori_t v1);
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vectori_t
+vectori_or(const vectori_t v0, const vectori_t v1);
+
 //! Treat vectors as row vectors, which puts axes in rows in matrix
 //                 [ m00 m01 m02 --- ]
 // [ vx vy vz vw ] [ m10 m11 m12 --- ] = [ m00*vx + m10*vy + m20*vz, m01*vx ..., ..., vw ]

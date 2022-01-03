@@ -325,6 +325,16 @@ vectori_component(const vectori_t v, int c) {
 }
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vectori_t
+vectori_and(const vectori_t v0, const vectori_t v1) {
+	return (vectori_t){v0.x & v1.x, v0.y & v1.y, v0.z & v1.z, v0.w & v1.w};
+}
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vectori_t
+vectori_or(const vectori_t v0, const vectori_t v1) {
+	return (vectori_t){v0.x | v1.x, v0.y | v1.y, v0.z | v1.z, v0.w | v1.w};
+}
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vectori_t
 vector_equal(const vector_t v0, const vector_t v1) {
 	return (vectori_t){v0.x == v1.x, v0.y == v1.y, v0.z == v1.z, v0.w == v1.w};
 }
