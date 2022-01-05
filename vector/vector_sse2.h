@@ -341,12 +341,12 @@ vectori_component(const vectori_t v, int c) {
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vectori_t
 vectori_and(const vectori_t v0, const vectori_t v1) {
-	return _mm_and_epi32(v0, v1);
+	return _mm_and_si128(v0, v1);
 }
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vectori_t
 vectori_or(const vectori_t v0, const vectori_t v1) {
-	return _mm_or_epi32(v0, v1);
+	return _mm_or_si128(v0, v1);
 }
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vectori_t
