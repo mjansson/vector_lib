@@ -831,15 +831,15 @@ DECLARE_TEST(vector, component) {
 }
 
 DECLARE_TEST(vector, equal) {
-	EXPECT_TRUE(vector_equal(vector_zero(), vector_zero()));
-	EXPECT_TRUE(vector_equal(vector_one(), vector_one()));
-	EXPECT_TRUE(vector_equal(vector_uniform(-5), vector_uniform(-5)));
-	EXPECT_TRUE(vector_equal(vector(1, -2, 3, -4), vector(1, -2, 3, -4)));
+	EXPECT_VECTOREQ(vector_zero(), vector_zero());
+	EXPECT_VECTOREQ(vector_one(), vector_one());
+	EXPECT_VECTOREQ(vector_uniform(-5), vector_uniform(-5));
+	EXPECT_VECTOREQ(vector(1, -2, 3, -4), vector(1, -2, 3, -4));
 
-	EXPECT_FALSE(vector_equal(vector_zero(), vector_one()));
-	EXPECT_FALSE(vector_equal(vector_one(), vector_zero()));
-	EXPECT_FALSE(vector_equal(vector_uniform(-5), vector_uniform(5)));
-	EXPECT_FALSE(vector_equal(vector(1, -2, 3, -4), vector(1, 2, 3, -4)));
+	EXPECT_VECTORNOTEQ(vector_zero(), vector_one());
+	EXPECT_VECTORNOTEQ(vector_one(), vector_zero());
+	EXPECT_VECTORNOTEQ(vector_uniform(-5), vector_uniform(5));
+	EXPECT_VECTORNOTEQ(vector(1, -2, 3, -4), vector(1, 2, 3, -4));
 
 	return 0;
 }
