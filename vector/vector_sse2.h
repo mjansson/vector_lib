@@ -159,6 +159,11 @@ vector_add(const vector_t v0, const vector_t v1) {
 }
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
+vector_add_triple(const vector_t v0, const vector_t v1, const vector_t v2) {
+	return _mm_add_ps(_mm_add_ps(v0, v1), v2);
+}
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_sub(const vector_t v0, const vector_t v1) {
 	return _mm_sub_ps(v0, v1);
 }

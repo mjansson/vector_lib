@@ -101,6 +101,9 @@ static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_add(const vector_t v0, const vector_t v1);
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
+vector_add_triple(const vector_t v0, const vector_t v1, const vector_t v2);
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_sub(const vector_t v0, const vector_t v1);
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t

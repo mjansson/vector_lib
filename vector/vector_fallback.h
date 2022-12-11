@@ -135,6 +135,11 @@ vector_add(const vector_t v0, const vector_t v1) {
 }
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
+vector_add_triple(const vector_t v0, const vector_t v1, const vector_t v2) {
+	return (vector_t){v0.x + v1.x + v2.x, v0.y + v1.y + v2.y, v0.z + v1.z + v2.z, v0.w + v1.w + v2.w};
+}
+
+static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
 vector_sub(const vector_t v0, const vector_t v1) {
 	return (vector_t){v0.x - v1.x, v0.y - v1.y, v0.z - v1.z, v0.w - v1.w};
 }
@@ -336,32 +341,27 @@ vectori_or(const vectori_t v0, const vectori_t v1) {
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vectori_t
 vector_equal(const vector_t v0, const vector_t v1) {
-	return (vectori_t){v0.x == v1.x ? -1 : 0, v0.y == v1.y ? -1 : 0,
-	                   v0.z == v1.z ? -1 : 0, v0.w == v1.w ? -1 : 0};
+	return (vectori_t){v0.x == v1.x ? -1 : 0, v0.y == v1.y ? -1 : 0, v0.z == v1.z ? -1 : 0, v0.w == v1.w ? -1 : 0};
 }
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vectori_t
 vector_lequal(const vector_t v0, const vector_t v1) {
-	return (vectori_t){v0.x <= v1.x ? -1 : 0, v0.y <= v1.y ? -1 : 0,
-	                   v0.z <= v1.z ? -1 : 0, v0.w <= v1.w ? -1 : 0};
+	return (vectori_t){v0.x <= v1.x ? -1 : 0, v0.y <= v1.y ? -1 : 0, v0.z <= v1.z ? -1 : 0, v0.w <= v1.w ? -1 : 0};
 }
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vectori_t
 vector_less(const vector_t v0, const vector_t v1) {
-	return (vectori_t){v0.x < v1.x ? -1 : 0, v0.y < v1.y ? -1 : 0,
-	                   v0.z < v1.z ? -1 : 0, v0.w < v1.w ? -1 : 0};
+	return (vectori_t){v0.x < v1.x ? -1 : 0, v0.y < v1.y ? -1 : 0, v0.z < v1.z ? -1 : 0, v0.w < v1.w ? -1 : 0};
 }
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vectori_t
 vector_gequal(const vector_t v0, const vector_t v1) {
-	return (vectori_t){v0.x >= v1.x ? -1 : 0, v0.y >= v1.y ? -1 : 0,
-	                   v0.z >= v1.z ? -1 : 0, v0.w >= v1.w ? -1 : 0};
+	return (vectori_t){v0.x >= v1.x ? -1 : 0, v0.y >= v1.y ? -1 : 0, v0.z >= v1.z ? -1 : 0, v0.w >= v1.w ? -1 : 0};
 }
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vectori_t
 vector_greater(const vector_t v0, const vector_t v1) {
-	return (vectori_t){v0.x > v1.x ? -1 : 0, v0.y > v1.y ? -1 : 0,
-	                   v0.z > v1.z ? -1 : 0, v0.w > v1.w ? -1 : 0};
+	return (vectori_t){v0.x > v1.x ? -1 : 0, v0.y > v1.y ? -1 : 0, v0.z > v1.z ? -1 : 0, v0.w > v1.w ? -1 : 0};
 }
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL vector_t
