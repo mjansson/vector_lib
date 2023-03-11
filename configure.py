@@ -24,10 +24,6 @@ if not target.is_ios() and not target.is_android() and not target.is_tizen():
   if not configs == []:
     generator.bin('maskgen', ['main.c'], 'maskgen', basepath = 'tools', implicit_deps = [vector_lib], libs = ['vector', 'foundation'], dependlibs = dependlibs, configs = configs)
 
-#No test cases if we're a submodule
-if generator.is_subninja():
-  sys.exit()
-
 includepaths = generator.test_includepaths()
 
 test_cases = [
@@ -60,6 +56,7 @@ if toolchain.is_monolithic() or target.is_ios() or target.is_android() or target
     generator.bin(module = '', sources = [os.path.join(module, 'main.c') for module in test_cases] + test_extrasources, binname = 'test-all', basepath = 'test', implicit_deps = [vector_lib], libs = ['test'] + dependlibs, resources = test_resources, includepaths = includepaths)
 else:
   #Build one binary per test case
-  generator.bin(module = 'all', sources = ['main.c'], binname = 'test-all', basepath = 'test', implicit_deps = [vector_lib], libs = dependlibs, includepaths = includepaths)
+  if not generator.is_subninja():
+    generator.bin(module = 'all', sources = ['main.c'], binname = 'test-all', basepath = 'test', implicit_deps = [vector_lib], libs = dependlibs, includepaths = includepaths)
   for test in test_cases:
     generator.bin(module = test, sources = ['main.c'], binname = 'test-' + test, basepath = 'test', implicit_deps = [vector_lib], libs = ['test'] + dependlibs, includepaths = includepaths)

@@ -47,6 +47,17 @@ typedef VECTOR_ALIGN float vector_arr_t[4];
 #include <pmmintrin.h>
 #endif
 
+#elif VECTOR_IMPLEMENTATION_NEON
+
+#include <arm_neon.h>
+
+#define VECTOR_ALIGN FOUNDATION_ALIGN(16)
+#define VECTOR_ALIGNED_STRUCT(s) FOUNDATION_ALIGNED_STRUCT(s, 16)
+
+typedef float32x4_t vector_t VECTOR_ALIGN;
+typedef int32x4_t vectori_t VECTOR_ALIGN;
+typedef float vector_arr_t[4] VECTOR_ALIGN;
+
 #else
 
 #define VECTOR_ALIGN
