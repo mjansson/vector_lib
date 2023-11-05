@@ -22,7 +22,10 @@ vector_lib = generator.lib(module = 'vector', sources = [
 if not target.is_ios() and not target.is_android() and not target.is_tizen():
   configs = [config for config in toolchain.configs if config not in ['profile', 'deploy']]
   if not configs == []:
-    generator.bin('maskgen', ['main.c'], 'maskgen', basepath = 'tools', implicit_deps = [vector_lib], libs = ['vector', 'foundation'], dependlibs = dependlibs, configs = configs)
+    generator.bin('maskgen', ['main.c'], 'maskgen', basepath = 'tools', libs = dependlibs, dependlibs = dependlibs, configs = configs)
+
+if generator.skip_tests():
+  sys.exit()
 
 includepaths = generator.test_includepaths()
 
@@ -50,13 +53,15 @@ if toolchain.is_monolithic() or target.is_ios() or target.is_android() or target
     test_resources = [os.path.join('all', 'tizen', item) for item in [
       'tizen-manifest.xml', os.path.join('res', 'tizenapp.png')
     ]]
+  dependlibs = ['test'] + dependlibs
   if target.is_macos() or target.is_ios() or target.is_android() or target.is_tizen():
-    generator.app(module = '', sources = [os.path.join(module, 'main.c') for module in test_cases] + test_extrasources, binname = 'test-all', basepath = 'test', implicit_deps = [vector_lib], libs = ['test'] + dependlibs, resources = test_resources, includepaths = includepaths)
+    generator.app(module = '', sources = [os.path.join(module, 'main.c') for module in test_cases] + test_extrasources, binname = 'test-vector', basepath = 'test', libs = dependlibs, dependlibs = dependlibs, resources = test_resources, includepaths = includepaths)
   else:
-    generator.bin(module = '', sources = [os.path.join(module, 'main.c') for module in test_cases] + test_extrasources, binname = 'test-all', basepath = 'test', implicit_deps = [vector_lib], libs = ['test'] + dependlibs, resources = test_resources, includepaths = includepaths)
+    generator.bin(module = '', sources = [os.path.join(module, 'main.c') for module in test_cases] + test_extrasources, binname = 'test-vector', basepath = 'test', libs = dependlibs, dependlibs = dependlibs, resources = test_resources, includepaths = includepaths)
 else:
   #Build one binary per test case
   if not generator.is_subninja():
-    generator.bin(module = 'all', sources = ['main.c'], binname = 'test-all', basepath = 'test', implicit_deps = [vector_lib], libs = dependlibs, includepaths = includepaths)
+    generator.bin(module = 'all', sources = ['main.c'], binname = 'test-all', basepath = 'test', implicit_deps = [vector_lib], libs = dependlibs, dependlibs = dependlibs, includepaths = includepaths)
+  dependlibs = ['test'] + dependlibs
   for test in test_cases:
-    generator.bin(module = test, sources = ['main.c'], binname = 'test-' + test, basepath = 'test', implicit_deps = [vector_lib], libs = ['test'] + dependlibs, includepaths = includepaths)
+    generator.bin(module = test, sources = ['main.c'], binname = 'test-' + test, basepath = 'test', implicit_deps = [vector_lib], libs = dependlibs, dependlibs = dependlibs, includepaths = includepaths)
