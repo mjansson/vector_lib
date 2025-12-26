@@ -19,12 +19,7 @@
 
 euler_angles_t
 euler_angles(real rx, real ry, real rz, euler_angles_order_t order) {
-	float32_aligned128_t v[4];
-	v[0] = rx;
-	v[1] = ry;
-	v[2] = rz;
-	*((uint32_t*)v + 3) = order;
-	return vector_aligned(v);
+	return vector(rx, ry, rz, *(float32_t*)&order);
 }
 
 static FOUNDATION_FORCEINLINE FOUNDATION_CONSTCALL unsigned int
@@ -57,7 +52,7 @@ euler_angles_to_quaternion(const euler_angles_t angles) {
 	uint32_t order = *((const uint32_t*)&angles + 3);
 	real angle[3] = {vector_x(angles), vector_y(angles), vector_z(angles)};
 	real ti, tj, th, ci, cj, ch, si, sj, sh, cc, cs, sc, ss;
-	float32_aligned128_t q[4];
+	VECTOR_ALIGN float32_t q[4];
 	unsigned int i, j, k, n, s, f;
 
 	EULER_SPLICE_ORDER_DATA(order);

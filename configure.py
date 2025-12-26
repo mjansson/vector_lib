@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """Ninja build configurator for vector library"""
 
@@ -61,7 +61,7 @@ if toolchain.is_monolithic() or target.is_ios() or target.is_android() or target
 else:
   #Build one binary per test case
   if not generator.is_subninja():
-    generator.bin(module = 'all', sources = ['main.c'], binname = 'test-all', basepath = 'test', implicit_deps = [vector_lib], libs = dependlibs, dependlibs = dependlibs, includepaths = includepaths)
+    generator.bin(module = 'all', sources = ['main.c'], binname = 'test-all', basepath = 'test', implicit_deps = [vector_lib], dependlibs = dependlibs, includepaths = includepaths)
   dependlibs = ['test'] + dependlibs
   for test in test_cases:
-    generator.bin(module = test, sources = ['main.c'], binname = 'test-' + test, basepath = 'test', implicit_deps = [vector_lib], libs = dependlibs, dependlibs = dependlibs, includepaths = includepaths)
+    generator.bin(module = test, sources = ['main.c'], binname = 'test-' + test, basepath = 'test', implicit_deps = [vector_lib], dependlibs = dependlibs, includepaths = includepaths)
